@@ -104,7 +104,13 @@
 - 컴포넌트 스펙: `../designer/component-spec.md` (Confluence 마크다운)
 - 디자인 QA: `../designer/design-qa.md` (Confluence 마크다운)
 - 실제 화면: 피그마 파일에 직접 반영
-
+- 
+  ## 산출물 저장 위치 (반드시 준수)
+- 모든 산출물은 반드시 `~/Documents/design-workspace/project/wepair/designer/` 안에 저장해
+- 절대로 다른 경로에 파일을 생성하지 마
+- 디자인 스펙: `~/Documents/design-workspace/project/wepair/designer/design-spec.md`
+- 컴포넌트 스펙: `~/Documents/design-workspace/project/wepair/designer/component-spec.md`
+- 디자인 QA: `~/Documents/design-workspace/project/wepair/designer/design-qa.md`
 ---
 
 ## 인세션 작업 루틴
