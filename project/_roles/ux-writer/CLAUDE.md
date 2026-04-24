@@ -21,6 +21,11 @@
 
 ---
 
+## 산출물 저장 위치 (반드시 준수)
+- 모든 산출물은 반드시 `~/Documents/design-workspace/project/wepair/ux-writer/` 안에 저장해
+- 절대로 다른 경로에 파일을 생성하지 마
+- UX 라이팅 결과: `~/Documents/design-workspace/project/wepair/ux-writer/[화면명]-ux-writing.md`
+
 ## 서비스 개요
 
 - **서비스 유형**: B2B SaaS
