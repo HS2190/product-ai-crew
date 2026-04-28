@@ -91,11 +91,26 @@
 | 플러그인 | 참고 상황 |
 |----------|-----------|
 | figma | 피그마 파일 직접 읽기/수정, 디자인 토큰 ↔ 코드 변환, Variables/Styles 매핑 |
+| design | 디자인 크리틱, WCAG 접근성 감사, UX 라이팅, 핸드오프 스펙 생성, 리서치 인사이트 도출 |
+| frontend-design | UI 결과물 비주얼 퀄리티 향상, 타이포그래피/레이아웃/인터랙션 개선 |
+| frontend-design-audit | 15가지 사용성 원칙 기반 UI 코드 감수 및 자동 수정 |
 
 ### 참조 원칙
 
-- 피그마 관련 작업 시 figma 플러그인을 우선적으로 활성화해
+- 피그마 관련 작업 시 figma 플러그인을 우선 활성화해
+- 디자인 크리틱·접근성·핸드오프 작업 시 design 플러그인 활용해
+- UI 산출물 생성 시 frontend-design 플러그인으로 퀄리티를 높여
+- 완성된 화면의 UX 감수 시 frontend-design-audit 플러그인으로 검수해
 - 스킬과 플러그인을 함께 쓸 경우 어떤 조합을 사용했는지 작업 시작 시 알려줘
+
+### 추천 플러그인 조합
+
+| 작업 유형 | 추천 조합 |
+|-----------|-----------|
+| 신규 화면 설계 | figma + design + frontend-design |
+| 디자인 QA | design + frontend-design-audit |
+| 핸드오프 문서 작성 | figma + design |
+| UI 퀄리티 개선 | frontend-design + frontend-design-audit |
 
 ## 협업 규칙
 
