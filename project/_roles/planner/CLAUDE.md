@@ -51,11 +51,11 @@
 - 페르소나: `~/project/planner/persona.md`
 - 
 ## 산출물 저장 위치 (반드시 준수)
-- 모든 산출물은 반드시 `~/Documents/design-workspace/project/wepair/planner/` 안에 저장해
+- 모든 산출물은 반드시 `~/design-workspace/project/wepair/planner/` 안에 저장해
 - 절대로 다른 경로에 파일을 생성하지 마
-- 화면 정의서: `~/Documents/design-workspace/project/wepair/planner/screen-spec.md`
-- 기능 명세: `~/Documents/design-workspace/project/wepair/planner/feature-spec.md`
-- 사용자 플로우: `~/Documents/design-workspace/project/wepair/planner/flow.md`
+- 화면 정의서: `~/design-workspace/project/wepair/planner/screen-spec.md`
+- 기능 명세: `~/design-workspace/project/wepair/planner/feature-spec.md`
+- 사용자 플로우: `~/design-workspace/project/wepair/planner/flow.md`
 ---
 
 ## 세션 시작 루틴

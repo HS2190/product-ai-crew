@@ -54,7 +54,7 @@
 
 ## Skills 디렉토리 참조 규칙
 
-작업 시작 전 ~/Documents/design-workspace/skills/ 디렉토리를 반드시 확인하고, 작업 내용에 가장 적합한 스킬을 스스로 판단해서 참고해.
+작업 시작 전 ~/design-workspace/skills/ 디렉토리를 반드시 확인하고, 작업 내용에 가장 적합한 스킬을 스스로 판단해서 참고해.
 
 ### 스킬 목록 및 용도
 
@@ -127,11 +127,11 @@
 
 ### 산출물 저장 위치 (반드시 준수)
 
-모든 산출물은 반드시 ~/Documents/design-workspace/project/wepair/designer/ 안에 저장해. 절대로 다른 경로에 파일을 생성하지 마.
+모든 산출물은 반드시 ~/design-workspace/project/wepair/designer/ 안에 저장해. 절대로 다른 경로에 파일을 생성하지 마.
 
-- 디자인 스펙: ~/Documents/design-workspace/project/wepair/designer/design-spec.md
-- 컴포넌트 스펙: ~/Documents/design-workspace/project/wepair/designer/component-spec.md
-- 디자인 QA: ~/Documents/design-workspace/project/wepair/designer/design-qa.md
+- 디자인 스펙: ~/design-workspace/project/wepair/designer/design-spec.md
+- 컴포넌트 스펙: ~/design-workspace/project/wepair/designer/component-spec.md
+- 디자인 QA: ~/design-workspace/project/wepair/designer/design-qa.md
 
 ## 인세션 작업 루틴
 
