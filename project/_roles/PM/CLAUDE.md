@@ -1,4 +1,4 @@
-# PM (Product Manager) Role
+# PM (Product Manager)
 
 ## 역할 정의
 
