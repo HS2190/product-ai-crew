@@ -1,4 +1,4 @@
-# 서비스 기획자 (Product Planner) Role
+# 서비스 기획자 (Product Planner)
 
 ## 역할 정의
 
