@@ -5,7 +5,7 @@
 - **실행 모드**: DESIGN
 - **호출 순서**: 기획자 → 디자이너
 - **사용 상황**: PRD와 기획 방향이 이미 존재할 때 디자인 작업만 진행
-- **오케스트레이터 참조**: `project/CLAUDE.md`
+- **오케스트레이터 참조**: `CLAUDE.md`
 
 ---
 
@@ -45,6 +45,7 @@
 | 기존 PRD 또는 요구사항 | 파일 경로 또는 텍스트 |
 | 기존 화면 기획안 | 파일 경로 또는 Figma URL (있는 경우) |
 | 대상 플랫폼 | APP / WEB / 전체 |
+| 브랜드 방향성 | `workspace/[서비스명]/pm/` 내 PRD 참조 또는 사용자가 직접 제공 |
 
 **수행 작업**
 
@@ -57,7 +58,7 @@
 | 산출물 | 저장 위치 |
 |-------|---------|
 | 화면 기획안 | Figma (기존 파일 업데이트 또는 신규 작성) |
-| 기능 명세서 | `project/wepair/planner/` |
+| 기능 명세서 | `workspace/[서비스명]/planner/` |
 
 **완료 조건**
 
@@ -83,14 +84,14 @@
 | 화면 기획안 | 기획자 아웃풋 |
 | 기능 명세서 | 기획자 아웃풋 |
 | 타겟 플랫폼 | 사전 준비 항목 |
-| 브랜드 방향성 | 기존 디자인 시스템 참조 또는 사용자 제공 |
+| 브랜드 방향성 | `workspace/[서비스명]/pm/` 내 PRD 참조 또는 사용자가 직접 제공 |
 
 **필수 아웃풋**
 
 | 산출물 | 저장 위치 |
 |-------|---------|
-| 디자인 스펙 | `project/wepair/designer/design-spec.md` |
-| 컴포넌트 스펙 | `project/wepair/designer/component-spec.md` |
+| 디자인 스펙 | `workspace/[서비스명]/designer/design-spec-v1.0.md` |
+| 컴포넌트 스펙 | `workspace/[서비스명]/designer/component-spec-v1.0.md` |
 | Figma 화면 | Figma 파일 직접 반영 |
 
 **완료 조건**

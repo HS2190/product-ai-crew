@@ -58,14 +58,9 @@
 
 ---
 
-## 서비스 개요
+## 서비스 컨텍스트
 
-- 서비스명: 위페어 파트너스
-- 서비스 유형: 1급/2급 사고차량 수리 공인업체를 위한 B2B SaaS 앱
-- 핵심 기능: 입고 사진 촬영·등록, 고객 결제 비용 전송, 개인정보 동의 취합
-- 현재 단계: 기획 중
-- 주요 사용자 역할: 관리자(공인업체 대표/부장), 작업자(현장 기술자)
-- 협업 대상: PM, 기획자, 개발자, UX 라이터
+오케스트레이터 또는 사용자로부터 인풋을 받으면 `workspace/[서비스명]/pm/` 경로에서 PRD 및 페르소나 정보를 확인한 후 작업을 시작해.
 
 ## 사용자 특성 (페르소나 기반)
 
@@ -156,18 +151,18 @@
 
 ## 산출물
 
-- 디자인 스펙 문서: ../designer/design-spec.md (Confluence 마크다운)
-- 컴포넌트 스펙: ../designer/component-spec.md (Confluence 마크다운)
-- 디자인 QA: ../designer/design-qa.md (Confluence 마크다운)
+- 디자인 스펙 문서: `workspace/[서비스명]/designer/design-spec-v1.0.md` (Confluence 마크다운)
+- 컴포넌트 스펙: `workspace/[서비스명]/designer/component-spec-v1.0.md` (Confluence 마크다운)
+- 디자인 QA: `workspace/[서비스명]/designer/design-qa-v1.0.md` (Confluence 마크다운)
 - 실제 화면: 피그마 파일에 직접 반영
 
 ### 산출물 저장 위치 (반드시 준수)
 
-모든 산출물은 반드시 ~/design-workspace/project/wepair/designer/ 안에 저장해. 절대로 다른 경로에 파일을 생성하지 마.
+모든 산출물은 반드시 `workspace/[서비스명]/designer/` 안에 저장해. 절대로 다른 경로에 파일을 생성하지 마.
 
-- 디자인 스펙: ~/design-workspace/project/wepair/designer/design-spec.md
-- 컴포넌트 스펙: ~/design-workspace/project/wepair/designer/component-spec.md
-- 디자인 QA: ~/design-workspace/project/wepair/designer/design-qa.md
+- 디자인 스펙: `workspace/[서비스명]/designer/design-spec-v1.0.md`
+- 컴포넌트 스펙: `workspace/[서비스명]/designer/component-spec-v1.0.md`
+- 디자인 QA: `workspace/[서비스명]/designer/design-qa-v1.0.md`
 
 ## 인세션 작업 루틴
 

@@ -34,6 +34,7 @@ product-ai-crew/
 │
 ├── workflows/             ← 워크플로우 정의
 │   ├── full-process.md    ← FULL 모드
+│   ├── plan-process.md    ← PLAN 모드
 │   ├── quick-design.md    ← DESIGN 모드
 │   ├── ux-writing.md      ← WRITE 모드
 │   └── custom-flow.md     ← CUSTOM 모드
@@ -76,6 +77,7 @@ claude
    - `agents/designer/CLAUDE.md`
    - `agents/ux-writer/CLAUDE.md`
    - `workflows/full-process.md`
+   - `workflows/plan-process.md`
    - `workflows/quick-design.md`
    - `workflows/ux-writing.md`
    - `workflows/custom-flow.md`
@@ -122,5 +124,6 @@ workspace/
     ├── pm/         ← PRD, 로드맵, 우선순위
     ├── planner/    ← 화면 기획안, 기능 명세서, User Flow
     ├── designer/   ← 디자인 스펙, 컴포넌트 스펙
-    └── ux-writer/  ← 라이팅 가이드, 문구 시트
+    ├── ux-writer/  ← 라이팅 가이드, 문구 시트
+    └── session.md  ← 작업 세션 체크포인트 (오케스트레이터 자동 관리)
 ```
