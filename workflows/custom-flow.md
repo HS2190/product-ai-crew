@@ -37,10 +37,10 @@ CUSTOM 모드는 사용자가 필요한 에이전트를 직접 조합해서 지�
 
 | 에이전트 키워드 | 해당 에이전트 | CLAUDE.md 경로 |
 |--------------|------------|---------------|
-| `pm` | PM | `project/_roles/PM/CLAUDE.md` |
-| `planner` / `기획자` | 서비스 기획자 | `project/_roles/planner/CLAUDE.md` |
-| `designer` / `디자이너` | UI/UX 디자이너 | `project/_roles/designer/CLAUDE.md` |
-| `ux-writer` / `UX라이터` | UX 라이터 | `project/_roles/ux-writer/CLAUDE.md` |
+| `pm` | PM | `agents/pm/CLAUDE.md` |
+| `planner` / `기획자` | 서비스 기획자 | `agents/planner/CLAUDE.md` |
+| `designer` / `디자이너` | UI/UX 디자이너 | `agents/designer/CLAUDE.md` |
+| `ux-writer` / `UX라이터` | UX 라이터 | `agents/ux-writer/CLAUDE.md` |
 
 ---
 

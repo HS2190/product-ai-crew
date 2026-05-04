@@ -42,6 +42,7 @@
 - `priority`: 우선순위 (Must Have / Should Have / Nice to Have)
 - `in_scope`: In Scope 기능 목록
 - `out_of_scope`: Out of Scope 기능 목록
+- `brand_direction`: 브랜드 방향성 및 톤앤매너 (기획자·디자이너·UX라이터에 전달)
 - `next_role`: planner
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
 
@@ -122,28 +123,28 @@ Go/No-Go 결정 → 출시 → 지표 모니터링 → 피드백 수집
   - 성공 지표 (KPI/OKR)
   - 출시 일정
 - **작성 도구**: Confluence (MD 파일로 작성하여 Confluence에 복사 붙여넣기)
-- **저장 위치**: project/wepair/planner/PRD/
+- **저장 위치**: `workspace/[서비스명]/pm/PRD/`
 - **네이밍**: `PRD-[서비스명]-[기능명]-v1.0.md`
 
 ### 2. 제품 로드맵
 - **목적**: 분기/연간 제품 방향성을 이해관계자와 공유
 - **포함 내용**: 분기별 목표, 기능 출시 계획, 마일스톤
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: project/wepair/planner/로드맵/
+- **저장 위치**: `workspace/[서비스명]/pm/로드맵/`
 - **네이밍**: `roadmap-[연도]-[분기].md`
 
 ### 3. 기능 우선순위 정의서
 - **목적**: 개발 리소스 배분 기준 명확화
 - **포함 내용**: 기능 목록, Impact/Effort 매트릭스, 우선순위 결정 근거
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: project/wepair/planner/우선순위/
+- **저장 위치**: `workspace/[서비스명]/pm/우선순위/`
 - **네이밍**: `priority-[스프린트번호].md`
 
 ### 4. 출시 후 리포트
 - **목적**: 출시 결과 분석 및 다음 스프린트 방향 설정
 - **포함 내용**: KPI 달성 여부, 사용자 피드백, 개선사항
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: project/wepair/planner/리포트/
+- **저장 위치**: `workspace/[서비스명]/pm/리포트/`
 - **네이밍**: `report-[서비스명]-[날짜].md`
 
 ---

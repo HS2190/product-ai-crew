@@ -36,7 +36,7 @@
 
 ### Step 1 — 기획자 에이전트 (기획안 검토 및 보완)
 
-**역할 참조**: `project/_roles/planner/CLAUDE.md`
+**역할 참조**: `agents/planner/CLAUDE.md`
 
 **인풋**
 
@@ -74,7 +74,7 @@
 
 ### Step 2 — 디자이너 에이전트
 
-**역할 참조**: `project/_roles/designer/CLAUDE.md`
+**역할 참조**: `agents/designer/CLAUDE.md`
 
 **인풋** (기획자 아웃풋)
 

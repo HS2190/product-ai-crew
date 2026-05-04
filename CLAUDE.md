@@ -15,10 +15,10 @@
 
 | 에이전트 | 역할 | CLAUDE.md 경로 |
 |---------|------|---------------|
-| PM | 제품 전략, PRD 작성 | `project/_roles/PM/CLAUDE.md` |
-| 기획자 | 화면 기획, 기능 명세서 | `project/_roles/planner/CLAUDE.md` |
-| 디자이너 | UI 디자인, 컴포넌트 스펙 | `project/_roles/designer/CLAUDE.md` |
-| UX 라이터 | UX 문구, 라이팅 가이드 | `project/_roles/ux-writer/CLAUDE.md` |
+| PM | 제품 전략, PRD 작성 | `agents/pm/CLAUDE.md` |
+| 기획자 | 화면 기획, 기능 명세서 | `agents/planner/CLAUDE.md` |
+| 디자이너 | UI 디자인, 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
+| UX 라이터 | UX 문구, 라이팅 가이드 | `agents/ux-writer/CLAUDE.md` |
 
 각 에이전트 호출 시 해당 CLAUDE.md를 먼저 읽고 역할과 인풋/아웃풋 형식을 파악한 후 작업을 지시한다.
 
@@ -121,7 +121,7 @@ project/wepair/
 
 1. **요청 분석** — 서비스명, 기능명, 작업 범위 파악
 2. **모드 결정** — FULL / PLAN / DESIGN / WRITE / CUSTOM 판단
-3. **워크플로우 파일 참조** — `project/_workflows/` 에서 해당 워크플로우 로드
+3. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
 4. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집
 5. **에이전트 순차 호출** — 각 에이전트 CLAUDE.md를 참조하며 작업 지시
 6. **결과 수집 및 전달** — 아웃풋을 다음 에이전트 인풋으로 전달
@@ -164,6 +164,8 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 
 | 워크플로우 | 파일 경로 | 사용 상황 |
 |-----------|---------|---------|
-| 전체 프로세스 | `project/_workflows/full-process.md` | 신규 서비스 / 대형 기능 |
-| 빠른 디자인 | `project/_workflows/quick-design.md` | 기획안이 있을 때 디자인만 |
-| UX 라이팅 | `project/_workflows/ux-writing.md` | 문구 작업만 |
+| 전체 프로세스 | `workflows/full-process.md` | 신규 서비스 / 대형 기능 |
+| 기획까지 | `workflows/plan-process.md` | PRD + 화면 기획까지만 |
+| 빠른 디자인 | `workflows/quick-design.md` | 기획안이 있을 때 디자인만 |
+| UX 라이팅 | `workflows/ux-writing.md` | 문구 작업만 |
+| 커스텀 | `workflows/custom-flow.md` | 에이전트 직접 조합 |

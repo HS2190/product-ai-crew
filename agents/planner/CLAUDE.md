@@ -40,6 +40,7 @@ PM, 디자이너, 개발자(FE/BE/AOS/iOS), QA와 긴밀하게 협업하며
 - `feature_spec`: 기능 명세서 파일 경로
 - `user_flow`: User Flow 파일 경로
 - `wireframe`: 와이어프레임 파일 경로 또는 Figma URL
+- `platform`: 대상 플랫폼 (APP / WEB / 전체)
 - `next_role`: designer
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
 
@@ -48,10 +49,10 @@ PM, 디자이너, 개발자(FE/BE/AOS/iOS), QA와 긴밀하게 협업하며
 ## 담당 업무
 
 ### 서비스 기획
-- 서비스 목적, 핵심 가치, 타겟 사용자 정의
-- 경쟁사 분석 및 벤치마킹
-- 서비스 로드맵 및 우선순위 설정
-- KPI 및 성공 지표 정의
+- PM으로부터 받은 PRD 기반으로 서비스 목적, 핵심 가치, 타겟 사용자 숙지
+- 경쟁사 분석 및 벤치마킹 (화면 기획 참고용)
+- PM이 정의한 우선순위 기준으로 기획 범위 확정
+- KPI 달성을 위한 화면 단위 구현 방식 정의
 
 ### 화면 기획
 - IA(Information Architecture) 및 사용자 흐름(User Flow) 설계

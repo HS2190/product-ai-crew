@@ -37,7 +37,7 @@
 
 ### Step 1 — UX 라이터 에이전트
 
-**역할 참조**: `project/_roles/ux-writer/CLAUDE.md`
+**역할 참조**: `agents/ux-writer/CLAUDE.md`
 
 **인풋**
 

@@ -23,7 +23,7 @@
 
 ### Step 1 — PM 에이전트
 
-**역할 참조**: `project/_roles/PM/CLAUDE.md`
+**역할 참조**: `agents/pm/CLAUDE.md`
 
 **인풋**
 
@@ -61,7 +61,7 @@
 
 ### Step 2 — 기획자 에이전트
 
-**역할 참조**: `project/_roles/planner/CLAUDE.md`
+**역할 참조**: `agents/planner/CLAUDE.md`
 
 **인풋** (PM 아웃풋)
 
@@ -99,7 +99,7 @@
 
 ### Step 3 — 디자이너 에이전트
 
-**역할 참조**: `project/_roles/designer/CLAUDE.md`
+**역할 참조**: `agents/designer/CLAUDE.md`
 
 **인풋** (기획자 아웃풋 + PM 브랜드 방향성)
 
@@ -136,7 +136,7 @@
 
 ### Step 4 — UX 라이터 에이전트
 
-**역할 참조**: `project/_roles/ux-writer/CLAUDE.md`
+**역할 참조**: `agents/ux-writer/CLAUDE.md`
 
 **인풋** (기획자 + 디자이너 아웃풋 + PM 브랜드 방향성)
 
