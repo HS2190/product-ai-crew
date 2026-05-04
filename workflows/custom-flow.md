@@ -23,6 +23,45 @@ CUSTOM 모드는 사용자가 필요한 에이전트를 직접 조합해서 지�
 
 ---
 
+## Claude Code 실행 메커니즘
+
+### 병렬 실행 — Task 툴 사용
+
+Claude Code에서 병렬 실행은 **Task 툴**로 독립적인 서브에이전트를 동시에 호출하는 방식으로 동작한다.
+
+**병렬 호출 구조**
+
+```
+오케스트레이터가 Task 툴을 사용해 두 에이전트를 동시에 호출:
+
+Task 1 — PM 에이전트
+  agents/pm/CLAUDE.md 로드
+  mode: CREW
+  input: { service_name, feature_name, business_goal, target_user }
+  output_path: workspace/[서비스명]/pm/
+
+Task 2 — UX 라이터 에이전트
+  agents/ux-writer/CLAUDE.md 로드
+  mode: CREW
+  input: { task, screen_plan, voice_guide }
+  output_path: workspace/[서비스명]/ux-writer/
+
+→ 두 Task 동시 실행 → 각각 완료되면 오케스트레이터가 결과 수집
+```
+
+**주의사항**
+
+- 각 Task는 독립적인 컨텍스트에서 실행되므로, 인풋에 필요한 모든 정보를 명시적으로 포함해야 한다 (대화 이력 공유 없음)
+- 병렬 실행 결과는 각각 `session.md`에 기록하되, 두 Task 모두 완료된 후에 session.md를 업데이트한다
+- 하나의 Task가 `blocked`이면 해당 Task만 중단하고 나머지는 계속 실행한다
+
+### 순차 실행 — 기본 방식
+
+병렬 실행이 불필요한 경우 오케스트레이터가 각 에이전트를 직접 순차 호출한다.
+앞 에이전트의 아웃풋이 확인된 후 다음 에이전트를 호출한다.
+
+---
+
 ## 사용 방법
 
 ### 기본 호출 형식
