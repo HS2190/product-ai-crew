@@ -5,7 +5,7 @@
 - **실행 모드**: WRITE
 - **호출 순서**: UX라이터 단독 실행
 - **사용 상황**: 문구 수정, UX 라이팅 가이드 업데이트, 신규 화면 문구 작성
-- **오케스트레이터 참조**: `project/CLAUDE.md`
+- **오케스트레이터 참조**: `CLAUDE.md`
 
 ---
 
@@ -47,7 +47,7 @@
 | `screen_plan` | 화면 기획안 경로 또는 Figma URL |
 | `design_screen` | 디자인 화면 Figma URL (있는 경우) |
 | `brand_direction` | PM 브랜드 방향성 및 톤앤매너 |
-| `voice_guide` | 기존 보이스 가이드 경로 (`project/wepair/ux-writer/writing-guide.md`) |
+| `voice_guide` | 기존 보이스 가이드 경로 (`workspace/[서비스명]/ux-writer/writing-guide-v1.0.md`) |
 
 **수행 작업**
 
@@ -61,8 +61,8 @@
 
 | 산출물 | 저장 위치 |
 |-------|---------|
-| UX 라이팅 가이드 | `project/wepair/ux-writer/writing-guide.md` |
-| 화면별 문구 시트 | `project/wepair/ux-writer/copy-sheet.md` |
+| UX 라이팅 가이드 | `workspace/[서비스명]/ux-writer/writing-guide-v1.0.md` |
+| 화면별 문구 시트 | `workspace/[서비스명]/ux-writer/copy-sheet-[화면명]-v1.0.md` |
 
 **완료 조건**
 
@@ -70,7 +70,7 @@
 - [ ] 금지 표현 0건 확인
 - [ ] 보이스 톤 일관성 확인 (`-해요` 체 통일)
 - [ ] 컴포넌트별 문구 분류 완료
-- [ ] 수정 필요 문구 `F. 이하` 표기 완료
+- [ ] 수정 필요 문구 `F. 유지` 표기 완료
 - [ ] 결과물 Confluence 마크다운 표 형식으로 출력
 
 **파이프라인 종료**

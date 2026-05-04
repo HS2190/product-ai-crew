@@ -5,7 +5,7 @@
 - **실행 모드**: FULL
 - **호출 순서**: PM → 기획자 → 디자이너 → UX라이터
 - **사용 상황**: 신규 서비스 출시 또는 대형 기능 추가
-- **오케스트레이터 참조**: `project/CLAUDE.md`
+- **오케스트레이터 참조**: `CLAUDE.md`
 
 ---
 
@@ -38,9 +38,10 @@
 
 | 산출물 | 저장 경로 |
 |-------|---------|
-| PRD | `project/wepair/PM/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
+| PRD | `workspace/[서비스명]/pm/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
 | 기능 목록 및 우선순위 | PRD 내 포함 |
 | In Scope / Out of Scope | PRD 내 포함 |
+| 브랜드 방향성 | PRD 내 포함 또는 별도 전달 |
 
 **완료 조건**
 
@@ -56,6 +57,7 @@
 - 기능 목록
 - 우선순위
 - 타겟 플랫폼
+- 브랜드 방향성
 
 ---
 
@@ -77,7 +79,7 @@
 | 산출물 | 저장 위치 |
 |-------|---------|
 | 화면 기획안 | Figma |
-| 기능 명세서 | `project/wepair/planner/` |
+| 기능 명세서 | `workspace/[서비스명]/planner/` |
 | User Flow | Figma / FigJam |
 | 와이어프레임 | Figma |
 
@@ -114,8 +116,8 @@
 
 | 산출물 | 저장 위치 |
 |-------|---------|
-| 디자인 스펙 | `project/wepair/designer/design-spec.md` |
-| 컴포넌트 스펙 | `project/wepair/designer/component-spec.md` |
+| 디자인 스펙 | `workspace/[서비스명]/designer/design-spec-v1.0.md` |
+| 컴포넌트 스펙 | `workspace/[서비스명]/designer/component-spec-v1.0.md` |
 | Figma 화면 | Figma 파일 직접 반영 |
 
 **완료 조건**
@@ -145,14 +147,14 @@
 | 화면 기획안 | 기획자 아웃풋 |
 | Figma 디자인 화면 URL | 디자이너 아웃풋 |
 | 브랜드 방향성 및 톤앤매너 | PM 아웃풋 |
-| 기존 보이스 가이드 | `project/wepair/ux-writer/writing-guide.md` (있는 경우) |
+| 기존 보이스 가이드 | `workspace/[서비스명]/ux-writer/writing-guide-v1.0.md` (있는 경우) |
 
 **필수 아웃풋**
 
 | 산출물 | 저장 위치 |
 |-------|---------|
-| UX 라이팅 가이드 | `project/wepair/ux-writer/writing-guide.md` |
-| 화면별 문구 시트 | `project/wepair/ux-writer/copy-sheet.md` |
+| UX 라이팅 가이드 | `workspace/[서비스명]/ux-writer/writing-guide-v1.0.md` |
+| 화면별 문구 시트 | `workspace/[서비스명]/ux-writer/copy-sheet-[화면명]-v1.0.md` |
 
 **완료 조건**
 
@@ -160,7 +162,7 @@
 - [ ] 금지 표현 0건 확인
 - [ ] 보이스 톤 일관성 확인 (`-해요` 체 통일)
 - [ ] 컴포넌트별 문구 분류 완료 (`[버튼]`, `[에러]`, `[빈상태]` 등)
-- [ ] 수정 필요 문구 `F. 이하` 표기 완료
+- [ ] 수정 필요 문구 `F. 유지` 표기 완료
 
 **파이프라인 종료**
 
