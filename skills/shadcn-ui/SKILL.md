@@ -324,3 +324,21 @@ See the `examples/` directory for:
 - Dashboard layouts
 - Authentication flows
 - Data table implementations
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — shadcn UI 컴포넌트 기반 작업 시 참조
+
+### 같은 폴더 내 파일
+- [[skills/shadcn-ui/README|shadcn-ui README]] — 스킬 개요 및 사용법
+- [[skills/shadcn-ui/resources/component-catalog|컴포넌트 카탈로그]] — 사용 가능한 컴포넌트 목록
+- [[skills/shadcn-ui/resources/customization-guide|커스터마이징 가이드]] — 컴포넌트 스타일 커스텀 방법
+- [[skills/shadcn-ui/resources/setup-guide|세팅 가이드]] — 프로젝트 초기 설정
+- [[skills/shadcn-ui/resources/migration-guide|마이그레이션 가이드]] — 버전 업그레이드 시 참조
+
+### 연관 스킬
+- [[skills/react-components/SKILL|react-components]] — React 컴포넌트로 변환 시 함께 사용
+- [[skills/stitch-design/SKILL|stitch-design]] — Stitch 화면 생성 후 shadcn 컴포넌트 적용

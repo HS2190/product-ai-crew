@@ -47,3 +47,14 @@ Before finalizing any response, verify:
 - Every item the user requested is present and finished
 - Code blocks contain actual runnable code, not descriptions of what code would do
 - Nothing was shortened to save space
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 완성된 긴 산출물 작성 시 적용
+
+### 함께 사용하면 좋은 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — 화면 생성 시 완전한 출력 보장
+- [[skills/react-components/SKILL|react-components]] — React 컴포넌트 완전 출력 시 적용

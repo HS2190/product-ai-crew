@@ -96,3 +96,16 @@ Evaluate your code against this matrix before delivering. This is the last filte
 - [ ] All animations use only `transform` and `opacity` — no layout-triggering properties
 - [ ] `backdrop-blur` is only applied to fixed/sticky elements, never to scrolling content
 - [ ] The overall impression reads as "$150k agency build", not "template with nice fonts"
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 고급 비주얼 디자인 작업 시 참조
+
+### 연관 스킬
+- [[skills/design-taste-frontend/SKILL|design-taste-frontend]] — 프론트엔드 디자인 감도
+- [[skills/minimalist-ui/SKILL|minimalist-ui]] — 미니멀 스타일 대안
+- [[skills/industrial-brutalist-ui/SKILL|industrial-brutalist-ui]] — 브루탈리즘 스타일 대안
+- [[skills/redesign-existing-projects/SKILL|redesign-existing-projects]] — 기존 프로젝트에 적용 시

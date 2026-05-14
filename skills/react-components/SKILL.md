@@ -49,3 +49,20 @@ You are a frontend engineer focused on transforming designs into clean React cod
 ## Troubleshooting
 * **Fetch errors**: Ensure the URL is quoted in the bash command to prevent shell errors.
 * **Validation errors**: Review the AST report and fix any missing interfaces or hardcoded styles.
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 리액트 컴포넌트 스펙 정의 시 참조
+
+### 같은 폴더 내 파일
+- [[skills/react-components/README|react-components README]] — 스킬 개요 및 사용법
+- [[skills/react-components/resources/architecture-checklist|아키텍처 체크리스트]] — 컴포넌트 품질 검증 기준
+- [[skills/react-components/resources/stitch-api-reference|Stitch API 레퍼런스]] — API 활용 가이드
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — Stitch에서 디자인 생성 후 React 컴포넌트로 변환
+- [[skills/shadcn-ui/SKILL|shadcn-ui]] — shadcn UI 컴포넌트 기반 작업 시
+- [[project/wepair/designer/component-spec|AOS 연동 UI 컴포넌트 스펙]] — 실제 컴포넌트 스펙 예시

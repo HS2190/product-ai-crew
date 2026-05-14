@@ -160,3 +160,18 @@ AOS 폴더에서 자동 반영(`자동 반영` 기능)된 입고 데이터임을
 | 접근성 — 색상 외 형태 구분 | ✅ | 아이콘 형태 + accent bar 병행 |
 | 반응형 처리 | ⬜ | 현재 단일 해상도 기준 |
 | 다크모드 처리 | ⬜ | 차후 대응 필요 |
+
+---
+
+## 관련 문서
+
+### 작성 역할 및 구조
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 이 문서를 작성한 역할의 작업 원칙 및 스펙 형식
+- [[project/SETUP|전체 프로젝트 구조 안내]] — 디자이너 산출물 저장 위치 및 협업 흐름
+
+### 페르소나 기반
+- [[project/wepair/persona|위페어 파트너스 페르소나]] — 관리자(박정훈)·작업자(최성호) 환경 고려사항 반영
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — 화면 생성에 활용된 Stitch MCP 스킬
+- [[skills/react-components/SKILL|react-components]] — 이 스펙을 기반으로 React 컴포넌트 구현 시 참조

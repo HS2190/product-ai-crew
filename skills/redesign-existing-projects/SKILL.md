@@ -176,3 +176,16 @@ Apply changes in this order for maximum visual impact with minimum risk:
 - If the project uses Tailwind, check the version (v3 vs v4) before modifying config.
 - If the project has no framework, use vanilla CSS.
 - Keep changes reviewable and focused. Small, targeted improvements over big rewrites.
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 기존 화면 리디자인 작업 시 참조
+
+### 연관 스킬
+- [[skills/high-end-visual-design/SKILL|high-end-visual-design]] — 고급 비주얼 디자인 기준 적용
+- [[skills/design-taste-frontend/SKILL|design-taste-frontend]] — 프론트엔드 디자인 감도 기준
+- [[skills/minimalist-ui/SKILL|minimalist-ui]] — 미니멀 스타일로 리디자인 시
+- [[skills/stitch-design/SKILL|stitch-design]] — Stitch로 리디자인 화면 생성 시

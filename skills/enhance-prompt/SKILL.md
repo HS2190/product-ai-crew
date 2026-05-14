@@ -202,3 +202,17 @@ Add a search bar to the header navigation.
 3. **Keep it structured** — Numbered sections help Stitch understand hierarchy
 4. **Include the design system** — Consistency is key for multi-page projects
 5. **One change at a time for edits** — Don't bundle unrelated changes
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 디자인 프롬프트 개선이 필요할 때 참조
+
+### 같은 폴더 내 파일
+- [[skills/enhance-prompt/README|enhance-prompt README]] — 스킬 개요 및 사용법
+- [[skills/enhance-prompt/references/KEYWORDS|프롬프트 키워드 레퍼런스]] — 활용 가능한 키워드 목록
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — 개선된 프롬프트를 기반으로 Stitch 화면 생성

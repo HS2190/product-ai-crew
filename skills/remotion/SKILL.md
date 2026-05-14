@@ -391,3 +391,18 @@ that shows a walkthrough of the screens.
 - **Remotion Skills**: https://www.remotion.dev/docs/ai/skills
 - **Remotion MCP**: https://www.remotion.dev/docs/ai/mcp
 - **Remotion Transitions**: https://www.remotion.dev/docs/transitions
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 모션·애니메이션 관련 작업 시 참조
+
+### 같은 폴더 내 파일
+- [[skills/remotion/README|remotion README]] — 스킬 개요 및 사용법
+- [[skills/remotion/resources/composition-checklist|컴포지션 체크리스트]] — 영상 품질 검증 기준
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — Stitch 화면을 Remotion 영상으로 변환하는 시작점
+- [[skills/stitch-loop/SKILL|stitch-loop]] — 반복 생성 패턴과 연계 가능

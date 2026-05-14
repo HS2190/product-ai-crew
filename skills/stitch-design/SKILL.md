@@ -82,3 +82,27 @@ After any tool call, always surface the `outputComponents` (Text Description and
 - **Iterative Polish**: Prefere `edit_screens` for targeted adjustments over full re-generation.
 - **Semantic First**: Name colors by their role (e.g., "Primary Action") as well as their appearance.
 - **Atmosphere Matters**: Explicitly set the "vibe" (Minimalist, Vibrant, Brutalist) to guide the generator.
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — Stitch MCP 기반 화면 생성·편집 시 핵심 스킬
+
+### 같은 폴더 내 파일
+- [[skills/stitch-design/README|stitch-design README]] — 스킬 개요 및 사용법
+- [[skills/stitch-design/examples/DESIGN|DESIGN.md 예시]] — 디자인 시스템 정의 샘플
+- [[skills/stitch-design/examples/enhanced-prompt|개선된 프롬프트 예시]] — 최적화된 프롬프트 샘플
+- [[skills/stitch-design/references/design-mappings|디자인 매핑 레퍼런스]] — 디자인 요소 매핑 기준
+- [[skills/stitch-design/references/prompt-keywords|프롬프트 키워드]] — 활용 가능한 키워드 모음
+- [[skills/stitch-design/references/tool-schemas|툴 스키마]] — Stitch MCP 도구 스키마
+- [[skills/stitch-design/workflows/text-to-design|텍스트→디자인 워크플로]] — 신규 화면 생성 흐름
+- [[skills/stitch-design/workflows/edit-design|디자인 편집 워크플로]] — 기존 화면 수정 흐름
+- [[skills/stitch-design/workflows/generate-design-md|DESIGN.md 생성 워크플로]] — 디자인 시스템 문서화
+
+### 연관 스킬
+- [[skills/enhance-prompt/SKILL|enhance-prompt]] — 생성 전 프롬프트 최적화
+- [[skills/stitch-design-taste/SKILL|stitch-design-taste]] — 디자인 감도 기준 적용
+- [[skills/stitch-loop/SKILL|stitch-loop]] — 반복 생성 패턴
+- [[skills/react-components/SKILL|react-components]] — 생성된 화면을 React 컴포넌트로 변환

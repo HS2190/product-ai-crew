@@ -261,3 +261,21 @@ This skill works best with the `design-md` skill:
 | Inconsistent styles | Ensure `.stitch/DESIGN.md` is up-to-date and copied correctly |
 | Loop stalls | Verify `.stitch/next-prompt.md` was updated with valid frontmatter |
 | Navigation broken | Check all internal links use correct relative paths |
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 반복 디자인 패턴 작업 시 참조
+
+### 같은 폴더 내 파일
+- [[skills/stitch-loop/README|stitch-loop README]] — 스킬 개요 및 사용법
+- [[skills/stitch-loop/examples/SITE|SITE.md 예시]] — 사이트 구조 예시
+- [[skills/stitch-loop/examples/next-prompt|next-prompt 예시]] — 다음 이터레이션 프롬프트 형식
+- [[skills/stitch-loop/resources/baton-schema|바톤 스키마]] — 이터레이션 간 데이터 전달 형식
+- [[skills/stitch-loop/resources/site-template|사이트 템플릿]] — 기본 사이트 구조 템플릿
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — 각 이터레이션에서 화면 생성에 사용
+- [[skills/remotion/SKILL|remotion]] — 생성된 화면을 영상으로 변환 시 연계

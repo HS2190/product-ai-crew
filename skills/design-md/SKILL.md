@@ -170,3 +170,18 @@ To use this skill for the Furniture Collection project:
 - ❌ Forgetting to explain functional roles of design elements
 - ❌ Being too vague in atmosphere descriptions
 - ❌ Ignoring subtle design details like shadows or spacing patterns
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 디자인 레퍼런스 분석 및 문서화 작업 시 참조
+
+### 같은 폴더 내 파일
+- [[skills/design-md/README|design-md README]] — 스킬 개요 및 사용법
+- [[skills/design-md/examples/DESIGN|DESIGN.md 예시]] — 실제 생성된 DESIGN.md 샘플
+
+### 연관 스킬
+- [[skills/stitch-design/SKILL|stitch-design]] — DESIGN.md를 기반으로 Stitch 화면 생성
+- [[skills/taste-design/SKILL|taste-design]] — 디자인 감도 기반 DESIGN.md 생성

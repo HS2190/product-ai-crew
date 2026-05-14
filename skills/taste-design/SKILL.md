@@ -189,3 +189,18 @@ no generic placeholder names, no broken image links.)
 - Being too vague in atmosphere descriptions
 - Ignoring the anti-pattern list — these are what make the output premium
 - Defaulting to generic "safe" designs instead of enforcing the curated aesthetic
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 전반적인 디자인 감도 참고 시 사용
+
+### 같은 폴더 내 파일
+- [[skills/taste-design/resources/DESIGN|DESIGN.md 기준 파일]] — 디자인 시스템 감도 기준 정의
+
+### 연관 스킬
+- [[skills/stitch-design-taste/SKILL|stitch-design-taste]] — Stitch 특화 디자인 감도 버전
+- [[skills/design-md/SKILL|design-md]] — DESIGN.md 생성 및 분석
+- [[skills/stitch-design/SKILL|stitch-design]] — 감도 기준을 적용한 화면 생성

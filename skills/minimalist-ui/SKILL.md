@@ -83,3 +83,15 @@ When tasked with writing frontend code (HTML, React, Tailwind, Vue) or designing
 5. Add scroll-entry animations to all major content blocks.
 6. Ensure sections have visual depth through imagery, ambient gradients, or subtle textures — no empty flat backgrounds.
 7. Provide code that reflects this high-end, uncluttered, editorial aesthetic natively without requiring manual adjustments.
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 미니멀 UI 설계 시 참조
+
+### 연관 스킬
+- [[skills/high-end-visual-design/SKILL|high-end-visual-design]] — 고급 비주얼 디자인 대안
+- [[skills/industrial-brutalist-ui/SKILL|industrial-brutalist-ui]] — 브루탈리즘 스타일 대안
+- [[skills/design-taste-frontend/SKILL|design-taste-frontend]] — 프론트엔드 디자인 감도 기준

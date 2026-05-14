@@ -224,3 +224,15 @@ Evaluate your code against this matrix before outputting. This is the **last** f
 - [ ] Are empty, loading, and error states provided?
 - [ ] Are cards omitted in favor of spacing where possible?
 - [ ] Did you strictly isolate CPU-heavy perpetual animations in their own Client Components?
+
+---
+
+## 관련 문서
+
+### 이 스킬을 사용하는 역할
+- [[project/_roles/designer/CLAUDE|프로덕트 디자이너 가이드]] — 프론트엔드 디자인 감도 참고 시 사용
+
+### 연관 스킬
+- [[skills/high-end-visual-design/SKILL|high-end-visual-design]] — 고급 비주얼 디자인 작업
+- [[skills/minimalist-ui/SKILL|minimalist-ui]] — 미니멀 UI 설계
+- [[skills/redesign-existing-projects/SKILL|redesign-existing-projects]] — 기존 프로젝트 리디자인

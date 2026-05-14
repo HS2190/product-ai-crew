@@ -223,3 +223,19 @@
 
 - UX 라이팅 가이드: `workspace/[서비스명]/ux-writer/writing-guide-v1.0.md`
 - 화면별 문구 시트: `workspace/[서비스명]/ux-writer/copy-sheet-[화면명]-v1.0.md`
+
+---
+
+## 관련 문서
+
+### 구조 및 역할
+- [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
+- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 주요 사용자 특성 및 보이스 퍼스낼리티 기준
+
+### 협업 핸드오프
+- [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 기능 명세 완료 후 문구 작업의 인풋 소스
+- [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 피그마 화면에서 UI 문구 추출 시 참조
+
+### 산출물 (위페어)
+- UX 라이팅 가이드: `workspace/wepair/ux-writer/writing-guide-v1.0.md`
+- 화면별 문구 시트: `workspace/wepair/ux-writer/copy-sheet-[화면명]-v1.0.md`
