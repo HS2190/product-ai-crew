@@ -207,3 +207,34 @@
 | 접근성 고려 여부 | ✅ / ❌ | |
 | 디자인 시스템 일관성 | ✅ / ❌ | |
 | 피그마 파일 반영 완료 | ✅ / ❌ | |
+
+---
+
+## 관련 문서
+
+### 구조 및 역할
+- [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
+- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 세션 시작 전 필수 숙지 (관리자·작업자 특성)
+
+### 협업 핸드오프
+- [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 화면 기획안을 인풋으로 받는 이전 단계
+- [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 디자인 완료 후 문구 작업 전달 대상
+
+### 산출물 (위페어)
+- [[workspace/wepair/designer/component-spec|AOS 연동 UI 컴포넌트 스펙]] — 작성 완료된 컴포넌트 스펙 예시
+
+### 참조 스킬
+- [[skills/design-md/SKILL|design-md]] — 디자인 레퍼런스 분석 및 DESIGN.md 문서화
+- [[skills/stitch-design/SKILL|stitch-design]] — Stitch MCP 기반 화면 생성·편집
+- [[skills/taste-design/SKILL|taste-design]] — 전반적인 디자인 감도 참고
+- [[skills/design-taste-frontend/SKILL|design-taste-frontend]] — 프론트엔드 디자인 감도
+- [[skills/high-end-visual-design/SKILL|high-end-visual-design]] — 고급 비주얼 디자인 작업
+- [[skills/minimalist-ui/SKILL|minimalist-ui]] — 미니멀 UI 설계
+- [[skills/industrial-brutalist-ui/SKILL|industrial-brutalist-ui]] — 브루탈리즘 스타일 UI
+- [[skills/react-components/SKILL|react-components]] — 리액트 컴포넌트 스펙 정의
+- [[skills/shadcn-ui/SKILL|shadcn-ui]] — shadcn UI 컴포넌트 기반 작업
+- [[skills/remotion/SKILL|remotion]] — 모션·애니메이션 관련 작업
+- [[skills/stitch-loop/SKILL|stitch-loop]] — 반복 디자인 패턴 작업
+- [[skills/enhance-prompt/SKILL|enhance-prompt]] — 디자인 프롬프트 개선
+- [[skills/redesign-existing-projects/SKILL|redesign-existing-projects]] — 기존 화면 리디자인
+- [[skills/full-output-enforcement/SKILL|full-output-enforcement]] — 완성된 긴 산출물 작성

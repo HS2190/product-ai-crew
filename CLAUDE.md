@@ -311,3 +311,17 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 | 빠른 디자인 | `workflows/quick-design.md` | 기획안이 있을 때 디자인만 |
 | UX 라이팅 | `workflows/ux-writing.md` | 문구 작업만 |
 | 커스텀 | `workflows/custom-flow.md` | 에이전트 직접 조합 |
+
+---
+
+## 관련 문서
+
+### 에이전트 가이드
+- [[agents/pm/CLAUDE|PM 가이드]] — PRD·기능 목록·우선순위 작성
+- [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 화면 정의서·기능 명세·플로우 설계
+- [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 컴포넌트 스펙·디자인 QA·피그마 작업
+- [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — UI 문구 추출·검토·개선
+
+### 위페어 프로젝트
+- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 관리자(박정훈)·작업자(최성호) 시나리오
+- [[workspace/wepair/designer/component-spec|AOS 연동 UI 컴포넌트 스펙]] — 디자이너 산출물 예시

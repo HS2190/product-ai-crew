@@ -311,3 +311,21 @@ F-APP-MY-001      프로필 수정
 ---
 
 *최종 업데이트: 2026.04*
+
+---
+
+## 관련 문서
+
+### 구조 및 역할
+- [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
+- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 세션 시작 전 필수 숙지 (관리자·작업자 특성)
+
+### 협업 핸드오프
+- [[agents/pm/CLAUDE|PM 가이드]] — PRD·기능 목록을 인풋으로 받는 이전 단계
+- [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 화면 정의서 완료 후 전달 대상
+- [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 기능 명세 완료 후 문구 작업 시작
+
+### 산출물 (위페어)
+- 화면 정의서: `workspace/wepair/planner/screen-spec.md`
+- 기능 명세: `workspace/wepair/planner/feature-spec.md`
+- 사용자 플로우: `workspace/wepair/planner/flow.md`
