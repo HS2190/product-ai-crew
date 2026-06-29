@@ -44,6 +44,78 @@ persona_path: workspace/[서비스명]/persona.md
 
 ---
 
+## 프로젝트 간 기억층 (Memory Layer)
+
+`session.md`가 한 프로젝트 *안*의 진행을 추적한다면, 기억층은 프로젝트를 *넘어* 누적되는 맥락을 담는다. 시스템이 쓸수록 그 회사·그 디자이너에게 맞게 똑똑해지도록 만드는 인프라다. (구조·원칙 요약은 `workspace/_memory/README.md` 참조.)
+
+### 무엇을 담는가 (남용 금지)
+
+- **담는 것**: 재현 가능한 판단의 근거(왜 그렇게 결정했나), 회사의 톤·규칙·제약, 반복 확인된 사용자 선호.
+- **담지 않는 것**: 산출물 자체(PRD·디자인·코드 — 프로젝트 폴더에 있음), 리서치 원본 데이터, 일회성 정보, 세션 진행 상태(`session.md`가 담당).
+- 기억층은 **판단과 선호**만 담는다. 데이터 창고가 아니다.
+
+### 2층 구조
+
+| 층 | 경로 | 담는 것 |
+|----|------|--------|
+| 개인 | `workspace/_memory/designer-profile.md` | 회사 불문 유지되는 나의 작업 취향·원칙 |
+| 회사 | `workspace/_memory/companies/[회사명]/decisions.md` | 그 회사에서 내린 판단과 근거 (결정 로그) |
+| 회사 | `workspace/_memory/companies/[회사명]/conventions.md` | 그 회사의 톤·디자인 규칙·기술 제약 |
+
+회사별로 분리해 A사의 결정이 B사로 새지 않게 한다. 개인 층은 회사가 바뀌어도 유지된다.
+
+### 회사 식별
+
+- `workspace/[서비스명]/session.md`의 `company: [회사명]` 필드로 프로젝트가 속한 회사를 식별한다.
+- 새 프로젝트 시작 시 회사명을 사용자에게 확인한다. 회사가 없거나 개인 작업이면 `company: default`.
+- 해당 회사 폴더가 없으면 `workspace/_memory/companies/_template/`를 복사해 `companies/[회사명]/`를 만든다.
+
+### 기억 읽기 — 작업 시작 시 자동 주입 (핵심)
+
+사용자가 "지난번 결정 참고해"라고 말하지 않아도, 오케스트레이터가 작업 시작 시 기억층을 **자동 로딩**해 모든 에이전트에 주입한다. 페르소나를 `persona_path`로 주입하는 것과 동일한 메커니즘이다.
+
+로딩 대상:
+- `workspace/_memory/designer-profile.md` (항상)
+- `workspace/_memory/companies/[회사]/decisions.md` (있으면)
+- `workspace/_memory/companies/[회사]/conventions.md` (있으면)
+
+이 내용을 `memory_context`로 묶어 모든 에이전트 호출에 포함한다. 각 에이전트는 작업 전 이를 읽고 따른다. **기억이 자동으로 읽히지 않으면 죽은 파일이 된다** — 이 자동 주입이 "쓸수록 똑똑해지는" 작동부다.
+
+### 기억 쓰기 — 반자동 (제안 → 승인)
+
+자동 저장하지 않는다(쓰레기 누적 방지). 무조건 수동도 아니다(제안은 시스템이 한다).
+
+1. 에이전트가 의미 있는 결정/선호를 산출하거나 사용자가 새 방향을 지시하면, 오케스트레이터가 판단한다 — "이건 프로젝트를 넘어 기억할 가치가 있는가?"
+2. 가치 있으면 사용자에게 제안한다:
+
+```
+💾 이 결정을 [회사] 기억에 남길까요?
+[결정] soft/hard 3단계 입력 채택
+[근거] 2단계는 강도 정보를 버리고 4단계는 변별이 어려움
+→ 회사 결정에 남기기 / 개인 프로파일에 / 안 남김
+```
+
+3. 사용자가 승인한 분류의 파일에 append한다. 승인하지 않으면 누적하지 않는다.
+
+**분류 기준**
+- 회사 불문 개인 취향 → `designer-profile.md`
+- 회사 고유 판단(왜가 분명한 결정) → `companies/[회사]/decisions.md`
+- 회사 규칙·톤·제약 → `companies/[회사]/conventions.md`
+
+**제안 트리거 (과하지 않게)**
+- 같은 선호가 반복 확인될 때 (→ 개인 프로파일 제안)
+- 재현 가능한 설계 판단이 내려질 때 (→ 회사 결정 제안)
+- 회사 고유 규칙/제약이 드러날 때 (→ conventions 제안)
+- 일회성·산출물·데이터는 제안하지 않는다.
+
+### 페르소나와 기억층의 구분
+
+둘은 다른 층이며 둘 다 컨텍스트로 주입되지만 역할이 다르다. 중복 주입되어도 충돌하지 않는다.
+- **페르소나**(`workspace/[서비스명]/persona.md`) = 이 프로젝트의 *사용자가 누구인가* (프로젝트별)
+- **기억층**(`workspace/_memory/`) = 이 회사/이 디자이너가 *어떻게 일하는가* (프로젝트를 넘어 누적)
+
+---
+
 ## 실행 모드
 
 사용자의 요청을 분석해 아래 모드 중 하나를 선택한다.
@@ -148,13 +220,16 @@ persona_path: workspace/[서비스명]/persona.md
 각 에이전트를 호출할 때 아래 항목을 반드시 포함한다.
 
 ```
-role:         [에이전트명]
-task:         [수행할 작업 내용]
-mode:         CREW
-input:        [이전 에이전트 아웃풋 또는 사용자 제공 인풋]
-output_path:  [산출물 저장 경로]
-persona_path: workspace/[서비스명]/persona.md   # 페르소나 파일이 존재할 때만 포함
+role:           [에이전트명]
+task:           [수행할 작업 내용]
+mode:           CREW
+input:          [이전 에이전트 아웃풋 또는 사용자 제공 인풋]
+output_path:    [산출물 저장 경로]
+persona_path:   workspace/[서비스명]/persona.md   # 페르소나 파일이 존재할 때만 포함
+memory_context: designer-profile.md + companies/[회사]/{decisions,conventions}.md  # 기억층 자동 주입 (있는 것만)
 ```
+
+> `memory_context`는 오케스트레이터가 작업 시작 시 로딩한 기억층 내용이다(「프로젝트 간 기억층 > 기억 읽기」 참조). 페르소나와 마찬가지로 각 에이전트는 작업 전 이를 읽고 따른다.
 
 ### blocked 상태 처리
 
@@ -207,17 +282,19 @@ escalate 사유: [escalate_reason]
 
 ## 산출물 저장 경로 규칙
 
-모든 산출물은 서비스명 폴더 아래에 역할별로 저장한다.
+모든 산출물은 서비스명 폴더 아래에 역할별로 저장한다. 프로젝트를 넘는 누적 기억은 `workspace/_memory/`에 별도로 둔다(「프로젝트 간 기억층」 참조).
 
 ```
-workspace/[서비스명]/
-  researcher/       ← Researcher 산출물 (리서치 종합, 경쟁 분석, insights)
-  pm/               ← PM 산출물 (PRD, 로드맵, 우선순위)
-  planner/          ← 기획자 산출물 (화면 기획안, 기능 명세서, User Flow)
-  designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
-  ux-writer/        ← UX 라이터 산출물 (라이팅 가이드, 문구 시트)
-  engineer/         ← Engineer 산출물 (동작하는 프론트엔드 코드, 빌드 결과)
-  session.md        ← 작업 세션 체크포인트 (오케스트레이터 관리)
+workspace/
+  _memory/            ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션)
+  [서비스명]/
+    researcher/       ← Researcher 산출물 (리서치 종합, 경쟁 분석, insights)
+    pm/               ← PM 산출물 (PRD, 로드맵, 우선순위)
+    planner/          ← 기획자 산출물 (화면 기획안, 기능 명세서, User Flow)
+    designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
+    ux-writer/        ← UX 라이터 산출물 (라이팅 가이드, 문구 시트)
+    engineer/         ← Engineer 산출물 (동작하는 프론트엔드 코드, 빌드 결과)
+    session.md        ← 작업 세션 체크포인트 (오케스트레이터 관리)
 ```
 
 ---
@@ -256,8 +333,9 @@ workspace/[서비스명]/
 # 작업 세션
 
 service: [서비스명]
+company: [회사명]   # 기억층 회사 식별용. 없거나 개인 작업이면 default
 feature: [기능명]
-mode: FULL / PLAN / DESIGN / WRITE / CUSTOM
+mode: RESEARCH / FULL / PLAN / DESIGN / BUILD / WRITE / CUSTOM
 status: in_progress / complete
 started_at: YYYY-MM-DD
 updated_at: YYYY-MM-DD
@@ -385,13 +463,14 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 사용자 요청을 받으면 아래 순서로 진행한다.
 
 1. **요청 분석** — 서비스명, 기능명, 작업 범위 파악
-2. **세션 확인** — `workspace/[서비스명]/session.md` 확인. `in_progress`이면 재개 여부 사용자에게 확인
-3. **모드 결정** — FULL / PLAN / DESIGN / WRITE / CUSTOM 판단
-4. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
-5. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집
-6. **에이전트 순차 호출** — 각 에이전트 CLAUDE.md를 참조하며 작업 지시
-7. **아웃풋 검증 및 검수, 체크포인트 기록** — 완료 후 ① 존재 검증 게이트 통과 → ② Reviewer 검수(`pass`/`revise`/`escalate`) → `pass`면 session.md 업데이트 후 다음 에이전트 호출, `revise`면 재작업(최대 2회), `escalate`면 사용자 보고
-8. **작업 완료 보고** — 전체 결과 요약, 산출물 목록, session.md `status: complete` 처리
+2. **회사 식별 및 기억층 로딩** — `company` 확인(없으면 사용자에게 확인, 개인 작업이면 `default`). `workspace/_memory/designer-profile.md`(항상) + `companies/[회사]/decisions.md`·`conventions.md`(있으면)를 로딩해 `memory_context`로 준비
+3. **세션 확인** — `workspace/[서비스명]/session.md` 확인. `in_progress`이면 재개 여부 사용자에게 확인
+4. **모드 결정** — RESEARCH / FULL / PLAN / DESIGN / BUILD / WRITE / CUSTOM 판단
+5. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
+6. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집. `persona_path`와 `memory_context`를 모든 에이전트 호출에 주입
+7. **에이전트 순차 호출** — 각 에이전트 CLAUDE.md를 참조하며 작업 지시
+8. **아웃풋 검증 및 검수, 체크포인트 기록** — 완료 후 ① 존재 검증 게이트 통과 → ② Reviewer 검수(`pass`/`revise`/`escalate`) → `pass`면 session.md 업데이트 후 다음 에이전트 호출, `revise`면 재작업(최대 2회), `escalate`면 사용자 보고. 기억할 가치가 있는 결정·선호가 나오면 **기억 제안**(제안→승인) 수행
+9. **작업 완료 보고** — 전체 결과 요약, 산출물 목록, 기억층 추가 항목, session.md `status: complete` 처리
 
 ---
 
@@ -416,6 +495,9 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 | 디자이너 | 디자인 스펙, 컴포넌트 스펙 | workspace/[서비스명]/designer/... |
 | UX 라이터 | 라이팅 가이드, 문구 시트 | workspace/[서비스명]/ux-writer/... |
 | Engineer | 동작하는 프론트엔드 코드, 빌드 결과 | workspace/[서비스명]/engineer/... |
+
+### 기억층 추가
+- 없음 / [이번 작업에서 승인되어 누적된 항목 — 예: [회사] decisions에 "soft/hard 3단계 채택" 추가]
 
 ### 이슈 사항
 - 없음 / [이슈 내용]
@@ -454,5 +536,6 @@ FULL 모드의 최종 산출물은 **Engineer의 구현 코드(동작하는 프�
 - [[agents/engineer/CLAUDE|Engineer 가이드]] — 프론트엔드 구현·빌드 검증 (파이프라인 마지막, 최종 산출물)
 - [[agents/reviewer/CLAUDE|Reviewer 가이드]] — 산출물 내용 품질 비평 (존재 검증 위에 얹는 2단계 게이트)
 
-### 템플릿
+### 템플릿·인프라
 - [[workspace/persona-template|페르소나 템플릿]] — 서비스별 페르소나 작성용 범용 템플릿
+- [[workspace/_memory/README|기억층 가이드]] — 프로젝트 간 누적 기억 (개인/회사 2층, 반자동 누적)

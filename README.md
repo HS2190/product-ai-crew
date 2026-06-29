@@ -135,10 +135,13 @@ claude
 
 ## 산출물 저장 경로
 
-모든 산출물은 `workspace/[서비스명]/` 하위에 역할별로 저장한다.
+프로젝트 산출물은 `workspace/[서비스명]/` 하위에 역할별로 저장하고, 프로젝트를 넘는 누적 기억은 `workspace/_memory/`에 둔다.
 
 ```text
 workspace/
+├── _memory/        ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션, 반자동 누적)
+│   ├── designer-profile.md
+│   └── companies/[회사명]/{decisions,conventions}.md
 └── [서비스명]/
     ├── researcher/ ← 리서치 종합, 경쟁 분석, insights
     ├── pm/         ← PRD, 로드맵, 우선순위
@@ -148,3 +151,5 @@ workspace/
     ├── engineer/   ← 동작하는 프론트엔드 코드, 빌드 결과
     └── session.md  ← 작업 세션 체크포인트 (오케스트레이터 자동 관리)
 ```
+
+> 기억층은 작업 시작 시 자동 주입되어 "쓸수록 그 회사·디자이너에게 맞게 똑똑해지는" 작동부다. 자세한 내용은 `workspace/_memory/README.md` 참조.
