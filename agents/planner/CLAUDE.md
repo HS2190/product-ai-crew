@@ -19,16 +19,14 @@
 
 ## 유저 페르소나 참조
 
-위페어 파트너스 작업 시 반드시 아래 파일을 먼저 읽고 시작한다.
-
-**파일 경로:** `~/Documents/design-workspace/project/wepair/persona.md`
+`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `workspace/[서비스명]/persona.md`).
 
 **기획자가 페르소나를 활용하는 방법**
 
 - User Flow 설계 시 **시나리오 섹션**을 기준으로 각 페르소나의 실제 행동 흐름을 반영한다
 - 화면 기획안의 레이아웃 결정 시 **물리/공간적 환경** 섹션을 확인한다
-  - 작업자: 한 손 조작, 장갑 착용, 이동 중 → 핵심 액션은 화면 하단 엄지 존에 배치
-  - 관리자: 사무실 PC + 스마트폰 겸용 → PC 화면과 모바일 화면 기획 분리
+  - 현장·모바일 중심 페르소나: 한 손 조작·이동 중 사용을 고려해 핵심 액션은 화면 하단 엄지 존에 배치
+  - 정보 밀도가 높은 관리자형 페르소나: PC와 모바일을 겸용하는 경우 PC 화면과 모바일 화면 기획을 분리
 - 예외 처리 및 빈 상태 기획 시 페르소나의 Pain Point에서 도출된 시나리오를 우선 처리한다
 - 기능 명세서 작성 시 각 기능이 어떤 페르소나의 어떤 Pain Point를 해결하는지 명시한다
 
@@ -318,14 +316,14 @@ F-APP-MY-001      프로필 수정
 
 ### 구조 및 역할
 - [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
-- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 세션 시작 전 필수 숙지 (관리자·작업자 특성)
+- 서비스별 페르소나: `workspace/[서비스명]/persona.md` — 세션 시작 전 필수 숙지 (`persona_path`로 전달됨)
 
 ### 협업 핸드오프
 - [[agents/pm/CLAUDE|PM 가이드]] — PRD·기능 목록을 인풋으로 받는 이전 단계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 화면 정의서 완료 후 전달 대상
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 기능 명세 완료 후 문구 작업 시작
 
-### 산출물 (위페어)
-- 화면 정의서: `workspace/wepair/planner/screen-spec.md`
-- 기능 명세: `workspace/wepair/planner/feature-spec.md`
-- 사용자 플로우: `workspace/wepair/planner/flow.md`
+### 산출물 경로
+- 화면 정의서: `workspace/[서비스명]/planner/screen-spec.md`
+- 기능 명세: `workspace/[서비스명]/planner/feature-spec.md`
+- 사용자 플로우: `workspace/[서비스명]/planner/flow.md`

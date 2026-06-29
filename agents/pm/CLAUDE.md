@@ -19,15 +19,13 @@
 
 ## 유저 페르소나 참조
 
-위페어 파트너스 작업 시 반드시 아래 파일을 먼저 읽고 시작한다.
-
-**파일 경로:** `~/Documents/design-workspace/project/wepair/persona.md`
+`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `workspace/[서비스명]/persona.md`).
 
 **PM이 페르소나를 활용하는 방법**
 
-- PRD의 `타겟 사용자` 항목을 막연한 "사용자" 대신 **박정훈(관리자)** / **최성호(작업자)** 페르소나명으로 명시한다
+- PRD의 `타겟 사용자` 항목을 막연한 "사용자" 대신 구체적인 페르소나명으로 명시한다
 - 기능 우선순위 결정 시 각 페르소나의 Pain Point와 연결해 Impact를 판단한다
-- 유저 스토리 작성 시 페르소나의 물리적 환경(장갑 착용, 소음, 이동 중)과 디지털 숙련도를 반영한다
+- 유저 스토리 작성 시 페르소나의 사용 환경(이동 중, 현장, 한 손 조작 등)과 디지털 숙련도를 반영한다
 - 성공 지표(KPI)는 페르소나 문서의 `성공 지표` 섹션을 기준으로 정의한다
 
 ---
@@ -48,7 +46,7 @@
 
 작업 시작 전 아래 항목을 수신해야 해.
 
-- `task`: 수행할 작업 (예: "차량 입고 등록 기능 PRD 작성")
+- `task`: 수행할 작업 (예: "[기능명] PRD 작성")
 - `service_name`: 서비스명
 - `feature_name`: 기능명 또는 스프린트 주제
 - `business_goal`: 비즈니스 목표
@@ -323,14 +321,14 @@ Effort (개발 공수) 기준:
 
 ### 구조 및 역할
 - [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
-- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — PRD 작성 전 필수 숙지 (관리자·작업자 특성)
+- `workspace/[서비스명]/persona.md` — PRD 작성 전 필수 숙지 (타겟 사용자 특성)
 
 ### 협업 핸드오프
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — PRD·기능 목록을 인풋으로 받는 다음 단계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 기획 완료 후 디자인 전달 대상
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 전체 파이프라인 최종 단계
 
-### 산출물 (위페어)
-- PRD: `workspace/wepair/pm/PRD/`
-- 로드맵: `workspace/wepair/pm/로드맵/`
-- 우선순위: `workspace/wepair/pm/우선순위/`
+### 산출물
+- PRD: `workspace/[서비스명]/pm/PRD/`
+- 로드맵: `workspace/[서비스명]/pm/로드맵/`
+- 우선순위: `workspace/[서비스명]/pm/우선순위/`

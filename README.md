@@ -56,7 +56,7 @@ product-ai-crew/
 ### GitHub에서 클론해서 사용
 
 ```bash
-git clone https://github.com/hs2190-bot/product-ai-crew.git
+git clone https://github.com/HS2190/product-ai-crew.git
 cd product-ai-crew
 chmod +x install.sh && ./install.sh
 ```
@@ -97,7 +97,7 @@ claude
 ### 호출 예시
 
 ```
-"위페어 파트너스 차량 입고 등록 기능 전체 프로세스 진행해줘"
+"[서비스명] [기능명] 전체 프로세스 진행해줘"
 "PRD랑 화면 기획서까지만 만들어줘"
 "기획안 있어, 디자인만 해줘"
 "로그인 화면 UX 문구 전체 검토해줘"

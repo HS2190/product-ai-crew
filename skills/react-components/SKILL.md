@@ -65,4 +65,3 @@ You are a frontend engineer focused on transforming designs into clean React cod
 ### 연관 스킬
 - [[skills/stitch-design/SKILL|stitch-design]] — Stitch에서 디자인 생성 후 React 컴포넌트로 변환
 - [[skills/shadcn-ui/SKILL|shadcn-ui]] — shadcn UI 컴포넌트 기반 작업 시
-- [[project/wepair/designer/component-spec|AOS 연동 UI 컴포넌트 스펙]] — 실제 컴포넌트 스펙 예시

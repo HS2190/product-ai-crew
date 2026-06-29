@@ -26,20 +26,16 @@
 
 ## 서비스 컨텍스트 — 유저 페르소나
 
-위페어 파트너스 관련 작업 시, 모든 에이전트 호출에 아래 페르소나 문서 경로를 반드시 포함한다.
+서비스별 페르소나는 `workspace/[서비스명]/persona.md`에 둔다.
+이 파일은 사용자가 직접 제공하거나, 없으면 PM이 PRD를 작성할 때 정의한다.
 
 ```
-persona_path: ~/Documents/design-workspace/project/wepair/persona.md
+persona_path: workspace/[서비스명]/persona.md
 ```
 
-**페르소나 요약**
-
-| 페르소나 | 역할 | 디지털 숙련도 | 핵심 니즈 |
-|---------|------|------------|---------|
-| 박정훈 | 관리자 (공업사 대표, 50세) | 중간 | 현장 실시간 파악, 사진 폴더링 자동화, 보험 청구 누락 0건 |
-| 최성호 | 작업자 (부장, 55세) | 낮음 | 한 손 조작, 3탭 이내 사진 등록, 큰 버튼 중심 UI |
-
-에이전트 호출 시 인풋에 `persona_path`를 추가하고, 각 에이전트가 작업 시작 전 해당 파일을 읽도록 지시한다.
+오케스트레이터는 해당 파일이 존재하면 모든 에이전트 호출에 `persona_path`로 포함한다.
+각 에이전트는 작업 시작 전 이 파일을 읽고 사용자 맥락을 파악한 뒤 작업한다.
+페르소나 작성 시에는 `workspace/persona-template.md`를 템플릿으로 사용한다.
 
 ---
 
@@ -108,7 +104,7 @@ task:         [수행할 작업 내용]
 mode:         CREW
 input:        [이전 에이전트 아웃풋 또는 사용자 제공 인풋]
 output_path:  [산출물 저장 경로]
-persona_path: ~/Documents/design-workspace/project/wepair/persona.md
+persona_path: workspace/[서비스명]/persona.md   # 페르소나 파일이 존재할 때만 포함
 ```
 
 ### blocked 상태 처리
@@ -322,6 +318,5 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 컴포넌트 스펙·디자인 QA·피그마 작업
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — UI 문구 추출·검토·개선
 
-### 위페어 프로젝트
-- [[workspace/wepair/persona|위페어 파트너스 페르소나]] — 관리자(박정훈)·작업자(최성호) 시나리오
-- [[workspace/wepair/designer/component-spec|AOS 연동 UI 컴포넌트 스펙]] — 디자이너 산출물 예시
+### 템플릿
+- [[workspace/persona-template|페르소나 템플릿]] — 서비스별 페르소나 작성용 범용 템플릿
