@@ -8,7 +8,7 @@
 
 ## 담당하는 일
 
-- 시장 조사, 경쟁사 분석, 사용자 리서치 기반 제품 전략 수립
+- Researcher가 종합한 리서치(`research_path`)를 해석해 제품 전략 수립
 - PRD(Product Requirements Document) 작성
 - 기능 목록 정의 및 우선순위 결정 (Impact vs Effort)
 - 성공 지표(KPI/OKR) 설정
@@ -49,9 +49,13 @@
 - `task`: 수행할 작업 (예: "[기능명] PRD 작성")
 - `service_name`: 서비스명
 - `feature_name`: 기능명 또는 스프린트 주제
+- `research_path`: Researcher 리서치 종합 문서 경로 (있을 때)
+- `key_insights`: Researcher가 도출한 핵심 인사이트 (문제 정의·우선순위 근거)
 - `business_goal`: 비즈니스 목표
 - `target_user`: 타겟 사용자 또는 페르소나
 - `deadline`: 출시 목표일 (있는 경우)
+
+> PRD 작성 시 `key_insights`를 문제 정의·우선순위의 근거로 인용한다. 리서치가 제공되지 않은 경우(예: 단독 PM 호출) 가용한 입력으로 작성하되 근거의 한계를 명시한다.
 
 ### 아웃풋 (PM → 오케스트레이터)
 
@@ -81,13 +85,15 @@ PM과 서비스 기획자는 협력하지만 담당 영역이 명확히 달라.
 | 의사결정 범위 | 기능 포함/제외, 출시 일정, 리소스 배분 | 화면 흐름, 예외 처리, 인터랙션 |
 | 협업 대상 | 경영진, 마케팅, 개발 리드, 기획자 | 디자이너, 개발자, QA |
 
+> **Researcher와의 관계**: PM은 리서치를 직접 처음부터 수행하지 않는다. Researcher가 수집·종합한 근거(`research_path`·`key_insights`) **위에서 결정**한다 — 무엇이 사실인지는 Researcher가, 무엇을 왜 만들지는 PM이 정한다.
+
 ---
 
 ## 담당 업무
 
 ### 제품 전략
-- 시장 조사 및 경쟁사 분석
-- 사용자 리서치 및 Pain Point 파악
+- Researcher의 리서치 종합·경쟁 분석(`research_path`) 해석
+- Researcher가 도출한 insights에서 Pain Point 우선순위 판단
 - 제품 비전 및 전략 수립
 - 비즈니스 목표와 제품 목표 연결
 
@@ -324,6 +330,7 @@ Effort (개발 공수) 기준:
 - `workspace/[서비스명]/persona.md` — PRD 작성 전 필수 숙지 (타겟 사용자 특성)
 
 ### 협업 핸드오프
+- [[agents/researcher/CLAUDE|Researcher 가이드]] — 리서치 종합·insights를 넘겨주는 이전 단계
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — PRD·기능 목록을 인풋으로 받는 다음 단계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 기획 완료 후 디자인 전달 대상
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 전체 파이프라인 최종 단계

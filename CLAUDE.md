@@ -15,6 +15,7 @@
 
 | 에이전트 | 역할 | CLAUDE.md 경로 |
 |---------|------|---------------|
+| Researcher | 리서치 수집·종합, 경쟁 분석 | `agents/researcher/CLAUDE.md` |
 | PM | 제품 전략, PRD 작성 | `agents/pm/CLAUDE.md` |
 | 기획자 | 화면 기획, 기능 명세서 | `agents/planner/CLAUDE.md` |
 | 디자이너 | UI 디자인, 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
@@ -48,11 +49,12 @@ persona_path: workspace/[서비스명]/persona.md
 
 | 모드 | 설명 | 에이전트 호출 순서 |
 |------|------|-----------------|
-| **FULL** | 신규 서비스/기능 전체 프로세스 | PM → 기획자 → 디자이너 → UX라이터 |
-| **PLAN** | PRD + 화면 기획까지 | PM → 기획자 |
+| **FULL** | 신규 서비스/기능 전체 프로세스 | Researcher → PM → 기획자 → 디자이너 → UX라이터 |
+| **PLAN** | 리서치 + PRD + 화면 기획까지 | Researcher → PM → 기획자 |
+| **RESEARCH** | 리서치/경쟁사 분석만 필요 | Researcher 단독 |
 | **DESIGN** | 기획안이 있고 디자인만 필요 | 기획자 → 디자이너 |
 | **WRITE** | 문구 작업만 | UX라이터 |
-| **CUSTOM** | 사용자가 에이전트를 직접 지정 | 사용자 정의 순서 |
+| **CUSTOM** | 사용자가 에이전트를 직접 지정 (Researcher 포함) | 사용자 정의 순서 |
 
 ### 모드 선택 기준
 
@@ -61,11 +63,14 @@ persona_path: workspace/[서비스명]/persona.md
         ↓
 "신규 서비스 / 전체 기능 출시"     → FULL
 "기획서 / PRD 만들어줘"             → PLAN
+"리서치 / 경쟁사 분석만 해줘"        → RESEARCH
 "기획안 있어, 디자인만 해줘"         → DESIGN
 "문구 수정 / UX 라이팅 해줘"         → WRITE
 "[특정 에이전트] 호출해줘"           → CUSTOM
 모호한 경우                         → 사용자에게 모드 확인 후 진행
 ```
+
+**FULL / PLAN 진입 시 리서치 자료 확인**: Researcher 단계 시작 전, 사용자가 제공할 기존 리서치 자료(인터뷰 전사·설문·지원 티켓 등)가 있는지 확인한다. 있으면 `research_input` 경로로 Researcher에 전달하고, 없으면 Researcher가 가용 범위(경쟁사 분석·웹 검색·페르소나)에서 수행하되 한계를 명시하게 한다.
 
 ---
 
@@ -73,7 +78,7 @@ persona_path: workspace/[서비스명]/persona.md
 
 ### 전체 파이프라인 흐름
 
-각 생성 에이전트(PM/기획자/디자이너/UX라이터)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
+각 생성 에이전트(Researcher/PM/기획자/디자이너/UX라이터)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
 
 1. **존재 검증 게이트** (기존) — 파일·필드가 있는지 확인. 실패하면 `blocked` 처리.
 2. **Reviewer 검수** (신규) — 내용 품질을 비평. `pass` / `revise` / `escalate` 판정.
@@ -84,8 +89,19 @@ persona_path: workspace/[서비스명]/persona.md
 [오케스트레이터] — 모드 판단 및 컨텍스트 준비
         ↓
 ┌──────────────────────────────────────────────┐
+│ [Researcher 에이전트] (FULL / PLAN / RESEARCH)   │
+│   인풋:  서비스명, 기능명, 리서치 자료, 페르소나      │
+│   아웃풋: 리서치 종합, key_insights, 경쟁 분석       │
+│        ↓                                        │
+│ [존재 검증 게이트] → [Reviewer 검수] (근거 품질)    │
+│   ├─ pass     → PM으로 진행                       │
+│   ├─ revise   → Researcher 재호출 (최대 2회)       │
+│   └─ escalate → 사용자에게 보고 후 대기            │
+└──────────────────────────────────────────────┘
+        ↓ pass (research_path, key_insights 전달)
+┌──────────────────────────────────────────────┐
 │ [PM 에이전트] (FULL / PLAN 모드)                  │
-│   인풋:  서비스명, 기능명, 비즈니스 목표, 타겟 사용자  │
+│   인풋:  리서치 종합·insights, 비즈니스 목표, 타겟    │
 │   아웃풋: PRD, 기능 목록, 우선순위, 브랜드 방향성     │
 │        ↓                                        │
 │ [존재 검증 게이트]  (파일/필드 존재 확인)            │
@@ -145,7 +161,7 @@ persona_path: workspace/[서비스명]/persona.md   # 페르소나 파일이 존
 ```
 role:           reviewer
 task:           [target_role] 산출물 검수
-target_role:    pm / planner / designer / ux-writer
+target_role:    researcher / pm / planner / designer / ux-writer
 target_output:  [검수할 산출물 파일 경로(들)]
 persona_path:   workspace/[서비스명]/persona.md   # 존재할 때만
 revision_count: [이 산출물이 지금까지 재작업된 횟수]
@@ -185,6 +201,7 @@ escalate 사유: [escalate_reason]
 
 ```
 workspace/[서비스명]/
+  researcher/       ← Researcher 산출물 (리서치 종합, 경쟁 분석, insights)
   pm/               ← PM 산출물 (PRD, 로드맵, 우선순위)
   planner/          ← 기획자 산출물 (화면 기획안, 기능 명세서, User Flow)
   designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
@@ -238,10 +255,11 @@ updated_at: YYYY-MM-DD
 
 | 단계 | 에이전트 | 상태 | 검수 결과 | 재작업 횟수 | 완료 시각 |
 |------|---------|------|----------|-----------|---------|
-| 1 | PM | complete | pass | 0 | 2026-05-04 |
-| 2 | 기획자 | complete | revise→pass | 1 | 2026-05-04 |
-| 3 | 디자이너 | in_progress | - | 0 | - |
-| 4 | UX 라이터 | pending | - | 0 | - |
+| 1 | Researcher | complete | pass | 0 | 2026-05-04 |
+| 2 | PM | complete | pass | 0 | 2026-05-04 |
+| 3 | 기획자 | complete | revise→pass | 1 | 2026-05-04 |
+| 4 | 디자이너 | in_progress | - | 0 | - |
+| 5 | UX 라이터 | pending | - | 0 | - |
 
 > 검수 결과 표기: `pass` / `revise(N)` / `escalate`. revise가 반복되면 `revise→pass`처럼 최종 결과까지 남긴다.
 > 재작업 횟수는 산출물별로 누적 기록한다. 대화가 끊겨 재개해도 이 값이 유지돼야 2회 상한과 escalate 전환이 올바르게 동작한다.
@@ -277,6 +295,12 @@ PRD 핵심 내용, 기획 범위, 브랜드 방향성 등을 충분히 기재한
 
 에이전트가 `status: complete`를 반환해도, 다음 에이전트로 넘기기 전에 아래 항목을 검증한다.
 **하나라도 실패하면 `blocked` 처리** 후 사용자에게 보고한다. 모두 통과하면 곧바로 Reviewer 검수(2단계)로 넘어간다.
+
+### Researcher 아웃풋 검증
+
+- [ ] `research_path` 파일이 실제로 존재하는가
+- [ ] `key_insights`가 비어있지 않은가
+- [ ] `competitor_findings`가 제공됐는가
 
 ### PM 아웃풋 검증
 
@@ -325,8 +349,9 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 | 모드 | 검수 적용 |
 |------|----------|
-| **FULL** | PM·기획자·디자이너·UX라이터 **각 단계마다** 검수 |
-| **PLAN** | PM·기획자 **각 단계마다** 검수 |
+| **FULL** | Researcher·PM·기획자·디자이너·UX라이터 **각 단계마다** 검수 |
+| **PLAN** | Researcher·PM·기획자 **각 단계마다** 검수 |
+| **RESEARCH** | Researcher 단독이므로 그 산출물에 **1회** 검수 |
 | **DESIGN** | 기획자·디자이너 **각 단계마다** 검수 |
 | **WRITE** | UX라이터 단독이므로 그 산출물에 **1회** 검수 |
 | **CUSTOM** | 사용자가 검수 on/off를 지정 (**기본 on**) |
@@ -360,12 +385,13 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 실행 모드: [FULL / PLAN / DESIGN / WRITE / CUSTOM]
 서비스/기능: [작업 대상]
-실행 에이전트: [PM → 기획자 → 디자이너 → UX라이터]
+실행 에이전트: [Researcher → PM → 기획자 → 디자이너 → UX라이터]
 
 ### 산출물 목록
 
 | 에이전트 | 산출물 | 저장 경로 |
 |---------|-------|---------|
+| Researcher | 리서치 종합, 경쟁 분석 | workspace/[서비스명]/researcher/... |
 | PM      | PRD   | workspace/[서비스명]/pm/PRD/... |
 | 기획자  | 화면 기획안, 기능 명세서 | workspace/[서비스명]/planner/... |
 | 디자이너 | 디자인 스펙, 컴포넌트 스펙 | workspace/[서비스명]/designer/... |
@@ -386,8 +412,9 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 
 | 워크플로우 | 파일 경로 | 사용 상황 |
 |-----------|---------|---------|
+| 리서치 | `workflows/research-process.md` | 리서치 / 경쟁사 분석만 |
 | 전체 프로세스 | `workflows/full-process.md` | 신규 서비스 / 대형 기능 |
-| 기획까지 | `workflows/plan-process.md` | PRD + 화면 기획까지만 |
+| 기획까지 | `workflows/plan-process.md` | 리서치 + PRD + 화면 기획까지 |
 | 빠른 디자인 | `workflows/quick-design.md` | 기획안이 있을 때 디자인만 |
 | UX 라이팅 | `workflows/ux-writing.md` | 문구 작업만 |
 | 커스텀 | `workflows/custom-flow.md` | 에이전트 직접 조합 |
@@ -397,6 +424,7 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 ## 관련 문서
 
 ### 에이전트 가이드
+- [[agents/researcher/CLAUDE|Researcher 가이드]] — 리서치 수집·종합, 경쟁 분석 (파이프라인 맨 앞)
 - [[agents/pm/CLAUDE|PM 가이드]] — PRD·기능 목록·우선순위 작성
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 화면 정의서·기능 명세·플로우 설계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 컴포넌트 스펙·디자인 QA·피그마 작업

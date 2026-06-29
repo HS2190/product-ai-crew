@@ -1,8 +1,9 @@
 # Product AI Crew
 
 Claude Code 기반 AI 멀티 에이전트 제품 조직.
-PM, 서비스 기획자, UI/UX 디자이너, UX 라이터 4개 롤을 독립 에이전트로 구성하고,
+Researcher, PM, 서비스 기획자, UI/UX 디자이너, UX 라이터 5개 롤을 독립 에이전트로 구성하고,
 오케스트레이터가 요청을 분석해 적합한 에이전트를 자동으로 순차 호출한다.
+각 단계 산출물은 Reviewer가 내용 품질을 검수한다(존재 검증 → 내용 비평 2단계 게이트).
 
 ---
 
@@ -11,10 +12,12 @@ PM, 서비스 기획자, UI/UX 디자이너, UX 라이터 4개 롤을 독립 에
 | 에이전트 | 역할 | 파일 |
 |---------|------|------|
 | 오케스트레이터 | 요청 분석 → 모드 판단 → 에이전트 순차 호출 | `CLAUDE.md` |
+| Researcher | 리서치 수집·종합, 경쟁 분석, insights 도출 | `agents/researcher/CLAUDE.md` |
 | PM | 제품 전략 수립, PRD 작성, 기능 우선순위 결정 | `agents/pm/CLAUDE.md` |
 | 서비스 기획자 | 화면 기획, 기능 명세서, User Flow 설계 | `agents/planner/CLAUDE.md` |
 | UI/UX 디자이너 | 화면 디자인, 컴포넌트 스펙, 디자인 시스템 | `agents/designer/CLAUDE.md` |
 | UX 라이터 | UX 문구 작성, 라이팅 가이드, 금지 표현 관리 | `agents/ux-writer/CLAUDE.md` |
+| Reviewer | 각 단계 산출물의 내용 품질 비평 (pass/revise/escalate) | `agents/reviewer/CLAUDE.md` |
 
 ---
 
@@ -27,12 +30,15 @@ product-ai-crew/
 ├── install.sh             ← 로컬 설치 스크립트
 │
 ├── agents/                ← 에이전트 롤 정의
+│   ├── researcher/CLAUDE.md
 │   ├── pm/CLAUDE.md
 │   ├── planner/CLAUDE.md
 │   ├── designer/CLAUDE.md
-│   └── ux-writer/CLAUDE.md
+│   ├── ux-writer/CLAUDE.md
+│   └── reviewer/CLAUDE.md
 │
 ├── workflows/             ← 워크플로우 정의
+│   ├── research-process.md ← RESEARCH 모드
 │   ├── full-process.md    ← FULL 모드
 │   ├── plan-process.md    ← PLAN 모드
 │   ├── quick-design.md    ← DESIGN 모드
@@ -72,10 +78,13 @@ claude
 1. [claude.ai/projects](https://claude.ai/projects) 에서 새 프로젝트 생성
 2. **Project Instructions** 에 `CLAUDE.md` 내용 붙여넣기
 3. **Project Knowledge** 에 아래 파일 업로드:
+   - `agents/researcher/CLAUDE.md`
    - `agents/pm/CLAUDE.md`
    - `agents/planner/CLAUDE.md`
    - `agents/designer/CLAUDE.md`
    - `agents/ux-writer/CLAUDE.md`
+   - `agents/reviewer/CLAUDE.md`
+   - `workflows/research-process.md`
    - `workflows/full-process.md`
    - `workflows/plan-process.md`
    - `workflows/quick-design.md`
@@ -88,8 +97,9 @@ claude
 
 | 모드 | 사용 상황 | 에이전트 순서 |
 |------|---------|-------------|
-| **FULL** | 신규 서비스/기능 전체 | PM → 기획자 → 디자이너 → UX라이터 |
-| **PLAN** | 기획서까지만 | PM → 기획자 |
+| **FULL** | 신규 서비스/기능 전체 | Researcher → PM → 기획자 → 디자이너 → UX라이터 |
+| **PLAN** | 리서치·기획서까지 | Researcher → PM → 기획자 |
+| **RESEARCH** | 리서치·경쟁사 분석만 | Researcher 단독 |
 | **DESIGN** | 기획안 있고 디자인만 | 기획자 → 디자이너 |
 | **WRITE** | 문구 작업만 | UX라이터 단독 |
 | **CUSTOM** | 직접 조합 | 사용자 정의 |
@@ -98,6 +108,7 @@ claude
 
 ```
 "[서비스명] [기능명] 전체 프로세스 진행해줘"
+"리서치랑 경쟁사 분석만 해줘"
 "PRD랑 화면 기획서까지만 만들어줘"
 "기획안 있어, 디자인만 해줘"
 "로그인 화면 UX 문구 전체 검토해줘"
@@ -121,6 +132,7 @@ claude
 ```text
 workspace/
 └── [서비스명]/
+    ├── researcher/ ← 리서치 종합, 경쟁 분석, insights
     ├── pm/         ← PRD, 로드맵, 우선순위
     ├── planner/    ← 화면 기획안, 기능 명세서, User Flow
     ├── designer/   ← 디자인 스펙, 컴포넌트 스펙

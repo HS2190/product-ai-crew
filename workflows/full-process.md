@@ -3,7 +3,7 @@
 ## 개요
 
 - **실행 모드**: FULL
-- **호출 순서**: PM → 기획자 → 디자이너 → UX라이터
+- **호출 순서**: Researcher → PM → 기획자 → 디자이너 → UX라이터
 - **사용 상황**: 신규 서비스 출시 또는 대형 기능 추가
 - **오케스트레이터 참조**: `CLAUDE.md`
 
@@ -21,14 +21,59 @@
 
 ## 단계별 실행 정의
 
-### Step 1 — PM 에이전트
+### Step 1 — Researcher 에이전트
 
-**역할 참조**: `agents/pm/CLAUDE.md`
+**역할 참조**: `agents/researcher/CLAUDE.md`
+**활용 스킬**: `plugins/design/skills/user-research/SKILL.md`, `plugins/design/skills/research-synthesis/SKILL.md`
 
 **인풋**
 
 | 항목 | 설명 |
 |------|------|
+| 서비스명 | 작업 대상 서비스 이름 |
+| 기능명 | 리서치 주제 또는 구현할 기능 |
+| 리서치 자료 | 사용자 제공 자료 경로 (인터뷰·설문·티켓 등). 없으면 비움 |
+| 페르소나 | `workspace/[서비스명]/persona.md` (있을 때) |
+
+**필수 아웃풋**
+
+| 산출물 | 저장 경로 |
+|-------|---------|
+| 리서치 종합 | `workspace/[서비스명]/researcher/research-synthesis-v1.0.md` |
+| 핵심 인사이트 (key_insights) | 종합 문서 내 포함 |
+| 경쟁사 분석 (competitor_findings) | 종합 문서 내 포함 |
+| insight → opportunity 매핑 | 종합 문서 내 포함 |
+
+**완료 조건**
+
+- [ ] 리서치 종합 문서 작성 완료 (research-synthesis 형식)
+- [ ] 경쟁사/기존 도구 분석 완료 (무엇을 하고 무엇이 비었는지)
+- [ ] 관찰과 해석 분리, 추정·한계 명시
+- [ ] PM이 인용할 수 있는 key_insights 정리됨
+
+**Reviewer 검수**
+
+- 산출물 완료 후 Reviewer가 근거 품질 비평 (`agents/reviewer/CLAUDE.md`)
+- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+
+**다음 에이전트로 전달**
+
+- 리서치 종합 문서 경로 (`research_path`)
+- 핵심 인사이트 (`key_insights`)
+- 경쟁사 분석 요약 (`competitor_findings`)
+
+---
+
+### Step 2 — PM 에이전트
+
+**역할 참조**: `agents/pm/CLAUDE.md`
+
+**인풋** (Researcher 아웃풋 + 사용자 인풋)
+
+| 항목 | 설명 |
+|------|------|
+| 리서치 종합 (research_path) | Researcher 아웃풋 |
+| 핵심 인사이트 (key_insights) | Researcher 아웃풋 — 문제 정의·우선순위 근거 |
 | 서비스명 | 작업 대상 서비스 이름 |
 | 기능명 | 구현할 기능 또는 스프린트 주제 |
 | 비즈니스 목표 | 이 기능이 해결하는 비즈니스 문제 |
@@ -66,7 +111,7 @@
 
 ---
 
-### Step 2 — 기획자 에이전트
+### Step 3 — 기획자 에이전트
 
 **역할 참조**: `agents/planner/CLAUDE.md`
 
@@ -109,7 +154,7 @@
 
 ---
 
-### Step 3 — 디자이너 에이전트
+### Step 4 — 디자이너 에이전트
 
 **역할 참조**: `agents/designer/CLAUDE.md`
 
@@ -151,7 +196,7 @@
 
 ---
 
-### Step 4 — UX 라이터 에이전트
+### Step 5 — UX 라이터 에이전트
 
 **역할 참조**: `agents/ux-writer/CLAUDE.md`
 
@@ -192,7 +237,8 @@
 
 ## 전체 완료 조건
 
-- [ ] PM PRD 완료 및 저장
+- [ ] Researcher 리서치 종합 완료 및 저장
+- [ ] PM PRD 완료 및 저장 (리서치 insights 인용)
 - [ ] 기획자 화면 기획안 + 기능 명세서 완료
 - [ ] 디자이너 화면 디자인 + 스펙 문서 완료
 - [ ] UX 라이터 문구 + 가이드 완료
