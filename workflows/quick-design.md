@@ -66,6 +66,11 @@
 - [ ] 기능 명세서 예외 처리 포함 완료
 - [ ] `[확인 필요]` 항목 해소 완료
 
+**Reviewer 검수**
+
+- 산출물 완료 후 Reviewer가 내용 품질 비평 (`agents/reviewer/CLAUDE.md`)
+- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+
 **다음 에이전트로 전달**
 
 - 화면 기획안 Figma URL
@@ -101,6 +106,11 @@
 - [ ] 디자인 QA 체크리스트 통과
 - [ ] 디자인 스펙 문서 완료
 
+**Reviewer 검수**
+
+- 산출물 완료 후 Reviewer가 내용 품질 비평 (`agents/reviewer/CLAUDE.md`)
+- pass → 파이프라인 종료 / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+
 **파이프라인 종료**
 
 - 디자인 스펙 및 Figma URL 완료 → 오케스트레이터에 최종 보고
@@ -111,6 +121,7 @@
 
 - [ ] 기획자 산출물 준비 완료 (화면 기획안, 기능 명세서)
 - [ ] 디자이너 화면 디자인 + 스펙 문서 완료
+- [ ] 각 단계 Reviewer 검수 `pass` (또는 escalate 시 사용자 판단 완료)
 - [ ] 오케스트레이터 작업 완료 보고 전달
 
 ---
