@@ -76,6 +76,7 @@
 - `feature_spec`: 기능 명세서 파일 경로
 - `platform`: 대상 플랫폼 (APP / WEB / 전체)
 - `brand_direction`: PM이 정의한 브랜드 방향성
+- `figma_link`: 사용자가 제공한 Figma 페이지 URL (디자이너 진입 직전 「Figma 링크 수령」에서 받음. 스킵/미연결 시 비움)
 - `memory_context`: 오케스트레이터가 주입하는 기억층 컨텍스트 (개인 작업 프로파일 + 회사 결정·컨벤션, 있는 것만)
 
 ### 아웃풋 (디자이너 → 오케스트레이터)
@@ -85,7 +86,10 @@
 - `status`: complete / blocked
 - `design_spec`: 디자인 스펙 문서 경로 (필수)
 - `component_spec`: 컴포넌트 스펙 문서 경로 (필수)
-- `figma_url`: 완성된 피그마 화면 URL (**선택** — Figma MCP 연결·사용자 요청 시에만 산출. 미연결/미요청 시 `N/A (사유)`)
+- `figma_url`: 완성된 피그마 화면 URL (**조건부**)
+  - `figma_link`를 인풋으로 받았으면: 그 Figma 페이지에 디자인을 그리고 figma_url을 **반드시** 산출한다.
+  - `figma_link`가 없으면(스킵/미연결): 마크다운 스펙만 산출하고 figma_url은 `N/A (사유)`로 둔다.
+  - 어느 경우든 **마크다운 스펙(design_spec·component_spec)이 항상 정본**이다. Figma는 그 스펙의 시각화이지 대체가 아니다.
 - `next_role`: ux-writer
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
 

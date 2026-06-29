@@ -195,9 +195,16 @@ persona_path: workspace/[서비스명]/persona.md
   아웃풋: 화면 기획안, 기능 명세서, User Flow, 와이어프레임
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
+[Figma 링크 수령] (FULL / DESIGN 모드, 디자이너 진입 직전 — 1회 정지)
+  - 디자이너 호출 전에 멈추고 사용자에게 요청한다:
+    "디자인을 받을 Figma 페이지 링크를 주세요. (Figma로 받지 않으려면 '스킵'이라고 알려주세요.)"
+  - 링크 제공 → figma_link로 저장, 디자이너 인풋에 전달. 디자이너는 그 페이지에 그린다(figma_url 필수 산출).
+  - '스킵' 또는 Figma MCP 미연결 → figma_link 없이 진행. 디자이너는 마크다운 스펙만 산출, figma_url은 N/A(사유 명시).
+  - 이 단계는 디자이너 진입 직전에만 1회 묻는다(Researcher~기획자 단계에서는 묻지 않는다).
+        ↓
 [디자이너 에이전트] (FULL / DESIGN 모드)
-  인풋:  화면 기획안, 기능 명세서, 플랫폼, 브랜드 방향성
-  아웃풋: 디자인 스펙, 컴포넌트 스펙, Figma URL
+  인풋:  화면 기획안, 기능 명세서, 플랫폼, 브랜드 방향성, figma_link(있으면)
+  아웃풋: 디자인 스펙, 컴포넌트 스펙, Figma URL(figma_link 받았을 때 필수 / 아니면 N/A)
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
 [UX 라이터 에이전트] (FULL / WRITE 모드)
@@ -409,9 +416,9 @@ PRD 핵심 내용, 기획 범위, 브랜드 방향성 등을 충분히 기재한
 
 - [ ] `design_spec` 파일이 존재하는가 (필수)
 - [ ] `component_spec` 파일이 존재하는가 (필수)
-- [ ] `figma_url`은 **선택** — Figma MCP가 연결돼 있고 사용자가 Figma 출력을 요청한 경우에만 확인. 미연결/미요청 시 `figma_url: N/A (사유 명시)`로 두고 게이트는 통과시킨다.
+- [ ] `figma_url`은 **조건부**: 디자이너 진입 직전에 `figma_link`를 받았다면 `figma_url`도 **필수**(디자이너가 그 페이지에 그렸어야 함). `figma_link`가 없으면(스킵/미연결) `figma_url: N/A (사유 명시)`로 두고 통과시킨다.
 
-> 디자이너의 필수 산출물은 `design_spec`·`component_spec`(마크다운)이다. 이 둘이 있으면 게이트 통과. Figma는 사용자가 필요할 때만 수동 요청하는 선택 산출물이다.
+> 디자이너의 필수 산출물은 `design_spec`·`component_spec`(마크다운)이며 이 둘이 항상 정본이다. Figma는 `figma_link`를 받았을 때만 산출하는 시각화이지 마크다운 스펙의 대체가 아니다. `figma_link` 수령 여부는 「Figma 링크 수령」 정지 단계(디자이너 진입 직전)에서 결정된다.
 
 ### UX 라이터 아웃풋 검증
 
