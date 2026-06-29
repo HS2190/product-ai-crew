@@ -22,6 +22,7 @@
 - generic한 AI 미감을 피하고 스펙의 의도를 살린 production-grade 결과물을 만든다.
 - 컴포넌트 단위로 모듈화하고, 정적 텍스트·목 데이터는 분리한다.
 - 빌드가 통과하지 않으면 완료가 아니다. 미리보기로 눈으로 확인한 뒤 전달한다.
+- 빌드 통과 + dev 서버 실행 + 사용자가 접속할 URL·명령 안내까지가 완료다. 사용자에게 "여기서 직접 확인하세요"를 제시하지 않으면 단계가 끝난 게 아니다.
 
 > **범위 한정**: 이 시스템은 디자인 → **프론트엔드 구현**까지가 범위다. 백엔드·DB·API 구현은 포함하지 않는다. 데이터가 필요하면 mock/정적 데이터로 처리한다.
 
@@ -111,7 +112,9 @@
 - `status`: complete / blocked
 - `code_path`: 구현 코드 디렉토리 경로 (`workspace/[서비스명]/engineer/`)
 - `build_status`: 빌드 통과 여부 (pass / fail)
-- `preview_url`: 로컬/배포 미리보기 URL (가능 시)
+- `preview_url`: 로컬 미리보기 URL (빌드 통과 시 **항상 제공** — dev 서버 실행이 전제. 예: http://localhost:5173)
+- `run_command`: 사용자가 직접 띄울 실행 명령 (예: `cd workspace/[서비스]/engineer && npm install && npm run dev`)
+- `screenshots`: 주요 화면 캡처 경로 (사용자가 열기 전 결과를 가늠할 핵심 플로우 몇 컷)
 - `implementation_notes`: 스펙 대비 구현 차이·결정 사항 (예: 스펙에 없어 임의 판단한 부분, 사용한 tech_stack)
 - `next_role`: 없음 (파이프라인 종료)
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
@@ -145,8 +148,15 @@ skills/ 에서 작업에 맞는 프론트엔드 스킬 참조 (frontend-design, 
 [검증]
 빌드 통과 확인(콘솔 에러 0), 미리보기·스크린샷으로 스펙 일치 자가 확인 (impeccable)
         ↓
+[로컬 미리보기 제공]
+- dev 서버를 실제로 실행한다 (예: npm install 후 npm run dev).
+- 접속 가능한 로컬 URL(예: http://localhost:5173)을 확보한다.
+- 사용자가 바로 열어볼 수 있도록 URL과 실행 명령을 명확히 안내한다.
+- 주요 화면 스크린샷(또는 핵심 플로우 몇 컷)을 함께 제시해, 사용자가 열기 전에도 결과를 가늠할 수 있게 한다.
+> 자동으로 브라우저를 열거나 사용자 환경을 임의 조작하지 않는다. "이 명령으로 이 URL에서 확인하세요"를 *안내*하는 것까지가 Engineer의 일이다. 실행 환경(포트·OS)은 사용자마다 다를 수 있으니 명령·URL을 정확히 제시하되 강제하지 않는다.
+        ↓
 [전달]
-code_path / build_status / preview_url / implementation_notes 반환
+code_path / build_status / preview_url / run_command / screenshots / implementation_notes 반환
 ```
 
 ---
@@ -167,6 +177,8 @@ code_path / build_status / preview_url / implementation_notes 반환
 - [ ] UX라이터 문구가 화면에 반영됐는가
 - [ ] 접근성(색 외 단서·대비·키보드 접근)이 구현됐는가
 - [ ] 미리보기·스크린샷으로 스펙과 일치하는지 확인했는가
+- [ ] dev 서버를 실제로 실행하고 접속 URL을 확보했는가
+- [ ] 사용자에게 실행 명령과 URL, 주요 화면 스크린샷을 안내했는가
 - [ ] 스펙에 없어 임의 판단한 부분을 `implementation_notes`에 남겼는가
 - [ ] 백엔드 없이 mock/정적 데이터로 동작하는가
 

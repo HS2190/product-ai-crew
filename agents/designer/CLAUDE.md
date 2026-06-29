@@ -83,9 +83,9 @@
 작업 완료 후 아래 항목을 반환해.
 
 - `status`: complete / blocked
-- `design_spec`: 디자인 스펙 문서 경로
-- `component_spec`: 컴포넌트 스펙 문서 경로
-- `figma_url`: 완성된 피그마 화면 URL
+- `design_spec`: 디자인 스펙 문서 경로 (필수)
+- `component_spec`: 컴포넌트 스펙 문서 경로 (필수)
+- `figma_url`: 완성된 피그마 화면 URL (**선택** — Figma MCP 연결·사용자 요청 시에만 산출. 미연결/미요청 시 `N/A (사유)`)
 - `next_role`: ux-writer
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
 
