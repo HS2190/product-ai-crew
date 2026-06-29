@@ -1,7 +1,7 @@
 # Product AI Crew — 사용 가이드
 
 Claude Code 기반 멀티 에이전트 제품 조직 시스템.
-Researcher → PM → 기획자 → 디자이너 → UX라이터 5개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 Reviewer의 내용 품질 검수를 거친다.
+Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer 6개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 Reviewer의 내용 품질 검수를 거친다. 리서치부터 동작하는 프론트엔드 구현까지가 범위다.
 
 ---
 
@@ -15,6 +15,7 @@ Researcher → PM → 기획자 → 디자이너 → UX라이터 5개의 AI 에�
 | 서비스 기획자 | `planner/CLAUDE.md` | 화면 기획, 기능 명세서, User Flow 설계 |
 | UI/UX 디자이너 | `designer/CLAUDE.md` | 화면 디자인, 컴포넌트 스펙, Figma 반영 |
 | UX 라이터 | `ux-writer/CLAUDE.md` | UX 문구 작성, 라이팅 가이드, 금지 표현 관리 |
+| Engineer | `engineer/CLAUDE.md` | 프론트엔드 구현, 빌드 검증 (최종 산출물) |
 | Reviewer | `reviewer/CLAUDE.md` | 각 단계 산출물의 내용 품질 비평 (pass/revise/escalate) |
 
 ---
@@ -23,12 +24,13 @@ Researcher → PM → 기획자 → 디자이너 → UX라이터 5개의 AI 에�
 
 | 모드 | 언제 쓰는가 | 에이전트 순서 |
 |------|-----------|-------------|
-| **FULL** | 기능을 아무것도 없는 상태에서 시작할 때 | Researcher → PM → 기획자 → 디자이너 → UX라이터 |
+| **FULL** | 기능을 아무것도 없는 상태에서 구현까지 만들 때 | Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer |
 | **PLAN** | 리서치·PRD·기획서까지 필요할 때 | Researcher → PM → 기획자 |
 | **RESEARCH** | 리서치·경쟁사 분석만 필요할 때 | Researcher 단독 |
 | **DESIGN** | 기획안이 이미 있고 디자인만 필요할 때 | 기획자 → 디자이너 |
+| **BUILD** | 디자인 스펙·문구가 있고 구현만 필요할 때 | Engineer 단독 (또는 디자이너 → Engineer) |
 | **WRITE** | 화면은 완성됐고 문구만 정리할 때 | UX라이터 단독 |
-| **CUSTOM** | 원하는 에이전트를 직접 조합할 때 (Researcher 포함) | 사용자 정의 |
+| **CUSTOM** | 원하는 에이전트를 직접 조합할 때 (Researcher·Engineer 포함) | 사용자 정의 |
 
 ---
 
@@ -65,10 +67,13 @@ PM
 UX라이터
  └─ 화면별 문구 시트, UX라이팅 가이드 작성
         ↓ [존재 검증] → [Reviewer 검수]
+Engineer
+ └─ 동작하는 프론트엔드 코드, 빌드 결과 (최종 산출물)
+        ↓ [존재 검증] → [Reviewer 검수]
 완료 보고
 ```
 
-**산출물:** `workspace/[서비스명]/researcher/`, `pm/`, `planner/`, `designer/`, `ux-writer/` 각 폴더에 저장
+**산출물:** `workspace/[서비스명]/researcher/`, `pm/`, `planner/`, `designer/`, `ux-writer/`, `engineer/` 각 폴더에 저장 (최종 산출물은 `engineer/`의 동작하는 코드)
 
 ---
 
@@ -116,6 +121,24 @@ Researcher가 `user-research`·`research-synthesis` 스킬을 활용해 themes �
 ```
 
 **산출물:** 디자인 스펙, 컴포넌트 스펙, Figma 반영 결과
+
+---
+
+### BUILD 모드 — 구현만
+
+**상황:** 디자인 스펙·컴포넌트 스펙·문구가 이미 있고 동작하는 프론트엔드 코드만 필요할 때
+
+```
+"디자인 스펙 있어, 코드로 구현만 해줘."
+
+"이 컴포넌트 스펙이랑 문구로 React 화면 만들어줘."
+
+"[Figma URL] 이 디자인 그대로 동작하는 코드로 구현해줘."
+```
+
+Engineer가 `frontend-design`·`react-components`·`impeccable` 등 스킬을 활용해 React(기본 Vite+TS) 코드로 구현하고, 빌드 통과·미리보기로 스펙 일치를 자가 확인한다. 데이터는 mock/정적으로 처리하며 백엔드는 범위 밖이다.
+
+**산출물:** 동작하는 프론트엔드 코드 (`workspace/[서비스명]/engineer/`)
 
 ---
 
@@ -218,6 +241,11 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 에이전트가 `blocked`를 반환하면 오케스트레이터가 멈추고 사유를 알려줌.
 추가 정보를 주거나 작업 범위를 조정한 다음 재호출해야 함.
 
+**Engineer는 디자인 스펙을 *구현*할 뿐 새로 디자인하지 않음**
+스펙에 없는 결정은 `implementation_notes`에 남기고, 중대한 경우 디자이너에 확인(blocked).
+따라서 스펙이 부실하면 구현 품질도 떨어진다 — 디자이너 단계의 완성도가 최종 구현 품질을 좌우함.
+또한 이 시스템의 구현 범위는 프론트엔드까지다(백엔드·DB·API는 mock/정적 데이터로 처리).
+
 **각 에이전트 아웃풋은 2단계 게이트를 통과해야 다음 단계로 넘어감**
 산출물은 두 단계를 차례로 거친다.
 - **1단계 — 존재 검증**: 필수 항목(파일 존재 여부, 필드 누락 등)을 자동 검증함. 실패 시 `blocked`로 처리하고 누락 항목을 사용자에게 보고함.
@@ -267,5 +295,6 @@ workspace/
     ├── planner/       ← 화면 기획안, 기능 명세서, User Flow
     ├── designer/      ← 디자인 스펙, 컴포넌트 스펙
     ├── ux-writer/     ← 라이팅 가이드, 화면별 문구 시트
+    ├── engineer/      ← 동작하는 프론트엔드 코드, 빌드 결과
     └── session.md     ← 작업 세션 체크포인트 (오케스트레이터 자동 관리)
 ```

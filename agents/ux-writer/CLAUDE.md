@@ -73,11 +73,12 @@
 - `status`: complete / blocked
 - `writing_guide`: UX 라이팅 가이드 파일 경로
 - `copy_sheet`: 화면별 문구 파일 경로
-- `next_role`: 없음 (파이프라인 종료)
+- `next_role`: engineer (FULL 모드 — 문구가 화면 구현에 반영됨)
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
 
-> 개발자 에이전트는 이 시스템에 포함되지 않습니다.
-> UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워크플로우의 최종 아웃풋입니다.
+> UX 라이터의 산출물(`copy_sheet`)은 Engineer 단계로 전달돼 실제 화면 구현에 반영됩니다.
+> 이 워크플로우의 최종 아웃풋은 Engineer의 구현 코드(동작하는 프론트엔드)입니다.
+> (WRITE 모드처럼 UX라이터 단독 실행인 경우에는 문구 산출물이 그 실행의 최종 결과입니다.)
 
 ---
 
@@ -99,7 +100,7 @@
 ### 인풋 / 아웃풋 흐름
 
 - 인풋 ← PM (서비스 방향성, 톤앤매너), 기획자 (화면 기획안), 디자이너 (디자인 화면)
-- 아웃풋 → UX 라이팅 가이드, 화면별 문구 (워크플로우 최종 아웃풋)
+- 아웃풋 → UX 라이팅 가이드, 화면별 문구 (FULL 모드에서는 Engineer 단계로 전달)
 
 ---
 
@@ -234,6 +235,7 @@
 ### 협업 핸드오프
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 기능 명세 완료 후 문구 작업의 인풋 소스
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 피그마 화면에서 UI 문구 추출 시 참조
+- [[agents/engineer/CLAUDE|Engineer 가이드]] — 문구(copy_sheet)를 받아 화면에 반영하는 다음 단계 (FULL 모드)
 
 ### 산출물
 - UX 라이팅 가이드: `workspace/[서비스명]/ux-writer/writing-guide-v1.0.md`

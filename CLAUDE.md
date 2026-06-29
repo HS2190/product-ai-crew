@@ -20,6 +20,7 @@
 | 기획자 | 화면 기획, 기능 명세서 | `agents/planner/CLAUDE.md` |
 | 디자이너 | UI 디자인, 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
 | UX 라이터 | UX 문구, 라이팅 가이드 | `agents/ux-writer/CLAUDE.md` |
+| Engineer | 프론트엔드 구현, 빌드 검증 | `agents/engineer/CLAUDE.md` |
 | Reviewer | 산출물 내용 품질 비평 | `agents/reviewer/CLAUDE.md` |
 
 각 에이전트 호출 시 해당 CLAUDE.md를 먼저 읽고 역할과 인풋/아웃풋 형식을 파악한 후 작업을 지시한다.
@@ -49,12 +50,13 @@ persona_path: workspace/[서비스명]/persona.md
 
 | 모드 | 설명 | 에이전트 호출 순서 |
 |------|------|-----------------|
-| **FULL** | 신규 서비스/기능 전체 프로세스 | Researcher → PM → 기획자 → 디자이너 → UX라이터 |
+| **FULL** | 신규 서비스/기능 전체 프로세스 (구현까지) | Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer |
 | **PLAN** | 리서치 + PRD + 화면 기획까지 | Researcher → PM → 기획자 |
 | **RESEARCH** | 리서치/경쟁사 분석만 필요 | Researcher 단독 |
 | **DESIGN** | 기획안이 있고 디자인만 필요 | 기획자 → 디자이너 |
+| **BUILD** | 디자인 스펙·문구가 있고 구현만 필요 | Engineer 단독 (또는 디자이너 → Engineer) |
 | **WRITE** | 문구 작업만 | UX라이터 |
-| **CUSTOM** | 사용자가 에이전트를 직접 지정 (Researcher 포함) | 사용자 정의 순서 |
+| **CUSTOM** | 사용자가 에이전트를 직접 지정 (Researcher·Engineer 포함) | 사용자 정의 순서 |
 
 ### 모드 선택 기준
 
@@ -65,10 +67,13 @@ persona_path: workspace/[서비스명]/persona.md
 "기획서 / PRD 만들어줘"             → PLAN
 "리서치 / 경쟁사 분석만 해줘"        → RESEARCH
 "기획안 있어, 디자인만 해줘"         → DESIGN
+"디자인 스펙 있어, 코드로 구현만 해줘" → BUILD
 "문구 수정 / UX 라이팅 해줘"         → WRITE
 "[특정 에이전트] 호출해줘"           → CUSTOM
 모호한 경우                         → 사용자에게 모드 확인 후 진행
 ```
+
+> **DESIGN 모드에서 구현까지 원하는 경우**: 디자인 완료 후 곧바로 구현이 필요하면 사용자에게 확인 후 Engineer를 이어 붙인다(`기획자 → 디자이너 → Engineer`). 또는 디자인 산출물이 이미 있으면 BUILD 모드로 분리해 실행한다.
 
 **FULL / PLAN 진입 시 리서치 자료 확인**: Researcher 단계 시작 전, 사용자가 제공할 기존 리서치 자료(인터뷰 전사·설문·지원 티켓 등)가 있는지 확인한다. 있으면 `research_input` 경로로 Researcher에 전달하고, 없으면 Researcher가 가용 범위(경쟁사 분석·웹 검색·페르소나)에서 수행하되 한계를 명시하게 한다.
 
@@ -78,7 +83,7 @@ persona_path: workspace/[서비스명]/persona.md
 
 ### 전체 파이프라인 흐름
 
-각 생성 에이전트(Researcher/PM/기획자/디자이너/UX라이터)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
+각 생성 에이전트(Researcher/PM/기획자/디자이너/UX라이터/Engineer)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
 
 1. **존재 검증 게이트** (기존) — 파일·필드가 있는지 확인. 실패하면 `blocked` 처리.
 2. **Reviewer 검수** (신규) — 내용 품질을 비평. `pass` / `revise` / `escalate` 판정.
@@ -128,7 +133,12 @@ persona_path: workspace/[서비스명]/persona.md
   아웃풋: UX 라이팅 가이드, 화면별 문구
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
-[작업 완료 보고]
+[Engineer 에이전트] (FULL / BUILD 모드)
+  인풋:  디자인 스펙, 컴포넌트 스펙, Figma URL, 문구 시트, 기술 스택
+  아웃풋: 동작하는 프론트엔드 코드, 빌드 결과, 미리보기 URL
+        ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
+        ↓ pass
+[작업 완료 보고]  ← 최종 산출물: Engineer 구현 코드
 ```
 
 > 두 게이트의 순서는 **존재 검증 → 내용 비평**이다. 존재 검증을 통과해야 Reviewer를 호출한다. 존재 검증 실패는 기존대로 `blocked` 처리이고, 내용 비평은 그 다음 단계다.
@@ -161,7 +171,7 @@ persona_path: workspace/[서비스명]/persona.md   # 페르소나 파일이 존
 ```
 role:           reviewer
 task:           [target_role] 산출물 검수
-target_role:    researcher / pm / planner / designer / ux-writer
+target_role:    researcher / pm / planner / designer / ux-writer / engineer
 target_output:  [검수할 산출물 파일 경로(들)]
 persona_path:   workspace/[서비스명]/persona.md   # 존재할 때만
 revision_count: [이 산출물이 지금까지 재작업된 횟수]
@@ -206,6 +216,7 @@ workspace/[서비스명]/
   planner/          ← 기획자 산출물 (화면 기획안, 기능 명세서, User Flow)
   designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
   ux-writer/        ← UX 라이터 산출물 (라이팅 가이드, 문구 시트)
+  engineer/         ← Engineer 산출물 (동작하는 프론트엔드 코드, 빌드 결과)
   session.md        ← 작업 세션 체크포인트 (오케스트레이터 관리)
 ```
 
@@ -260,6 +271,7 @@ updated_at: YYYY-MM-DD
 | 3 | 기획자 | complete | revise→pass | 1 | 2026-05-04 |
 | 4 | 디자이너 | in_progress | - | 0 | - |
 | 5 | UX 라이터 | pending | - | 0 | - |
+| 6 | Engineer | pending | - | 0 | - |
 
 > 검수 결과 표기: `pass` / `revise(N)` / `escalate`. revise가 반복되면 `revise→pass`처럼 최종 결과까지 남긴다.
 > 재작업 횟수는 산출물별로 누적 기록한다. 대화가 끊겨 재개해도 이 값이 유지돼야 2회 상한과 escalate 전환이 올바르게 동작한다.
@@ -326,6 +338,12 @@ PRD 핵심 내용, 기획 범위, 브랜드 방향성 등을 충분히 기재한
 - [ ] `writing_guide` 파일이 존재하는가
 - [ ] `copy_sheet` 파일이 존재하는가
 
+### Engineer 아웃풋 검증
+
+- [ ] `code_path` 디렉토리가 실제로 존재하는가
+- [ ] `build_status`가 `pass`인가
+- [ ] `implementation_notes`가 제공됐는가
+
 ### 검증 실패 처리
 
 ```
@@ -349,10 +367,11 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 | 모드 | 검수 적용 |
 |------|----------|
-| **FULL** | Researcher·PM·기획자·디자이너·UX라이터 **각 단계마다** 검수 |
+| **FULL** | Researcher·PM·기획자·디자이너·UX라이터·Engineer **각 단계마다** 검수 |
 | **PLAN** | Researcher·PM·기획자 **각 단계마다** 검수 |
 | **RESEARCH** | Researcher 단독이므로 그 산출물에 **1회** 검수 |
 | **DESIGN** | 기획자·디자이너 **각 단계마다** 검수 |
+| **BUILD** | Engineer 산출물(구현 코드)에 검수 (디자이너 포함 시 각 단계마다) |
 | **WRITE** | UX라이터 단독이므로 그 산출물에 **1회** 검수 |
 | **CUSTOM** | 사용자가 검수 on/off를 지정 (**기본 on**) |
 
@@ -385,7 +404,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 실행 모드: [FULL / PLAN / DESIGN / WRITE / CUSTOM]
 서비스/기능: [작업 대상]
-실행 에이전트: [Researcher → PM → 기획자 → 디자이너 → UX라이터]
+실행 에이전트: [Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer]
 
 ### 산출물 목록
 
@@ -396,14 +415,16 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 | 기획자  | 화면 기획안, 기능 명세서 | workspace/[서비스명]/planner/... |
 | 디자이너 | 디자인 스펙, 컴포넌트 스펙 | workspace/[서비스명]/designer/... |
 | UX 라이터 | 라이팅 가이드, 문구 시트 | workspace/[서비스명]/ux-writer/... |
+| Engineer | 동작하는 프론트엔드 코드, 빌드 결과 | workspace/[서비스명]/engineer/... |
 
 ### 이슈 사항
 - 없음 / [이슈 내용]
 
 ### 최종 아웃풋
 
-개발자 에이전트는 이 시스템에 포함되지 않습니다.
-UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워크플로우의 최종 아웃풋입니다.
+이 시스템의 범위는 디자인 → **프론트엔드 구현**까지다.
+FULL 모드의 최종 산출물은 **Engineer의 구현 코드(동작하는 프론트엔드)**다.
+(백엔드·DB·API는 범위에 포함되지 않으며, 데이터는 mock/정적으로 처리한다.)
 ```
 
 ---
@@ -416,6 +437,7 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 | 전체 프로세스 | `workflows/full-process.md` | 신규 서비스 / 대형 기능 |
 | 기획까지 | `workflows/plan-process.md` | 리서치 + PRD + 화면 기획까지 |
 | 빠른 디자인 | `workflows/quick-design.md` | 기획안이 있을 때 디자인만 |
+| 구현 | `workflows/build-process.md` | 디자인 스펙·문구가 있을 때 구현만 |
 | UX 라이팅 | `workflows/ux-writing.md` | 문구 작업만 |
 | 커스텀 | `workflows/custom-flow.md` | 에이전트 직접 조합 |
 
@@ -429,6 +451,7 @@ UX 라이터의 산출물(UX 라이팅 가이드, 화면별 문구)이 이 워�
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 화면 정의서·기능 명세·플로우 설계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 컴포넌트 스펙·디자인 QA·피그마 작업
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — UI 문구 추출·검토·개선
+- [[agents/engineer/CLAUDE|Engineer 가이드]] — 프론트엔드 구현·빌드 검증 (파이프라인 마지막, 최종 산출물)
 - [[agents/reviewer/CLAUDE|Reviewer 가이드]] — 산출물 내용 품질 비평 (존재 검증 위에 얹는 2단계 게이트)
 
 ### 템플릿

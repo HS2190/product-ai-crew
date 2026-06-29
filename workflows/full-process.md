@@ -3,8 +3,8 @@
 ## 개요
 
 - **실행 모드**: FULL
-- **호출 순서**: Researcher → PM → 기획자 → 디자이너 → UX라이터
-- **사용 상황**: 신규 서비스 출시 또는 대형 기능 추가
+- **호출 순서**: Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer
+- **사용 상황**: 신규 서비스 출시 또는 대형 기능 추가 (구현까지)
 - **오케스트레이터 참조**: `CLAUDE.md`
 
 ---
@@ -227,11 +227,57 @@
 **Reviewer 검수**
 
 - 산출물 완료 후 Reviewer가 내용 품질 비평 (`agents/reviewer/CLAUDE.md`)
+- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+
+**다음 에이전트로 전달**
+
+- 화면별 문구 시트 경로 (`copy_sheet`)
+- UX 라이팅 가이드 경로
+
+---
+
+### Step 6 — Engineer 에이전트
+
+**역할 참조**: `agents/engineer/CLAUDE.md`
+**활용 스킬**: `skills/frontend-design/SKILL.md`, `skills/react-components/SKILL.md`, `skills/shadcn-ui/SKILL.md`, `skills/impeccable/`
+
+**인풋** (디자이너 + UX라이터 아웃풋)
+
+| 항목 | 출처 |
+|------|------|
+| 디자인 스펙 (design_spec) | 디자이너 아웃풋 |
+| 컴포넌트 스펙 (component_spec) | 디자이너 아웃풋 |
+| Figma URL | 디자이너 아웃풋 (있으면 MCP로 직접 참조) |
+| 화면 문구 (copy_sheet) | UX라이터 아웃풋 |
+| 기술 스택 (tech_stack) | 사용자 지정 또는 기본 React+Vite+TS |
+
+**필수 아웃풋**
+
+| 산출물 | 저장 위치 |
+|-------|---------|
+| 구현 코드 | `workspace/[서비스명]/engineer/` (빌드/실행 가능) |
+| 빌드 결과 (build_status) | pass / fail |
+| 미리보기 URL (preview_url) | 가능 시 |
+| 구현 노트 (implementation_notes) | 스펙 대비 차이·결정 사항 |
+
+**완료 조건**
+
+- [ ] 빌드 통과 (콘솔 에러 0)
+- [ ] 디자인 스펙·컴포넌트 스펙 반영
+- [ ] UX라이터 문구 반영
+- [ ] 접근성 반영 (색 외 단서·대비·키보드 접근)
+- [ ] 미리보기·스크린샷으로 스펙 일치 자가 확인
+- [ ] 백엔드 없이 mock/정적 데이터로 동작
+
+**Reviewer 검수**
+
+- 산출물 완료 후 Reviewer가 구현 품질 비평 (`agents/reviewer/CLAUDE.md`)
 - pass → 파이프라인 종료 / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
 
 **파이프라인 종료**
 
-- UX 라이팅 가이드 및 문구 시트 완료 → 오케스트레이터에 최종 보고
+- 동작하는 프론트엔드 코드 완료 → 오케스트레이터에 최종 보고
+- **이 구현 코드가 FULL 모드의 최종 산출물이다.**
 
 ---
 
@@ -242,5 +288,6 @@
 - [ ] 기획자 화면 기획안 + 기능 명세서 완료
 - [ ] 디자이너 화면 디자인 + 스펙 문서 완료
 - [ ] UX 라이터 문구 + 가이드 완료
+- [ ] Engineer 구현 완료 (빌드 통과, 스펙·문구·접근성 반영)
 - [ ] 각 단계 Reviewer 검수 `pass` (또는 escalate 시 사용자 판단 완료)
 - [ ] 오케스트레이터 작업 완료 보고 전달
