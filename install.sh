@@ -16,17 +16,47 @@ if [ ! -d "$HOME/.claude" ]; then
   exit 1
 fi
 
-# skills 심링크
-echo "[1/3] skills 심링크 설정..."
-rm -rf "$HOME/.claude/skills"
-ln -s "$REPO_DIR/skills" "$HOME/.claude/skills"
-echo "  ✓ ~/.claude/skills → $REPO_DIR/skills"
+# skills 안전 병합
+# 기존 스킬을 절대 삭제하지 않는다. 레포의 각 스킬을 개별 심링크로 추가하되,
+# 같은 이름이 이미 있으면 기존 것을 보존하고 건너뛴다.
+# (구버전 install.sh가 만든, 레포 루트로 향하던 통째 심링크는 정리한다.)
+merge_skills() {
+  local dest="$1"
+  mkdir -p "$dest"
 
-# .agents/skills 심링크 (있는 경우)
+  # 구버전이 dest 자체를 레포 skills로 심링크해둔 경우 → 실제 디렉토리로 복원
+  if [ -L "$dest" ]; then
+    rm "$dest"
+    mkdir -p "$dest"
+    echo "  ↺ 기존 통째 심링크 해제 → 디렉토리로 복원: $dest"
+  fi
+
+  local added=0 skipped=0
+  for d in "$REPO_DIR"/skills/*/; do
+    [ -d "$d" ] || continue
+    local name target
+    name="$(basename "$d")"
+    target="${d%/}"
+    if [ -e "$dest/$name" ] || [ -L "$dest/$name" ]; then
+      # 깨졌거나(존재X) 같은 레포를 가리키는 잘못된 링크면 교체, 아니면 보존
+      if [ -L "$dest/$name" ] && [ ! -e "$dest/$name" ]; then
+        rm "$dest/$name"; ln -s "$target" "$dest/$name"
+        echo "  ✓ (깨진 링크 교체) $name"; added=$((added+1))
+      else
+        skipped=$((skipped+1))
+      fi
+    else
+      ln -s "$target" "$dest/$name"
+      echo "  ✓ $name"; added=$((added+1))
+    fi
+  done
+  echo "  → $dest : 추가 $added / 보존(건너뜀) $skipped"
+}
+
+echo "[1/3] skills 안전 병합..."
+merge_skills "$HOME/.claude/skills"
 if [ -d "$HOME/.agents" ]; then
-  rm -rf "$HOME/.agents/skills"
-  ln -s "$REPO_DIR/skills" "$HOME/.agents/skills"
-  echo "  ✓ ~/.agents/skills → $REPO_DIR/skills"
+  merge_skills "$HOME/.agents/skills"
 fi
 
 # plugins 심링크
