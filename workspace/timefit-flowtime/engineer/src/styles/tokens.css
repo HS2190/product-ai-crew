@@ -1,0 +1,120 @@
+/* 디자인 토큰 — design-spec-v1.0.md §1 을 CSS 변수로 1:1 매핑.
+   원시(primitive) → 의미(semantic) 2계층. 다크 추가 시 값만 교체 가능(의미 기반). */
+
+:root {
+  /* §1.1 컬러 — 원시 팔레트 */
+  --c-paper: #fafbfb;
+  --c-surface: #ffffff;
+  --c-surface-sunken: #f2f4f4;
+  --c-ink: #1b2524;
+  --c-ink-soft: #5a6766;
+  --c-ink-mute: #8a9694;
+  --c-hairline: #e3e8e7;
+  --c-brand: #1f8a82;
+  --c-brand-strong: #176b65;
+  --c-brand-soft: #e5f2f1;
+  --c-focus: #2563c9;
+
+  /* §1.2 강도 척도 팔레트 (채움 / 텍스트·보더) — polarity 연속 스케일, 빨강 배제 */
+  --int-prefer: #1f8a82;
+  --int-prefer-text: #0f4f4a;
+  --int-ok: #7fb8b3;
+  --int-ok-text: #2f5c58;
+  --int-avoid: #c7b8a6;
+  --int-avoid-text: #6e5c45;
+  --int-hardno: #8c8c8c;
+  --int-hardno-text: #4a4a4a;
+
+  /* §1.3 상태/피드백 — 황토(빨강 배제) */
+  --s-success: #1f8a82;
+  --s-info: #2563c9;
+  --s-warning: #b5852a;
+  --s-error: #b5852a;
+  --s-disabled-bg: #eef1f0;
+  --s-disabled-ink: #aeb8b6;
+
+  /* §1.4 타이포 */
+  --font-base: "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", sans-serif;
+  --t-display: 700 24px/1.3 var(--font-base);
+  --t-title: 700 20px/1.35 var(--font-base);
+  --t-body: 400 16px/1.6 var(--font-base);
+  --t-body-strong: 600 16px/1.5 var(--font-base);
+  --t-label: 500 14px/1.4 var(--font-base);
+  --t-caption: 400 13px/1.4 var(--font-base);
+
+  /* §1.5 스페이싱 (4px 그리드) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* §1.6 라운드 / 보더 / 그림자 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 999px;
+  --border-hairline: 1px solid var(--c-hairline);
+  --shadow-card: 0 1px 2px rgba(27, 37, 36, 0.04), 0 2px 8px rgba(27, 37, 36, 0.06);
+  --shadow-sheet: 0 -2px 16px rgba(27, 37, 36, 0.12);
+
+  /* §1.7 터치 / 모션 */
+  --touch-min: 44px;
+  --touch-comfort: 48px;
+  --motion-fast: 120ms ease-out;
+  --motion-base: 200ms ease-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: var(--t-body);
+  color: var(--c-ink);
+  background: var(--c-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* tabular-nums 유틸 — 진행 수치·점수·날짜 정렬 (§1.4) */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 키보드 포커스 링 (§1.6 / §4 포커스) — 브랜드와 구분되는 청색 */
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+}
+/* 마우스 클릭 시 링 억제(키보드 도달만 강조) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* §1.7 / §4 모션 접근성 — 전환 제거, shimmer 정적 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
