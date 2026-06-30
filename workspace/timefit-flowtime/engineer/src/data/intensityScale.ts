@@ -1,108 +1,97 @@
-/**
- * IntensityScale — 강도 척도 단일 진실 공급원(SSOT).
- * design-spec §1.2 / screen-plan §0.1.
- *
- * ★ 핵심 규칙: 강도 단계는 3↔4 가변. 모든 컴포넌트는 이 배열을 *순회*해 렌더한다.
- *   "4단계 고정"을 코드 어디에도 박지 않는다. 3단계 전환은 아래 배열에서 avoid만 빼면 된다.
- *
- * weight 의미(screen-plan §0.3, flowtime decisions):
- *   - 추천 점수 = weight 합. 단, hard-no는 weight 합산이 아니라 "제외 플래그"로 분기한다
- *     (필수 참석자 hard-no면 슬롯 excluded). 그래서 hard-no의 weight는 *감점 폭*으로만 쓰이고
- *     (선택 참석자 hard-no의 감점), 제외 판정은 polarity/id 기준 분기로 별도 처리한다.
- *   - 막대(IntensityDistributionBar)는 weight를 절대 쓰지 않는다 — 건수(count)만 쌓는다(§3.4).
- */
+/* =========================================================================
+   IntensityScale — screen-plan §0.1 data-driven scale (단계 수 가변)
+   강도 색은 컴포넌트에 하드코딩하지 않고 여기서 CSS 변수명으로만 주입한다.
+   라벨은 copy-sheet 확정 문구. avoid 칩은 "회피" 축약 / 범례·aria는 "가급적 회피".
+   ========================================================================= */
 
+export type IntensityId = "prefer" | "ok" | "avoid" | "hard-no";
 export type Polarity = "+" | "0" | "-";
-export type IntensityShape =
-  | "circle-check"
-  | "half-circle"
-  | "diamond-hatch"
-  | "square-x";
+export type SoftHard = "soft" | "hard";
 
-export interface IntensityItem {
-  id: string;
-  /** 정렬 순서: 긍정→부정 (막대·범례 좌→우) */
-  order: number;
+export interface IntensityScaleItem {
+  id: IntensityId;
+  /** 칩에 표시되는 짧은 라벨 (copy-sheet 부록B: 4칩 균등 2~4자) */
   label: string;
-  ariaLabel: string;
+  /** 범례·aria·tooltip 풀이 (copy-sheet 공통 강도 칩) */
+  legendLabel: string;
+  order: number; // 분포막대 정렬용 (긍정→부정)
   polarity: Polarity;
-  shape: IntensityShape;
-  /** 채움 색 CSS 변수명(var(--...)) */
-  fill: string;
-  /** 텍스트/보더 색 (칩 selected 시 채움 대비 ≥4.5:1) */
-  text: string;
-  /** 추천 점수 감점/가점 폭. hard-no는 제외 분기 + 큰 감점. */
+  softHard: SoftHard;
+  /** 추천 점수 weight. hard는 제외 플래그로 분기하므로 점수엔 큰 음수만 둔다 */
   weight: number;
-  /** true면 "필수 참석자가 이 값이면 슬롯 제외" 후보. (hard-no 전용) */
-  hardExclude: boolean;
+  /** 색 외 단서 (색약 대응) */
+  shape: "●" | "○" | "◐" | "⊘";
+  /** CSS 변수명만 참조 — 하드코딩 hex 금지 (design-spec §1.2) */
+  tokens: {
+    bg: string;
+    fg: string;
+    border?: string; // 없으면 투명
+  };
+  ariaLabel: string;
 }
 
 /**
- * 데모 기본 4단계 주입(부록 A 확정 라벨).
- * 3단계 전환: avoid 객체만 제거 → 컴포넌트 코드/레이아웃 불변(SSOT 순회).
+ * 데모 4단계 매핑. 3단계 전환 시 이 배열만 교체하면
+ * 칩 그룹·분포막대·범례·집계가 모두 따라간다(레이아웃 N 종속 없음).
  */
-export const intensityScale4: IntensityItem[] = [
+export const IntensityScale: IntensityScaleItem[] = [
   {
     id: "prefer",
-    order: 0,
     label: "선호",
-    ariaLabel: "이 시간 선호로 응답",
+    legendLabel: "선호",
+    order: 0,
     polarity: "+",
-    shape: "circle-check",
-    fill: "var(--int-prefer)",
-    text: "#0f4f4a",
+    softHard: "soft",
     weight: 2,
-    hardExclude: false,
+    shape: "●",
+    tokens: { bg: "var(--c-sage-bg)", fg: "var(--c-sage)" },
+    ariaLabel: "선호, 이 시간이 좋아요",
   },
   {
     id: "ok",
-    order: 1,
     label: "가능",
-    ariaLabel: "이 시간 가능으로 응답",
+    legendLabel: "가능",
+    order: 1,
     polarity: "0",
-    shape: "half-circle",
-    fill: "var(--int-ok)",
-    text: "#2f5c58",
-    weight: 1,
-    hardExclude: false,
+    softHard: "soft",
+    weight: 0,
+    shape: "○",
+    tokens: { bg: "var(--c-neutral-ok-bg)", fg: "var(--c-neutral-ok)" },
+    ariaLabel: "가능, 이 시간도 괜찮아요",
   },
   {
     id: "avoid",
+    label: "회피", // 칩 축약 (부록B). 범례/aria는 "가급적 회피"
+    legendLabel: "가급적 회피",
     order: 2,
-    label: "가급적 회피",
-    ariaLabel: "이 시간 가급적 회피로 응답",
     polarity: "-",
-    shape: "diamond-hatch",
-    fill: "var(--int-avoid)",
-    text: "#6e5c45",
+    softHard: "soft",
     weight: -1,
-    hardExclude: false,
+    shape: "◐",
+    tokens: {
+      bg: "var(--c-clay-bg)",
+      fg: "var(--c-clay-ink)",
+      border: "var(--c-clay-line)", // soft = 연한 황토 테두리
+    },
+    ariaLabel: "가급적 회피, 가능하면 피하고 싶어요",
   },
   {
     id: "hard-no",
-    order: 3,
     label: "불가",
-    ariaLabel: "이 시간 불가로 응답",
+    legendLabel: "불가",
+    order: 3,
     polarity: "-",
-    shape: "square-x",
-    fill: "var(--int-hardno)",
-    text: "#4a4a4a",
-    /** 제외는 weight 합산이 아니라 hardExclude 플래그로 분기(§3.4 인계노트1).
-     *  단 선택 참석자 hard-no는 제외 안 되고 감점만 — 그 감점 폭으로 -3 사용. */
-    weight: -3,
-    hardExclude: true,
+    softHard: "hard",
+    weight: -1000, // 점수상 매우 낮음. 단 '제외'는 weight가 아닌 softHard==hard 플래그로 분기
+    shape: "⊘",
+    tokens: {
+      bg: "var(--c-clay-bg)",
+      fg: "var(--c-clay-ink)",
+      border: "var(--c-clay)", // hard = 진한 황토 테두리 (soft 대비 강조)
+    },
+    ariaLabel: "불가, 이 시간은 어려워요",
   },
 ];
 
-/** 3단계 변형(검증용). avoid 제거만으로 동작 — SSOT 가변성 증명. */
-export const intensityScale3: IntensityItem[] = intensityScale4.filter(
-  (i) => i.id !== "avoid"
-);
-
-/** 데모에서 실제 주입하는 척도. 여기 한 줄만 바꾸면 전 화면이 3↔4로 전환된다. */
-export const activeScale: IntensityItem[] = intensityScale4;
-
-export const byId = (
-  scale: IntensityItem[]
-): Record<string, IntensityItem> =>
-  Object.fromEntries(scale.map((i) => [i.id, i]));
+export const scaleById = (id: IntensityId): IntensityScaleItem =>
+  IntensityScale.find((s) => s.id === id)!;

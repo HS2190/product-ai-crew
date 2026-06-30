@@ -1,109 +1,89 @@
-// IntensityDistributionBar (component-spec §7) — 집계 막대 = 건수(count) 분포.
-// ★ weight를 받지 않는다. hard-no도 "건수 1"로 쌓인다(§3.4). 추천 점수와 다른 계산.
-// 세그먼트 색 = polarity, 정렬 = order. 단계 수 가변(scale 순회).
-import type { IntensityItem } from "../data/intensityScale";
-import { IntensityGlyph } from "./IntensityGlyph";
+/* C-03. IntensityDistributionBar ★ — 건수 분포(≠ 추천 weight).
+   IntensityScale를 order로 정렬, polarity로 색칠. weight 미사용.
+   필수/선택 2줄 구분. 최소 익명성 임계(선택 N명 이하면 강도 가림). */
 
-interface Props {
-  scale: IntensityItem[];
-  counts: Record<string, number>;
+import { IntensityScale, type IntensityId } from "../data/intensityScale";
+import styles from "./IntensityDistributionBar.module.css";
+
+interface BarProps {
+  counts: Record<IntensityId, number>;
   group: "required" | "optional";
-  total: number;
-  /** 이 미만이면 분포 숨김(익명성). 기본 2 — 선택 1명이면 개인 식별 위험. */
-  anonymizeBelow?: number;
-  groupLabel: string;
+  total: number; // 그 그룹 전체 인원(미응답 트랙 계산)
+  /** 응답한 인원 수 — 익명성 임계 판단(선택 그룹) */
+  respondents: number;
+  minAnonymity?: number; // 이하면 강도 숨김
 }
 
+const GROUP_LABEL: Record<"required" | "optional", string> = {
+  required: "필수",
+  optional: "선택",
+};
+
 export function IntensityDistributionBar({
-  scale,
   counts,
   group,
   total,
-  anonymizeBelow = 2,
-  groupLabel,
-}: Props) {
-  const empty = total === 0;
-  // 익명성 임계: 선택 그룹에서 응답 수가 임계 미만이면 분포 숨김
-  const anonymized = group === "optional" && total > 0 && total < anonymizeBelow;
+  respondents,
+  minAnonymity = 2, // anonymizeBelow=2 (선택 1명 분포 숨김 — 강화 규칙)
+}: BarProps) {
+  const ordered = [...IntensityScale].sort((a, b) => a.order - b.order);
+  const responded = ordered.reduce((n, s) => n + counts[s.id], 0);
+  const pending = Math.max(0, total - responded);
+
+  // 최소 익명성 발동(선택 그룹 + 응답 1명뿐): 강도 비표시
+  if (group === "optional" && respondents > 0 && respondents < minAnonymity) {
+    return (
+      <div className={styles.row}>
+        <span className={styles.groupTag}>{GROUP_LABEL[group]}</span>
+        <span className={styles.anonymized}>선택 {respondents}명 응답</span>
+      </div>
+    );
+  }
+
+  // empty(응답 0)
+  if (responded === 0) {
+    return (
+      <div className={styles.row}>
+        <span className={styles.groupTag}>{GROUP_LABEL[group]}</span>
+        <span className={styles.emptyTrack} aria-hidden="true" />
+        <span className={styles.emptyText}>응답 대기</span>
+      </div>
+    );
+  }
+
+  // aria 요약 (copy-sheet: "필수: 선호 3명, 가능 2명, 가급적 회피 1명")
+  const ariaParts = ordered
+    .filter((s) => counts[s.id] > 0)
+    .map((s) => `${s.legendLabel} ${counts[s.id]}명`);
+  const ariaLabel = `${GROUP_LABEL[group]}: ${ariaParts.join(", ")}`;
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "44px 1fr", gap: var12(), alignItems: "center" }}>
-      <span style={{ font: "var(--t-label)", color: "var(--c-ink-soft)" }}>{groupLabel}</span>
-
-      {empty ? (
-        <div style={trackStyle}>
-          <span style={mutedLabel}>{group === "optional" ? "선택 참석자 응답이 아직 없어요" : "응답 없음"}</span>
-        </div>
-      ) : anonymized ? (
-        <div style={trackStyle}>
-          <span style={mutedLabel}>선택 참석자 1명이 응답했어요</span>
-        </div>
-      ) : (
-        <div
-          role="img"
-          aria-label={
-            groupLabel +
-            " 응답 분포 " +
-            scale
-              .filter((it) => (counts[it.id] ?? 0) > 0)
-              .map((it) => `${it.label} ${counts[it.id]}명`)
-              .join(", ")
-          }
-          style={{
-            display: "flex",
-            height: 24,
-            borderRadius: var6(),
-            overflow: "hidden",
-            border: "var(--border-hairline)",
-          }}
-        >
-          {scale.map((it) => {
-            const c = counts[it.id] ?? 0;
-            if (c === 0) return null;
-            const pct = (c / total) * 100;
-            return (
-              <span
-                key={it.id}
-                title={`${it.label} ${c}명`}
-                style={{
-                  flex: `${pct} 0 0%`,
-                  background: it.fill,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 4,
-                  color: it.text,
-                  font: "var(--t-caption)",
-                  fontWeight: 600,
-                  minWidth: 0,
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <IntensityGlyph shape={it.shape} color={it.text} filled size={13} />
-                {pct >= 16 && <span>{it.label} {c}</span>}
-              </span>
-            );
-          })}
-        </div>
-      )}
+    <div className={styles.row}>
+      <span className={styles.groupTag}>{GROUP_LABEL[group]}</span>
+      <div className={styles.bar} role="img" aria-label={ariaLabel}>
+        {ordered.map((s) =>
+          counts[s.id] > 0 ? (
+            <span
+              key={s.id}
+              className={styles.seg}
+              style={
+                {
+                  flex: counts[s.id],
+                  "--seg-bg": s.tokens.fg, // 채움색 = 강도 fg(가독성 있는 진한 톤)
+                } as React.CSSProperties
+              }
+              title={`${s.legendLabel} ${counts[s.id]}명`}
+            />
+          ) : null
+        )}
+        {pending > 0 && (
+          <span
+            className={styles.pendingSeg}
+            style={{ flex: pending }}
+            title={`미응답 ${pending}명`}
+          />
+        )}
+      </div>
     </div>
   );
-}
-
-const trackStyle: React.CSSProperties = {
-  height: 24,
-  borderRadius: "var(--sp-1)",
-  background: "var(--c-surface-sunken)",
-  display: "flex",
-  alignItems: "center",
-  paddingLeft: 10,
-};
-const mutedLabel: React.CSSProperties = { font: "var(--t-caption)", color: "var(--c-ink-mute)" };
-
-function var12() {
-  return "var(--sp-3)";
-}
-function var6() {
-  return "6px";
 }

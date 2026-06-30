@@ -1,0 +1,96 @@
+.screen {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--c-bone);
+}
+.container {
+  max-width: var(--w-dash);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.head h1 {
+  font-family: var(--font-serif);
+}
+
+.boundary {
+  color: var(--c-ink-muted);
+  margin-top: calc(-1 * var(--space-3));
+}
+
+.recSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.recHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.recList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pendingSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-top: 1px solid var(--c-line);
+  padding-top: var(--space-4);
+}
+.pendingHead {
+  margin-bottom: var(--space-1);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  border: 1px dashed var(--c-line);
+  border-radius: var(--radius-card);
+  background: var(--c-surface-2);
+}
+.emptyText {
+  white-space: pre-line;
+  color: var(--c-ink-muted);
+}
+
+.sheetTitle {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-2);
+}
+.confirmSlot {
+  font-size: 15px;
+  color: var(--c-ink-muted);
+  margin-bottom: var(--space-4);
+}
+.warnGap {
+  margin-bottom: var(--space-4);
+}
+.sheetActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* 데스크톱: 추천 리스트를 더 넓은 2열 그리드로(밀도) */
+@media (min-width: 1024px) {
+  .recList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}

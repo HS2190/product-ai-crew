@@ -1,172 +1,175 @@
-/**
- * 추천 엔진 — 순수 함수, 결정적(deterministic). 무작위 요소 없음.
- *
- * 정본: screen-plan §0.3, flowtime decisions, Reviewer 인계노트 1.
- *
- * 핵심 규칙:
- *  1) 제외(excluded)는 *필수 참석자(required)의 hard-no만* 발동한다.
- *     → hard-no는 weight 합산이 아니라 **제외 플래그로 분기**한다(인계노트 1).
- *     필수 1명이라도 hard-no면 슬롯 excluded=true. 추천 후보에서 빠지고 리스트 최하단.
- *  2) 그 외 모든 부정 강도(필수 soft=avoid, 선택 hard-no, 선택 soft)는 *전부 감점*하고 후보 유지.
- *     선택 참석자가 전원 불가여도 회의는 성립(빠져도 됨).
- *  3) 점수 = 응답된 강도의 weight 합 (무응답은 0, 점수에 영향 없음).
- *  4) 동률 tie-break 고정 순서(무작위 없음):
- *       ① 필수 prefer 수 많은 순
- *       ② 미응답 적은 순
- *       ③ 슬롯 시작시각 빠른 순 (최종 안정 정렬 키)
- *
- * 집계 막대(IntensityDistributionBar)는 이 점수와 무관하다 — 건수 분포는 buildCounts()가 따로 만든다.
- */
+/* =========================================================================
+   추천 로직 — screen-plan §0.3 단일 확정 규칙 (순수 함수, 무작위 0)
+   flowtime decisions(2026-06-29, 2026-06-30):
+   · 제외(자격 박탈)는 단 하나의 조건: 필수 참석자의 softHard==hard.
+     → weight 합산이 아니라 '제외 플래그'로 분기한다.
+   · 그 외 모든 부정 강도(필수 soft / 선택 hard / 선택 soft)는 weight 감점.
+   · tie-break: 필수 prefer 수 → 미응답 적은 순 → 시작시각 → 생성순(인덱스, 최종 결정자).
+   동일 입력 → 동일 출력 (NFR-004).
+   ========================================================================= */
 
-import type { IntensityItem } from "../data/intensityScale";
-import type { Attendee, ResponseMap, Slot } from "../data/types";
+import type { Attendee, Meeting, Response, Slot } from "../data/types";
+import { scaleById, type IntensityId } from "../data/intensityScale";
 
-export interface ScoredSlot {
+export interface SlotAggregate {
   slot: Slot;
-  /** weight 합산 점수 (제외 슬롯도 참고용으로 계산해 둠) */
+  /** 강도별 응답 건수 (분포막대용 — weight 아님) */
+  counts: Record<IntensityId, number>;
+  /** 필수/선택 그룹별 강도 건수 (분포막대 2줄 구분, 익명성 임계) */
+  requiredCounts: Record<IntensityId, number>;
+  optionalCounts: Record<IntensityId, number>;
+  /** 응답한 선택 참석자 수 (최소 익명성 임계 판단) */
+  optionalRespondents: number;
+  requiredRespondents: number;
+  /** 추천 점수 = weight 합산 (STEP2). 제외 슬롯은 표시하지 않음 */
   score: number;
-  /** 필수 참석자 hard-no가 1명이라도 있으면 true → 후보 제외 */
+  /** 제외 여부 (STEP1: 필수 hard 1건 이상) */
   excluded: boolean;
-  /** 제외 사유: 불가 표시한 필수 인원 수 */
-  requiredBlockedCount: number;
-  /** 필수 충족: 불가(hard-no) 아닌 필수 인원 수 / 전체 필수 수 */
-  requiredAvailable: number;
-  requiredTotal: number;
-  /** tie-break ① — 필수 참석자가 prefer로 응답한 수 */
+  /** 제외 사유 (제외일 때만) — 필수 hard-no 인원 수 */
+  excludedRequiredCount: number;
+  /** 필수 충족: 필수 중 부정(avoid/hard-no)이 아닌 응답 수 / 필수 응답 수 */
+  requiredMet: number;
+  requiredResponded: number;
+  /** tie-break 보조값 */
   requiredPreferCount: number;
-  /** tie-break ② — 무응답(전체 참석자 기준) 수 */
-  unansweredCount: number;
+  pendingCount: number; // 미응답 인원 (전체 참석자 - 응답자)
 }
 
-interface Ctx {
-  scale: IntensityItem[];
-  weightOf: Record<string, number>;
-  item: Record<string, IntensityItem>;
+const emptyCounts = (): Record<IntensityId, number> => ({
+  prefer: 0,
+  ok: 0,
+  avoid: 0,
+  "hard-no": 0,
+});
+
+function responsesForSlot(meeting: Meeting, slotId: string): Response[] {
+  return meeting.responses.filter((r) => r.slotId === slotId);
 }
 
-function scoreSlot(
-  slot: Slot,
-  attendees: Attendee[],
-  responses: ResponseMap,
-  ctx: Ctx
-): ScoredSlot {
+function attendeeMap(attendees: Attendee[]): Map<string, Attendee> {
+  return new Map(attendees.map((a) => [a.id, a]));
+}
+
+/** 한 슬롯 집계 (STEP1·STEP2 + 분포·충족 계산) */
+export function aggregateSlot(meeting: Meeting, slot: Slot): SlotAggregate {
+  const amap = attendeeMap(meeting.attendees);
+  const slotResponses = responsesForSlot(meeting, slot.id);
+
+  const counts = emptyCounts();
+  const requiredCounts = emptyCounts();
+  const optionalCounts = emptyCounts();
+
   let score = 0;
-  let requiredBlockedCount = 0;
+  let excludedRequiredCount = 0;
+  let requiredMet = 0;
+  let requiredResponded = 0;
   let requiredPreferCount = 0;
-  let unansweredCount = 0;
+  let optionalRespondents = 0;
+  let requiredRespondents = 0;
 
-  const requiredTotal = attendees.filter((a) => a.role === "required").length;
-  let requiredAvailable = requiredTotal;
+  for (const r of slotResponses) {
+    const attendee = amap.get(r.attendeeId);
+    if (!attendee) continue;
+    const item = scaleById(r.intensity);
 
-  for (const a of attendees) {
-    const value = responses[a.id]?.[slot.id] ?? null;
-    if (value === null) {
-      unansweredCount += 1;
-      continue; // 무응답은 점수 영향 없음
+    counts[r.intensity] += 1;
+    score += item.weight; // STEP2: weight 합산
+
+    const isRequired = attendee.role === "required";
+    if (isRequired) {
+      requiredCounts[r.intensity] += 1;
+      requiredResponded += 1;
+      requiredRespondents += 1;
+      if (item.id === "prefer") requiredPreferCount += 1;
+      if (item.polarity !== "-") requiredMet += 1; // 부정 아님 = 충족
+      // STEP1: 필수 + hard → 제외 플래그
+      if (item.softHard === "hard") excludedRequiredCount += 1;
+    } else {
+      optionalCounts[r.intensity] += 1;
+      optionalRespondents += 1;
     }
-    const it = ctx.item[value];
-    if (!it) continue;
-
-    // 점수: 모든 응답 강도의 weight 합 (제외와 별개로 누적)
-    score += ctx.weightOf[value] ?? 0;
-
-    if (a.role === "required") {
-      if (it.hardExclude) {
-        // 필수 참석자 hard-no → 제외 분기 (weight 합산이 아니라 플래그)
-        requiredBlockedCount += 1;
-        requiredAvailable -= 1;
-      }
-      if (it.id === "prefer") requiredPreferCount += 1;
-    }
-    // 선택 참석자 hard-no는 제외하지 않음 — weight 감점(score)에만 반영됨(위에서 처리)
   }
+
+  const respondedIds = new Set(slotResponses.map((r) => r.attendeeId));
+  const pendingCount = meeting.attendees.filter((a) => !respondedIds.has(a.id)).length;
 
   return {
     slot,
+    counts,
+    requiredCounts,
+    optionalCounts,
+    optionalRespondents,
+    requiredRespondents,
     score,
-    excluded: requiredBlockedCount > 0,
-    requiredBlockedCount,
-    requiredAvailable,
-    requiredTotal,
+    excluded: excludedRequiredCount > 0,
+    excludedRequiredCount,
+    requiredMet,
+    requiredResponded,
     requiredPreferCount,
-    unansweredCount,
+    pendingCount,
   };
 }
 
-/**
- * 결정적 비교자. 후보끼리: 점수 내림차순 → tie-break ①②③.
- * 제외 슬롯은 항상 후보 뒤로(리스트 최하단 구획).
- */
-function compareScored(a: ScoredSlot, b: ScoredSlot): number {
-  // 제외는 항상 뒤로
-  if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
-
-  // 점수 내림차순
+/** STEP3 결정적 비교자 (점수 내림차순 + 고정 tie-break) */
+function compareSlots(a: SlotAggregate, b: SlotAggregate): number {
+  // 1차: 점수 내림차순
   if (b.score !== a.score) return b.score - a.score;
-  // ① 필수 prefer 수 많은 순
+  // tie 1: 필수 prefer 수 많은 순
   if (b.requiredPreferCount !== a.requiredPreferCount)
     return b.requiredPreferCount - a.requiredPreferCount;
-  // ② 미응답 적은 순
-  if (a.unansweredCount !== b.unansweredCount)
-    return a.unansweredCount - b.unansweredCount;
-  // ③ 시작시각 빠른 순 (최종 안정 키 — 항상 유일하게 결정됨)
-  return a.slot.startMinutes - b.slot.startMinutes;
+  // tie 2: 미응답 적은 순
+  if (a.pendingCount !== b.pendingCount) return a.pendingCount - b.pendingCount;
+  // tie 3: 시작시각 빠른 순
+  const ta = new Date(a.slot.start).getTime();
+  const tb = new Date(b.slot.start).getTime();
+  if (ta !== tb) return ta - tb;
+  // tie 4: 생성순(인덱스) 빠른 순 — 최종 결정자(완전 결정성)
+  return a.slot.order - b.slot.order;
 }
 
-export interface RecommendResult {
-  /** 정렬 완료된 전체 슬롯(후보 점수순 → 제외 슬롯). */
-  ranked: ScoredSlot[];
-  /** 제외되지 않은 후보만 */
-  candidates: ScoredSlot[];
-  /** 제외 슬롯만 */
-  excluded: ScoredSlot[];
+export interface RecommendationResult {
+  recommended: SlotAggregate[]; // 제외 안 된 슬롯, 점수순 정렬
+  excluded: SlotAggregate[]; // 제외 슬롯 (생성순 유지)
+  /** 필수 응답이 0인가 (잠정 추천 플래그) */
+  tentative: boolean;
+  /** 모든 슬롯이 제외됐는가 (전원 불가) */
+  allExcluded: boolean;
+  /** 응답이 하나도 없는가 */
+  noResponses: boolean;
 }
 
-export function recommend(
-  slots: Slot[],
-  attendees: Attendee[],
-  responses: ResponseMap,
-  scale: IntensityItem[]
-): RecommendResult {
-  const ctx: Ctx = {
-    scale,
-    weightOf: Object.fromEntries(scale.map((i) => [i.id, i.weight])),
-    item: Object.fromEntries(scale.map((i) => [i.id, i])),
-  };
+/** 전체 추천 계산 — 순수 함수. 동일 meeting → 동일 결과. */
+export function recommend(meeting: Meeting): RecommendationResult {
+  const aggregates = meeting.slots.map((s) => aggregateSlot(meeting, s));
 
-  const scored = slots.map((s) => scoreSlot(s, attendees, responses, ctx));
-  const ranked = [...scored].sort(compareScored);
+  const recommended = aggregates
+    .filter((a) => !a.excluded)
+    .sort(compareSlots); // 정렬 안정성은 compareSlots 최종자(order)가 보장
+
+  const excluded = aggregates
+    .filter((a) => a.excluded)
+    .sort((a, b) => a.slot.order - b.slot.order);
+
+  const requiredResponseCount = recommended.reduce(
+    (n, a) => n + a.requiredResponded,
+    0
+  );
 
   return {
-    ranked,
-    candidates: ranked.filter((s) => !s.excluded),
-    excluded: ranked.filter((s) => s.excluded),
+    recommended,
+    excluded,
+    tentative: requiredResponseCount === 0 && recommended.length > 0,
+    allExcluded: aggregates.length > 0 && recommended.length === 0,
+    noResponses: meeting.responses.length === 0,
   };
 }
 
-/** 시간순 정렬(정렬 토글 '시간순'). 점수 계산은 불변 — 표시 순서만 바뀐다(§3.1). */
-export function sortByTime(ranked: ScoredSlot[]): ScoredSlot[] {
-  return [...ranked].sort((a, b) => a.slot.startMinutes - b.slot.startMinutes);
-}
-
-/**
- * 집계 막대용 건수 분포(§3.4). 추천 weight와 무관 — *건수만* 센다.
- * hard-no도 "건수 1"로 쌓인다(제외 신호를 막대에 넣지 않음).
- */
-export function buildCounts(
-  slotId: string,
-  attendees: Attendee[],
-  responses: ResponseMap,
-  role: "required" | "optional"
-): { counts: Record<string, number>; total: number } {
-  const counts: Record<string, number> = {};
-  let total = 0;
-  for (const a of attendees) {
-    if (a.role !== role) continue;
-    const value = responses[a.id]?.[slotId] ?? null;
-    if (value === null) continue;
-    counts[value] = (counts[value] ?? 0) + 1;
-    total += 1;
-  }
-  return { counts, total };
+/** 시간순 정렬(표시 순서만 — 점수 계산 불변) */
+export function sortByTime(slots: SlotAggregate[]): SlotAggregate[] {
+  return [...slots].sort((a, b) => {
+    const ta = new Date(a.slot.start).getTime();
+    const tb = new Date(b.slot.start).getTime();
+    if (ta !== tb) return ta - tb;
+    return a.slot.order - b.slot.order;
+  });
 }

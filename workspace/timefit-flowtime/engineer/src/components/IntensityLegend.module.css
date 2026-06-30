@@ -1,0 +1,28 @@
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+}
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  font-size: 12px;
+  background: var(--sw-bg);
+  color: var(--sw-fg);
+  border: 1px solid var(--sw-border);
+}
+.text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--c-ink-muted);
+}

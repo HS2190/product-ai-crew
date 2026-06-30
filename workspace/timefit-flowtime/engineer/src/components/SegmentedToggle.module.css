@@ -1,0 +1,21 @@
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-control);
+}
+.item {
+  padding: 6px var(--space-4);
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-ink-muted);
+  transition: background var(--dur-color), color var(--dur-color);
+}
+.item[data-active="true"] {
+  background: var(--c-white);
+  color: var(--c-ink);
+  border: 1px solid var(--c-line);
+}

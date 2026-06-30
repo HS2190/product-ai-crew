@@ -1,0 +1,44 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--c-white);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-card);
+  /* 그림자 없음 (minimalist) */
+}
+
+.card[data-disabled="true"] {
+  opacity: 0.6;
+}
+
+.time {
+  color: var(--c-ink);
+  font-size: 14px;
+}
+
+.commentLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-ink-muted);
+}
+.commentLink:hover:not(:disabled) {
+  color: var(--c-ink);
+}
+.commentLink:disabled {
+  color: var(--c-ink-faint);
+  cursor: not-allowed;
+}
+.commentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-sage);
+}

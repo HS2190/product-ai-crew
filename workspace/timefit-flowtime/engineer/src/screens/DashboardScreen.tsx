@@ -1,144 +1,178 @@
-// 화면 2 — 주최자 집계 대시보드 (SCR-WEB-DASH-001, 핵심). design-spec §3.
-// 추천 정렬(deterministic) · 강도 분포(건수) · 미응답 현황 · 확정.
-// Mobile 우선 + Desktop 겸용(카드↔표는 동일 컴포넌트, 레이아웃만 폭으로 분기 — 여기선 카드 리스트로 통일하고 데스크톱은 폭 확장).
+/* SCR-WEB-DASH-001 ★ 주최자 집계 대시보드.
+   deterministic 추천 정렬(§0.3) · 강도 분포 · 미응답 · 확정.
+   모바일 카드 / 데스크톱 넓은 폭. 점수(=weight 합) ≠ 분포막대(=건수). */
 import { useMemo, useState } from "react";
-import { activeScale } from "../data/intensityScale";
-import { attendees, meeting, responses } from "../data/mock";
-import { recommend, sortByTime } from "../lib/recommend";
-import { PrivacyBoundaryNotice } from "../components/Notices";
-import { SlotCardAggregate } from "../components/SlotCardAggregate";
-import { Legend } from "../components/Legend";
+import type { Meeting } from "../data/types";
+import { recommend, sortByTime, type SlotAggregate } from "../lib/recommend";
+import { SummaryBento } from "../components/SummaryBento";
+import { SegmentedToggle } from "../components/SegmentedToggle";
+import { IntensityLegend } from "../components/IntensityLegend";
+import { AggregateSlotCard } from "../components/AggregateSlotCard";
+import { ExcludedSlotSection } from "../components/ExcludedSlotSection";
 import { PendingAttendeeList } from "../components/PendingAttendeeList";
-import { ConfirmSheet } from "../components/ConfirmSheet";
-import { Toast } from "../components/Toast";
+import { WarningBanner } from "../components/Banners";
+import { Button } from "../components/Button";
+import { Sheet } from "../components/Sheet";
+import { Toast, type ToastState } from "../components/Toast";
+import { formatSlotShort } from "../lib/format";
+import styles from "./DashboardScreen.module.css";
 
-export function DashboardScreen() {
-  const scale = activeScale;
-  const [sortMode, setSortMode] = useState<"recommended" | "time">("recommended");
-  const [reminded, setReminded] = useState<Set<string>>(new Set());
-  const [confirmSlot, setConfirmSlot] = useState<string | null>(null);
-  const [confirmedSlot, setConfirmedSlot] = useState<string | null>(null);
+export function DashboardScreen({ meeting }: { meeting: Meeting }) {
+  const [sort, setSort] = useState<"recommended" | "time">("recommended");
+  const [confirmSlot, setConfirmSlot] = useState<SlotAggregate | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
-  const result = useMemo(
-    () => recommend(meeting.slots, attendees, responses, scale),
-    [scale]
-  );
+  // 추천 계산은 순수 함수. 정렬 토글은 표시 순서만 바꾼다(점수 불변).
+  const result = useMemo(() => recommend(meeting), [meeting]);
 
-  // 응답/미응답 집계 (한 슬롯이라도 응답하면 응답자로 간주)
-  const responded = attendees.filter((a) =>
-    meeting.slots.some((s) => responses[a.id]?.[s.id])
-  );
-  const pending = attendees.filter((a) => !responded.includes(a));
+  const respondedAttendees = useMemo(() => {
+    const ids = new Set(meeting.responses.map((r) => r.attendeeId));
+    return ids.size;
+  }, [meeting]);
+  const pendingAttendees = useMemo(() => {
+    const ids = new Set(meeting.responses.map((r) => r.attendeeId));
+    return meeting.attendees.filter((a) => !ids.has(a.id));
+  }, [meeting]);
 
-  // 표시 순서: 추천순 = 후보(점수순) + 제외(하단), 시간순 = 시간 정렬(점수 계산 불변)
-  const display =
-    sortMode === "recommended"
-      ? result.ranked
-      : sortByTime(result.ranked);
+  const displayed =
+    sort === "recommended" ? result.recommended : sortByTime(result.recommended);
 
-  // 순위는 후보에만 부여(제외 슬롯은 순위 없음)
-  const rankOf = new Map(result.candidates.map((s, i) => [s.slot.id, i + 1]));
+  const requiredAll = meeting.attendees.filter((a) => a.role === "required").length;
 
-  const slotToConfirm = result.ranked.find((s) => s.slot.id === confirmSlot);
+  function confirm() {
+    if (!confirmSlot) return;
+    setConfirmSlot(null);
+    setToast({ kind: "info", message: "이 시간으로 확정했어요" });
+  }
+
+  // 확정 시트의 경고 여부 판단
+  const confirmWarning = confirmSlot
+    ? confirmSlot.excluded
+      ? "이 시간은 필수 참석자에게 어려운 시간이에요.\n그래도 확정할 수 있어요."
+      : confirmSlot.requiredMet < requiredAll
+        ? "필수 참석자 일부가 아직 응답하지 않았어요.\n그래도 이 시간으로 확정할 수 있어요."
+        : null
+    : null;
 
   return (
-    <div className="dash-shell">
-      {/* 요약 바 (상단 고정) */}
-      <header className="dash-summary">
-        <span className="tnum" style={{ font: "var(--t-body-strong)" }}>
-          응답 {responded.length}/{attendees.length}
-        </span>
-        <span style={{ color: "var(--c-ink-mute)" }}>·</span>
-        <span className="tnum" style={{ font: "var(--t-body)", color: "var(--c-ink-soft)" }}>
-          미응답 {pending.length}명
-        </span>
-        <span style={{ color: "var(--c-ink-mute)" }}>·</span>
-        <span className="tnum" style={{ font: "var(--t-body)", color: "var(--c-ink-soft)" }}>
-          마감 D-{meeting.deadlineDays}
-        </span>
-      </header>
+    <div className={styles.screen}>
+      <div className={styles.container}>
+        <header className={styles.head}>
+          <h1 className="t-title">{meeting.title}</h1>
+        </header>
 
-      <div className="dash-body">
-        <div style={{ marginBottom: "var(--sp-4)" }}>
-          <PrivacyBoundaryNotice message="선택 참석자 응답은 집계로만 보여요. 개인 응답은 표시되지 않아요." />
-        </div>
+        <SummaryBento
+          responded={respondedAttendees}
+          total={meeting.attendees.length}
+          pending={pendingAttendees.length}
+          deadlineLabel={meeting.deadlineLabel}
+        />
+        <p className={`${styles.boundary} t-caption`}>
+          선택 참석자 응답은 집계로만 보여요
+        </p>
 
-        {/* 정렬 토글 */}
-        <div role="group" aria-label="정렬" className="sort-toggle" style={{ marginBottom: "var(--sp-4)" }}>
-          {(["recommended", "time"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              aria-pressed={sortMode === m}
-              data-on={sortMode === m}
-              onClick={() => setSortMode(m)}
-            >
-              {m === "recommended" ? "추천순" : "시간순"}
-            </button>
-          ))}
-        </div>
+        {/* 잠정 추천 경고 (필수 응답 0) */}
+        {result.tentative && (
+          <WarningBanner message={"필수 참석자 응답을 기다리는 중이에요.\n지금 추천은 잠정값이에요."} />
+        )}
 
-        {/* 추천 슬롯 리스트 */}
-        <div className="dash-grid">
-          {display.map((scored) => (
-            <SlotCardAggregate
-              key={scored.slot.id}
-              scored={scored}
-              rank={rankOf.get(scored.slot.id) ?? 0}
-              scale={scale}
-              attendees={attendees}
-              responses={responses}
-              onConfirm={setConfirmSlot}
+        {/* 추천 영역 헤더 + 정렬 토글 + 범례 */}
+        <section className={styles.recSection}>
+          <div className={styles.recHead}>
+            <h2 className="t-h">추천 슬롯</h2>
+            <SegmentedToggle
+              ariaLabel="추천 정렬"
+              value={sort}
+              onChange={setSort}
+              options={[
+                { value: "recommended", label: "추천순" },
+                { value: "time", label: "시간순" },
+              ]}
             />
-          ))}
-        </div>
+          </div>
+          <IntensityLegend />
 
-        {/* 범례 (IntensityScale 자동 생성) */}
-        <div style={{ margin: "var(--sp-6) 0 var(--sp-5)" }}>
-          <h2 style={{ font: "var(--t-label)", color: "var(--c-ink-mute)", margin: "0 0 var(--sp-2)" }}>강도 범례</h2>
-          <Legend scale={scale} />
-        </div>
+          {/* 본문 상태 분기 */}
+          {result.noResponses ? (
+            <EmptyState
+              title={"아직 응답이 없어요.\n링크를 공유해 보세요."}
+              actionLabel="링크 다시 공유"
+              onAction={() => setToast({ kind: "info", message: "링크를 복사했어요" })}
+            />
+          ) : result.allExcluded ? (
+            <EmptyState
+              title={"필수 참석자가 모두 가능한 시간이 아직 없어요.\n후보 시간을 더 추가해 보세요."}
+              actionLabel="후보 시간 추가"
+              onAction={() => setToast({ kind: "info", message: "데모: 후보 시간 추가 화면으로 이동" })}
+            />
+          ) : (
+            <div className={styles.recList}>
+              {displayed.map((agg) => (
+                <AggregateSlotCard
+                  key={agg.slot.id}
+                  agg={agg}
+                  /* 순위는 추천순 정렬 기준 — 시간순 표시여도 점수 순위 유지 */
+                  rank={result.recommended.indexOf(agg) + 1}
+                  attendees={meeting.attendees}
+                  tentative={result.tentative}
+                  onConfirm={() => setConfirmSlot(agg)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 제외 슬롯 접힘 영역 */}
+        <ExcludedSlotSection slots={result.excluded} />
 
         {/* 미응답 현황 */}
-        <section>
-          <h2 style={{ font: "var(--t-title)", margin: "0 0 var(--sp-3)" }}>아직 응답 전인 사람</h2>
-          <PendingAttendeeList
-            pending={pending}
-            reminded={reminded}
-            onRemind={(id) => setReminded((r) => new Set(r).add(id))}
-          />
+        <section className={styles.pendingSection}>
+          <h2 className={`${styles.pendingHead} t-h`}>미응답 현황</h2>
+          <PendingAttendeeList pending={pendingAttendees} />
         </section>
       </div>
 
-      {confirmSlot && slotToConfirm && (
-        <ConfirmSheet
-          title="이 시간으로 확정할까요?"
-          body={`${slotToConfirm.slot.date} ${slotToConfirm.slot.start}–${slotToConfirm.slot.end} · 필수 ${slotToConfirm.requiredAvailable}/${slotToConfirm.requiredTotal} 가능`}
-          warning={
-            slotToConfirm.requiredAvailable < slotToConfirm.requiredTotal
-              ? `필수 ${slotToConfirm.requiredTotal - slotToConfirm.requiredAvailable}명이 어려운 시간이에요. 그래도 확정할 수 있어요.`
-              : null
-          }
-          confirmVariant={
-            slotToConfirm.requiredAvailable < slotToConfirm.requiredTotal ? "warning" : "primary"
-          }
-          confirmLabel={
-            slotToConfirm.requiredAvailable < slotToConfirm.requiredTotal ? "그래도 확정" : "확정"
-          }
-          cancelLabel="취소"
-          onConfirm={() => {
-            setConfirmedSlot(confirmSlot);
-            setConfirmSlot(null);
-          }}
-          onCancel={() => setConfirmSlot(null)}
-        />
-      )}
+      {/* 확정 시트/모달 */}
+      <Sheet open={confirmSlot !== null} onClose={() => setConfirmSlot(null)} labelledBy="dash-confirm">
+        {confirmSlot && (
+          <>
+            <h2 id="dash-confirm" className={`${styles.sheetTitle} t-title`}>
+              이 시간으로 확정할까요?
+            </h2>
+            <p className={`${styles.confirmSlot} t-meta`}>{formatSlotShort(confirmSlot.slot.start)}</p>
+            {confirmWarning && <div className={styles.warnGap}><WarningBanner message={confirmWarning} /></div>}
+            <div className={styles.sheetActions}>
+              <Button variant="secondary" size="lg" fullWidth onClick={() => setConfirmSlot(null)}>
+                취소
+              </Button>
+              <Button variant="primary" size="lg" fullWidth onClick={confirm}>
+                확정
+              </Button>
+            </div>
+          </>
+        )}
+      </Sheet>
 
-      {confirmedSlot && (
-        <div style={{ position: "fixed", left: 16, right: 16, bottom: 24, zIndex: 40, maxWidth: 420, margin: "0 auto" }}>
-          <Toast message="회의 시간을 확정했어요" tone="info" />
-        </div>
-      )}
+      <Toast toast={toast} onDismiss={() => setToast(null)} />
+    </div>
+  );
+}
+
+function EmptyState({
+  title,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className={styles.empty}>
+      <p className={`${styles.emptyText} t-body`}>{title}</p>
+      <Button variant="secondary" size="md" onClick={onAction}>
+        {actionLabel}
+      </Button>
     </div>
   );
 }

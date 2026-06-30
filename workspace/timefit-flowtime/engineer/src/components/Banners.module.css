@@ -1,0 +1,65 @@
+/* Reassurance/Privacy = 중립(--c-surface-2). Warning = 황토. 별개 톤. */
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-control);
+  color: var(--c-ink-muted); /* 중립 — 황토/빨강 아님 */
+}
+.notice svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c-ink-muted);
+}
+.noticeText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--c-ink);
+  white-space: pre-line; /* \n 줄바꿈 반영 */
+}
+
+.persistent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--c-surface-2);
+  border-bottom: 1px solid var(--c-line);
+  color: var(--c-ink-muted);
+}
+
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--c-clay-bg);
+  border: 1px solid var(--c-clay-line);
+  border-radius: var(--radius-control);
+  color: var(--c-clay-ink);
+}
+.warning svg {
+  flex: none;
+  margin-top: 2px;
+}
+.warningText {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  white-space: pre-line;
+}
+.warningAction {
+  flex: none;
+  align-self: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-clay-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

@@ -1,0 +1,9 @@
+.tag {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-clay-ink); /* 미충족 = 황토(주의, 거부 아님) */
+}
+.tag[data-met="true"] {
+  color: var(--c-sage); /* 충족 = 세이지(긍정) */
+}

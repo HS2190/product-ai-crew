@@ -1,0 +1,69 @@
+/* =========================================================================
+   Design Tokens — design-spec-v1.1.md §1 (1:1 mapping, no hardcoding)
+   minimalist-ui · 빨강 배제 → 황토(#B5852A). 강도 색은 데이터(IntensityScale)로
+   주입하되 그 데이터는 여기 정의된 토큰 var()만 가리킨다.
+   ========================================================================= */
+
+:root {
+  /* ---- §1.1 색 Primitive ---- */
+  --c-bone: #f7f6f3;            /* 캔버스 */
+  --c-white: #ffffff;           /* 카드 표면 */
+  --c-surface-2: #f9f9f8;       /* 보조 표면 */
+  --c-ink: #1f2421;             /* 본문/제목 (off-black) */
+  --c-ink-muted: #6b6f6a;       /* 보조 텍스트 */
+  --c-ink-faint: #9a9e98;       /* 비활성·플레이스홀더 */
+  --c-line: #eaeae7;            /* 1px 구조 라인 */
+  --c-line-strong: rgba(0, 0, 0, 0.1); /* 포커스/강조 라인 */
+
+  /* 황토 계열 (부정·에러·경고 — 빨강 대체) */
+  --c-clay: #b5852a;            /* 부정 라인/아이콘 채움 + hard-no 테두리 (라벨 텍스트 금지) */
+  --c-clay-ink: #7a5a16;        /* 부정 라벨·아이콘 전경 (clay-bg 위 5.39:1 AA) */
+  --c-clay-bg: #f3ecd9;         /* 황토 저채도 배경 */
+  --c-clay-line: #d8c089;       /* 황토 라인 (avoid soft 테두리) */
+
+  /* 긍정·중립 강도 */
+  --c-sage: #496447;            /* prefer 전경 (sage-bg 위 5.56:1 AA) */
+  --c-sage-bg: #e7eee6;         /* prefer 배경 */
+  --c-neutral-ok: #676b65;      /* ok 전경 (neutral-ok-bg 위 4.59:1 AA) */
+  --c-neutral-ok-bg: #ececea;   /* ok 배경 */
+
+  /* 역할·정보 액센트 */
+  --c-role-required: #2f5d6e;   /* 필수 역할 배지 (뮤트 틸) */
+  --c-role-required-bg: #e2edf1;
+  --c-role-optional: #6b6f6a;   /* 선택 역할 배지 (무채) */
+  --c-role-optional-bg: #efefed;
+  --c-rank-1: #1f2421;          /* 추천 1순위 (잉크 솔리드) */
+
+  /* ---- §1.3 타이포그래피 ---- */
+  --font-serif: "Newsreader", "Instrument Serif", Georgia, serif;
+  --font-sans: "Geist Sans", "Pretendard", "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-mono: "Geist Mono", "SF Mono", ui-monospace, monospace;
+
+  /* ---- §1.4 간격 (8pt 베이스) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+
+  /* 콘텐츠 폭 */
+  --w-resp: 420px;      /* 참석자 모바일 중앙 정렬 */
+  --w-dash: 1120px;     /* 데스크톱 대시보드 max */
+
+  /* ---- §1.5 라운드 · 고도 ---- */
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-btn: 6px;
+  --radius-pill: 9999px;
+  --elev-flat: none;
+  --elev-hover: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --elev-sheet: 0 -2px 16px rgba(0, 0, 0, 0.05);
+
+  /* ---- §1.6 모션 ---- */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-enter: 600ms;
+  --dur-color: 160ms;
+}

@@ -1,0 +1,62 @@
+/* C-01 styles — all values from tokens. min 44×44 tap target.
+   4칩 균등 분배(N 종속 금지) — flex:1. "가급적 회피"는 칩에서 "회피"로 축약돼
+   균등 폭에서 1줄 유지(핸드오프 메모 대응). */
+
+.group {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.chip {
+  flex: 1 1 0; /* 균등 분배 — 4칩이든 3칩이든 균등 */
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
+  background: var(--c-white);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-control);
+  color: var(--c-ink-muted);
+  transition: background var(--dur-color), border-color var(--dur-color),
+    color var(--dur-color), transform var(--dur-color);
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--c-line-strong);
+  background: var(--c-surface-2);
+}
+
+.chip:active:not(:disabled) {
+  transform: scale(0.97); /* transform만 — 레이아웃 속성 애니메이션 금지 */
+}
+
+/* selected — strength 토큰은 인라인 var()로 주입됨 */
+.chip[data-selected="true"] {
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  border-color: var(--chip-border);
+}
+
+.chip:disabled {
+  color: var(--c-ink-faint);
+  background: var(--c-surface-2);
+  cursor: not-allowed;
+}
+
+.shape {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}

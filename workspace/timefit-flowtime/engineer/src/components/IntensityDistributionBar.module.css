@@ -1,0 +1,52 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.groupTag {
+  flex: none;
+  width: 28px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-ink-muted);
+}
+
+.bar {
+  flex: 1;
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--c-line);
+}
+
+.seg {
+  background: var(--seg-bg);
+  height: 100%;
+  min-width: 3px;
+}
+
+.pendingSeg {
+  background: var(--c-line);
+  height: 100%;
+}
+
+.emptyTrack {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--c-line);
+}
+
+.emptyText,
+.anonymized {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--c-ink-muted);
+}
+
+.anonymized {
+  flex: 1;
+}

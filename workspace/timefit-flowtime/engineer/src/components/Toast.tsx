@@ -1,27 +1,31 @@
-// Toast (component-spec §15) — 인라인 피드백. info/error(황토). 입력값 보존(상태 외부 관리).
-interface Props {
-  message: string;
-  tone?: "info" | "error";
+/* C-10 Toast — info(무채) / error(황토, 빨강 아님). 입력값 보존 안내. */
+import { useEffect } from "react";
+import styles from "./Toast.module.css";
+
+export interface ToastState {
+  kind: "info" | "error";
+  message: string; // \n 줄바꿈 허용
 }
 
-export function Toast({ message, tone = "info" }: Props) {
+export function Toast({
+  toast,
+  onDismiss,
+}: {
+  toast: ToastState | null;
+  onDismiss: () => void;
+}) {
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(onDismiss, toast.kind === "error" ? 4200 : 2400);
+    return () => clearTimeout(t);
+  }, [toast, onDismiss]);
+
+  if (!toast) return null;
   return (
-    <div
-      role="status"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "12px 16px",
-        borderRadius: "var(--r-md)",
-        background: "var(--c-surface)",
-        border: `1px solid ${tone === "error" ? "var(--s-error)" : "var(--c-hairline)"}`,
-        color: tone === "error" ? "var(--s-error)" : "var(--c-ink)",
-        font: "var(--t-caption)",
-        boxShadow: "var(--shadow-card)",
-      }}
-    >
-      {message}
+    <div className={styles.wrap} role="status" aria-live="polite">
+      <div className={styles.toast} data-kind={toast.kind}>
+        {toast.message}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,64 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(31, 36, 33, 0.32);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fade 200ms ease;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--c-white);
+  border-top-left-radius: var(--radius-card);
+  border-top-right-radius: var(--radius-card);
+  border-top: 1px solid var(--c-line);
+  box-shadow: var(--elev-sheet);
+  padding: var(--space-3) var(--space-5) var(--space-6);
+  animation: slideUp 280ms var(--ease-enter);
+}
+
+.grabber {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--c-line);
+  margin: 0 auto var(--space-4);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(16px);
+  }
+}
+
+/* 데스크톱: 중앙 모달 */
+@media (min-width: 768px) {
+  .scrim {
+    align-items: center;
+  }
+  .sheet {
+    max-width: 440px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--c-line);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  }
+  .grabber {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .sheet {
+    animation: none;
+  }
+}

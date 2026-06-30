@@ -1,33 +1,34 @@
-// 공통 버튼 (component-spec §14) — PrimaryButton / GhostButton.
-import type { ButtonHTMLAttributes } from "react";
-import "./Button.css";
+/* C-10. PrimaryButton / SecondaryButton / GhostButton — variant 1 컴포넌트 */
+import styles from "./Button.module.css";
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "ghost" | "warning";
-  fullWidth?: boolean;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "ghost" | "clay";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
+  fullWidth?: boolean;
 }
 
 export function Button({
   variant = "primary",
-  fullWidth = false,
+  size = "md",
   loading = false,
+  fullWidth = false,
   disabled,
   children,
   ...rest
-}: Props) {
+}: ButtonProps) {
   return (
     <button
-      type="button"
-      className="btn"
+      className={styles.btn}
       data-variant={variant}
+      data-size={size}
       data-full={fullWidth}
       disabled={disabled || loading}
-      aria-busy={loading || undefined}
+      aria-busy={loading}
       {...rest}
     >
-      {loading && <span className="btn-spinner" aria-hidden="true" />}
-      <span style={{ visibility: loading ? "hidden" : "visible" }}>{children}</span>
+      {loading && <span className={styles.spinner} aria-hidden="true" />}
+      <span>{children}</span>
     </button>
   );
 }
