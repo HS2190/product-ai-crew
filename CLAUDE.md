@@ -212,8 +212,15 @@ persona_path: workspace/[서비스명]/persona.md
   - Figma 링크 수령과는 **순차로** 묻는다(스킬 추천은 기획 분석 결과를 보여줘야 하므로 분리).
         ↓
 [디자이너 에이전트] (FULL / DESIGN 모드)
-  인풋:  화면 기획안, 기능 명세서, 플랫폼, 브랜드 방향성, figma_link(있으면), design_skill(승인된 스킬)
-  아웃풋: 디자인 스펙(적용 스킬 명시), 컴포넌트 스펙, Figma URL(figma_link 받았을 때 필수 / 아니면 N/A)
+  인풋:  화면 기획안, 기능 명세서, platform(mobile/web/both), 브랜드 방향성, figma_link(있으면), design_skill(승인된 스킬)
+  아웃풋: 디자인 스펙(적용 스킬·전 화면 N개/전 컴포넌트 M개 명시), 컴포넌트 스펙, figma_draw_plan(figma_link 받았을 때)
+        ↓
+[Figma 드로잉 위임] (figma_link 받았을 때만 — 오케스트레이터/메인 세션 수행)
+  - 네이티브 서브에이전트는 Figma MCP 도구에 접근하지 못한다. 디자이너의 figma_draw_plan을 받아
+    메인 세션이 위임받아 Figma에 그린다: Variables(토큰) → 컴포넌트+Variant → 전 화면(디바이스/브레이크포인트 사이즈) 배치.
+  - 오토레이아웃·시멘틱 네이밍·토큰 참조(Figma 제작 표준) 준수. 완료 후 figma_url 확보 → 디자이너 산출의 figma_url로 채운다.
+  - Figma 호출 한도 고려: 핵심 컴포넌트·전 화면 위주, 많으면 핵심 플로우 우선.
+  - figma_link 없으면(스킵/미연결) 이 단계 생략, figma_url=N/A.
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
 [UX 라이터 에이전트] (FULL / WRITE 모드)
@@ -484,8 +491,9 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 2. **회사 식별 및 기억층 로딩** — `company` 확인(없으면 사용자에게 확인, 개인 작업이면 `default`). `workspace/_memory/designer-profile.md`(항상) + `companies/[회사]/decisions.md`·`conventions.md`(있으면)를 로딩해 `memory_context`로 준비
 3. **세션 확인** — `workspace/[서비스명]/session.md` 확인. `in_progress`이면 재개 여부 사용자에게 확인
 4. **모드 결정** — RESEARCH / FULL / PLAN / DESIGN / BUILD / WRITE / CUSTOM 판단
-5. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
-6. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집. `persona_path`와 `memory_context`를 모든 에이전트 호출에 주입
+5. **플랫폼 확정** — `platform`을 `mobile` / `web` / `both` 중 확정한다(사용자 미지정 시 묻는다). 이 값을 PM→기획자→디자이너→Engineer 인풋에 전달하며, 단계별 화면 설계·디자인(디바이스/브레이크포인트)·구현 기준이 분기된다.
+6. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
+7. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집. `persona_path`·`memory_context`·`platform`을 에이전트 호출에 주입
 7. **에이전트 순차 호출** — 각 에이전트 CLAUDE.md를 참조하며 작업 지시
 8. **아웃풋 검증 및 검수, 체크포인트 기록** — 완료 후 ① 존재 검증 게이트 통과 → ② Reviewer 검수(`pass`/`revise`/`escalate`) → `pass`면 session.md 업데이트 후 다음 에이전트 호출, `revise`면 재작업(최대 2회), `escalate`면 사용자 보고. 기억할 가치가 있는 결정·선호가 나오면 **기억 제안**(제안→승인) 수행
 9. **작업 완료 보고** — 전체 결과 요약, 산출물 목록, 기억층 추가 항목, session.md `status: complete` 처리
