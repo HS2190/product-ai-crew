@@ -159,7 +159,7 @@ persona_path: workspace/[서비스명]/persona.md
 각 생성 에이전트(Researcher/PM/기획자/디자이너/UX라이터/Engineer)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
 
 1. **존재 검증 게이트** (기존) — 파일·필드가 있는지 확인. 실패하면 `blocked` 처리.
-2. **Reviewer 검수** (신규) — 내용 품질을 비평. `pass` / `revise` / `escalate` 판정.
+2. **Reviewer 검수** — 내용 품질을 비평. `pass` / `revise`(같은 단계 재작업) / `rollback`(상류 단계로 되돌림) / `escalate`(사람 판단) 판정. Reviewer의 verdict와 근거는 각 단계 정지 보고 시 **항상 사용자에게 노출**되며, 사용자 판단이 Reviewer보다 우선한다(아래 「Reviewer 검수 처리」 참조).
 
 ```
 [사용자 요청]
@@ -188,9 +188,11 @@ persona_path: workspace/[서비스명]/persona.md
 │   ├─ pass     → 다음 에이전트로 진행               │
 │   ├─ revise   → PM 재호출 (review_notes 전달,     │
 │   │             revision_count +1) → 재검수       │
+│   ├─ rollback → 상류(researcher) 재호출 후          │
+│   │             하류로 재진행 (같은 상류 2회 제한)    │
 │   └─ escalate → 사용자에게 보고 후 대기            │
 └──────────────────────────────────────────────┘
-        ↓ pass
+        ↓ pass (verdict·근거를 사용자에게 노출)
 [기획자 에이전트] (FULL / PLAN / DESIGN 모드)
   인풋:  PRD, 기능 목록, 우선순위, 플랫폼, 브랜드 방향성
   아웃풋: 화면 기획안, 기능 명세서, User Flow, 와이어프레임
@@ -273,15 +275,27 @@ target_role:    researcher / pm / planner / designer / ux-writer / engineer
 target_output:  [검수할 산출물 파일 경로(들)]
 persona_path:   workspace/[서비스명]/persona.md   # 존재할 때만
 revision_count: [이 산출물이 지금까지 재작업된 횟수]
+rollback_count: [이 단계에서 같은 상류 역할로 되돌린 횟수, 없으면 0]
 ```
 
-Reviewer가 반환한 `verdict`에 따라 처리한다.
+Reviewer가 반환한 `verdict`는 **4종(`pass` / `revise` / `rollback` / `escalate`)**이며, 어떤 verdict든 처리 전에 **verdict와 근거(`review_notes`)를 사용자에게 노출**한다(아래 「Reviewer verdict의 사용자 가시성」 참조).
 
-- **`pass`** → 검수 통과. session.md에 `review: pass` 기록 후 다음 에이전트 호출.
-- **`revise`** → `review_notes`를 인풋에 포함해 `revise_target` 에이전트를 재호출한다. 해당 산출물의 `revision_count`를 +1 하고, 재작업 완료 후 **다시 존재 검증 → Reviewer 검수**를 거친다.
+- **`pass`** → 검수 통과. `review_notes`(확인한 핵심 기준 + 남긴 약점)를 사용자에게 노출하고, session.md에 `review: pass` 기록 후 다음 에이전트 호출.
+- **`revise`** → `review_notes`를 인풋에 포함해 `revise_target`(현재 단계) 에이전트를 재호출한다. 해당 산출물의 `revision_count`를 +1 하고, 재작업 완료 후 **다시 존재 검증 → Reviewer 검수**를 거친다.
+- **`rollback`** → 결함 원인이 상류 산출물에 있다는 판정. `rollback_reason`을 인풋에 실어 `rollback_to`(상류 역할) 에이전트를 재호출하고, **거기서부터 하류로 다시 진행**한다(중간 단계는 영향받은 부분만 갱신). 해당 `rollback_to` 대상의 `rollback_count`를 +1 하고 session.md에 rollback 이력을 기록한다. 재진행 산출물은 다시 존재 검증 → Reviewer 검수를 거친다.
 - **`escalate`** → 작업을 중단하고 `escalate_reason`과 `review_notes`를 사용자에게 보고한 뒤 판단을 기다린다.
 
 **재작업 횟수 상한**: 같은 산출물은 최대 2회까지만 `revise`한다. `revision_count >= 2`인데도 품질이 미흡하면 Reviewer가 `revise` 대신 `escalate`를 반환하므로, 오케스트레이터는 무한 루프 없이 사용자 판단으로 넘어간다.
+
+**rollback 횟수 상한**: 같은 `rollback_to` 대상으로는 최대 2회까지만 되돌린다. `rollback_count >= 2`인데도 하류에서 같은 결함이 반복되면 Reviewer가 `rollback` 대신 `escalate`를 반환한다. 오케스트레이터는 상류↔하류 무한 왕복 없이 사용자 판단으로 넘어간다.
+
+### Reviewer verdict의 사용자 가시성 (자기참조 공백 보완)
+
+Reviewer의 비평이 자의적일 수 있으므로(좋은 걸 `revise`, 나쁜 걸 `pass`), Reviewer 판정 자체를 사용자가 최종 검수한다.
+
+- 각 단계 정지·진행 보고 시 Reviewer의 `verdict`와 근거(`review_notes`)를 **항상 사용자에게 노출**한다. `pass`도 예외가 아니다 — 무비판 통과를 사용자가 확인할 수 있어야 한다.
+- 사용자는 Reviewer verdict에 **이의를 제기**할 수 있다(Reviewer가 `pass`했어도 사용자가 재작업을 요청하거나, 반대로 `revise`/`rollback`/`escalate`를 사용자가 그대로 수용하고 진행). **사용자 판단이 Reviewer보다 우선한다.**
+- 사용자가 verdict를 뒤집으면 그 결정을 session.md에 기록하고(예: `review: pass(사용자 revise 지시)`) 그에 따라 진행한다.
 
 #### Reviewer escalate 보고 형식
 
@@ -299,6 +313,25 @@ escalate 사유: [escalate_reason]
   1. 사용자가 직접 방향을 정해 해당 에이전트에 재지시
   2. 현재 산출물을 그대로 수용하고 다음 단계 진행
   3. 작업 범위 조정 후 재시작
+```
+
+#### Reviewer rollback 보고 형식
+
+`rollback`은 사람 판단을 기다리는 정지가 아니라 상류로 되돌려 자동 재진행하는 처리지만, verdict 가시성 원칙에 따라 되돌리기 전에 사용자에게 알린다(사용자가 이의를 제기하면 그 판단이 우선한다).
+
+```
+## Reviewer 검수 — 상류 되돌림 (rollback)
+
+대상: [현재 target_role] 산출물 ([파일 경로])
+되돌릴 상류: [rollback_to]
+rollback 횟수: [rollback_count]회 (같은 상류 2회 초과 시 escalate 전환)
+rollback 사유: [rollback_reason — 무엇이 왜 상류 문제이고, 현재 단계 재작업으로 못 고치는 이유]
+
+검수 의견:
+[review_notes]
+
+처리: [rollback_to]을(를) rollback_reason과 함께 재호출하고, 거기서부터 하류로 재진행합니다.
+(이 판정에 이의가 있으면 알려주세요 — 사용자 판단이 우선합니다.)
 ```
 
 ---
@@ -374,8 +407,16 @@ updated_at: YYYY-MM-DD
 | 5 | UX 라이터 | pending | - | 0 | - |
 | 6 | Engineer | pending | - | 0 | - |
 
-> 검수 결과 표기: `pass` / `revise(N)` / `escalate`. revise가 반복되면 `revise→pass`처럼 최종 결과까지 남긴다.
+> 검수 결과 표기: `pass` / `revise(N)` / `rollback(N)` / `escalate`. 반복되면 `revise→pass`, `rollback→pass`처럼 최종 결과까지 남긴다. 사용자가 verdict를 뒤집었으면 `pass(사용자 revise 지시)`처럼 함께 남긴다.
 > 재작업 횟수는 산출물별로 누적 기록한다. 대화가 끊겨 재개해도 이 값이 유지돼야 2회 상한과 escalate 전환이 올바르게 동작한다.
+
+## rollback 이력
+
+| 발생 단계 | 되돌린 대상 | 횟수 | 사유 요약 |
+|----------|-----------|------|---------|
+| (예) Engineer | planner | 1 | 기획 플로우가 구현상 모순 — 상류 수정 필요 |
+
+> 같은 (발생 단계 → 되돌린 대상) 쌍의 rollback 횟수를 누적 기록한다. 대화가 끊겨 재개해도 이 값이 유지돼야 rollback 2회 상한과 escalate 전환이 올바르게 동작한다. rollback이 없으면 이 섹션은 비워둔다.
 
 ## 산출물 경로
 
@@ -495,7 +536,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 6. **워크플로우 파일 참조** — `workflows/` 에서 해당 워크플로우 로드
 7. **컨텍스트 준비** — 기존 산출물 경로 확인, 필요한 인풋 수집. `persona_path`·`memory_context`·`platform`을 에이전트 호출에 주입
 7. **에이전트 순차 호출** — 각 에이전트 CLAUDE.md를 참조하며 작업 지시
-8. **아웃풋 검증 및 검수, 체크포인트 기록** — 완료 후 ① 존재 검증 게이트 통과 → ② Reviewer 검수(`pass`/`revise`/`escalate`) → `pass`면 session.md 업데이트 후 다음 에이전트 호출, `revise`면 재작업(최대 2회), `escalate`면 사용자 보고. 기억할 가치가 있는 결정·선호가 나오면 **기억 제안**(제안→승인) 수행
+8. **아웃풋 검증 및 검수, 체크포인트 기록** — 완료 후 ① 존재 검증 게이트 통과 → ② Reviewer 검수(`pass`/`revise`/`rollback`/`escalate`). Reviewer verdict와 근거는 **항상 사용자에게 노출**하고 사용자 이의가 있으면 그 판단을 우선한다. `pass`면 session.md 업데이트 후 다음 에이전트 호출, `revise`면 같은 단계 재작업(최대 2회), `rollback`면 `rollback_to` 상류 재호출 후 하류로 재진행(같은 상류 최대 2회), `escalate`면 사용자 보고. 기억할 가치가 있는 결정·선호가 나오면 **기억 제안**(제안→승인) 수행
 9. **작업 완료 보고** — 전체 결과 요약, 산출물 목록, 기억층 추가 항목, session.md `status: complete` 처리
 
 ---
