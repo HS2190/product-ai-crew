@@ -2,5 +2,8 @@
 # workspace/
 # !workspace/**/.gitkeep
 
+# gitmate은 자체 GitHub 저장소(github.com/HS2190/gitmate)로 분리 관리 — 상위 repo에서 제외
+workspace/gitmate/
+
 # macOS
 .DS_Store
