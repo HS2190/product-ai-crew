@@ -5,5 +5,12 @@
 # gitmate은 자체 GitHub 저장소(github.com/HS2190/gitmate)로 분리 관리 — 상위 repo에서 제외
 workspace/gitmate/
 
+# proprietary/source-available 라이선스 스킬 — 재배포 불가하므로 로컬 전용 관리 (출처: anthropics/skills, Gabberflast/academic-pptx-skill)
+skills/pptx/
+skills/theme-factory/
+skills/canvas-design/
+skills/web-artifacts-builder/
+skills/academic-pptx/
+
 # macOS
 .DS_Store
