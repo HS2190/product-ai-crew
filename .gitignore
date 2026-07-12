@@ -12,5 +12,9 @@ skills/canvas-design/
 skills/web-artifacts-builder/
 skills/academic-pptx/
 
+# ppt-master 벌크 에셋(90M) — 로컬 전용, 재설치 시 hugohe3/ppt-master에서 다시 받기
+skills/ppt-master/templates/icons/
+skills/ppt-master/references/ai-image-comparison/
+
 # macOS
 .DS_Store
