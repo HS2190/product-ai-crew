@@ -33,8 +33,23 @@ def read_front(path):
     nm = re.search(r"^name:\s*(.+)$", fm, re.M)
     ds = re.search(r"^description:\s*(.+?)(?=\n[a-z_-]+:|\Z)", fm, re.M | re.S)
     name = nm.group(1).strip().strip("\"'") if nm else None
-    desc = " ".join(ds.group(1).split()) if ds else ""
+    desc = unfold(ds.group(1)) if ds else ""
     return name, desc
+
+
+def unfold(raw):
+    """YAML 스칼라를 한 줄 텍스트로 편다.
+
+    description은 평문일 수도, 인용부호일 수도, 블록 스칼라(>- | |- >)일 수도
+    있다. 블록 마커를 그대로 두면 인덱스에 ">-"가 새어 나온다.
+    """
+    raw = raw.strip()
+    if raw[:1] in ("|", ">"):          # 블록 스칼라: 첫 줄은 마커(+들여쓰기 지시자)
+        raw = raw.split("\n", 1)[1] if "\n" in raw else ""
+    text = " ".join(raw.split())
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "\"'":
+        text = text[1:-1]
+    return text.strip()
 
 
 def one_line(desc, limit=160):
