@@ -6,7 +6,7 @@ CLAUDE.md는 스킬 본문 전체(1.2MB)를 스캔하는 대신 이 인덱스만
 
     python3 scripts/build-skill-index.py
 """
-import io, os, re, datetime
+import io, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "skills", "INDEX.md")
@@ -99,8 +99,7 @@ def main():
     w = buf.append
     w("# 스킬 인덱스\n")
     w("> 이 파일은 `scripts/build-skill-index.py`가 생성한다. 직접 수정하지 말 것.\n")
-    w(f"> 생성: {datetime.date.today().isoformat()} · "
-      f"스킬 {len(skills)}개 · 플러그인 스킬 {len(plugins)}개\n")
+    w(f"> 스킬 {len(skills)}개 · 플러그인 스킬 {len(plugins)}개\n")
     w("\n스킬을 고를 때는 이 인덱스에서 후보를 좁힌 뒤 **선택한 스킬의 SKILL.md만** 연다.\n")
     w("`자동`은 `~/.claude/skills`에 등록되어 설명 매칭으로 저절로 뜨는 스킬이다. "
       "나머지는 경로를 열어 직접 적용한다.\n")
@@ -139,11 +138,19 @@ def main():
         for r in sorted(plugins, key=lambda x: (x["plugin"], x["folder"])):
             w(f"| **{r['folder']}** | `{r['plugin']}` | {r['desc']} |")
 
-    io.open(OUT, "w", encoding="utf-8").write("\n".join(buf) + "\n")
-    size = os.path.getsize(OUT)
-    print(f"생성: {os.path.relpath(OUT, ROOT)}  ({size:,} bytes)")
-    print(f"  스킬 {len(skills)}개 (자동 로드 {sum(1 for r in skills if r['folder'] in reg)}개)")
-    print(f"  플러그인 스킬 {len(plugins)}개")
+    new = "\n".join(buf) + "\n"
+    try:
+        old = io.open(OUT, encoding="utf-8").read()
+    except OSError:
+        old = None
+    quiet = "--quiet" in sys.argv
+    if old == new:
+        if not quiet:
+            print(f"변경 없음: {os.path.relpath(OUT, ROOT)}")
+        return
+    io.open(OUT, "w", encoding="utf-8").write(new)
+    auto = sum(1 for r in skills if r["folder"] in reg)
+    print(f"인덱스 갱신: 스킬 {len(skills)}개(자동 {auto}) · 플러그인 {len(plugins)}개")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\" && python3 scripts/build-skill-index.py --quiet",
+            "timeout": 30,
+            "statusMessage": "스킬 인덱스 확인 중"
+          }
+        ]
+      }
+    ]
+  }
+}
