@@ -2,7 +2,7 @@
 
 > 이 파일은 `scripts/build-skill-index.py`가 생성한다. 직접 수정하지 말 것.
 
-> 스킬 132개 · 플러그인 스킬 19개
+> 스킬 133개 · 플러그인 스킬 19개
 
 
 스킬을 고를 때는 이 인덱스에서 후보를 좁힌 뒤 **선택한 스킬의 SKILL.md만** 연다.
@@ -88,7 +88,7 @@
 | **stitch-design-taste** | Semantic Design System Skill for Google Stitch. |  | `skills/ui/stitch-design-taste` |
 | **swiftui-pro** | Comprehensively reviews SwiftUI code for best practices on modern APIs, maintainability, and performance. |  | `skills/ui/swiftui-pro` |
 
-## 최상위 (57개)
+## 최상위 (58개)
 
 | 스킬 | 설명 | 자동 | 경로 |
 |---|---|:--:|---|
@@ -131,6 +131,7 @@
 | **portfolio-review** | Conduct a hiring-manager-perspective review of a design portfolio from a URL or PDF. |  | `skills/portfolio-review` |
 | **ppt-master** | > AI-driven multi-format SVG content generation system. |  | `skills/ppt-master` |
 | **pptx** | "Use this skill any time a .pptx file is involved in any way — as input, output, or both. |  | `skills/pptx` |
+| **presentation** | "Presentation expert for slide structure, storytelling, visual design, and audience engagement" |  | `skills/presentation` |
 | **presentation-deck** | Structure compelling design presentations for stakeholders, reviews, and showcases. | ● | `skills/presentation-deck` |
 | **presentation-design** | This skill should be used when the user asks to "design a presentation", "structure presentation content", "improve presentation flow", "create presentation ou… |  | `skills/presentation-design` |
 | **prototype** | Build multiple genuinely different versions of a UI piece you describe, rendered behind a visual picker so you can flip through them live and promote the one t… |  | `skills/prototype` |
