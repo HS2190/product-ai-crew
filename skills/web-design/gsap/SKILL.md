@@ -80,3 +80,16 @@ gsap.timeline({
 - Is this a static site or SPA (React/Next/Vue)? Any page transitions?
 - Do we need scroll-driven sections (pin/scrub/snap)?
 - Performance constraints (mobile support, reduced motion)?
+
+## 참조 문서 (필요할 때만 열기)
+
+전체 리소스 맵은 [REFERENCES.md](REFERENCES.md). 상황별로 아래를 읽는다.
+
+| 상황 | 문서 |
+|---|---|
+| ScrollTrigger가 안 먹거나 튀거나 어긋남 | [references/scrolltrigger-mistakes.md](references/scrolltrigger-mistakes.md) |
+| React/Next에서 GSAP 사용·정리 | [references/react.md](references/react.md) |
+| 타임라인 타이밍 조율(`<`, `>`, `-=`, 라벨) | [references/position-parameter.md](references/position-parameter.md) |
+| reduced motion·스크린리더 대응 | [references/accessibility.md](references/accessibility.md) |
+
+원문이 필요하면 https://gsap.com/resources/ 를 직접 fetch한다.
