@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Case · Wepair</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{word-break:keep-all;width:1440px;background:#EAE8E3;color:#111;font-family:'Noto Sans KR',sans-serif}
+.page{padding:28px 48px 48px}
+.mono{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.ab{font-family:'Archivo Black';font-weight:400;text-transform:uppercase}
+.bar{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #111;padding-bottom:14px}
+.logo{font-family:'Archivo Black';font-size:28px;letter-spacing:-.04em}
+.nav{display:flex;gap:6px}.nav span{padding:4px 8px}.nav .on{background:#111;color:#EAE8E3}
+.crumb{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #111}
+.spec{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:2px solid #111}
+.spec div{padding:12px 14px 14px;border-right:1px solid #111;display:flex;flex-direction:column;gap:6px}
+.spec div:last-child{border-right:0}
+.spec b{font-family:'Noto Sans KR';font-weight:700;font-size:14px;letter-spacing:-.01em}
+/* hero */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:96px 0 88px;border-bottom:2px solid #111}
+.h1{font-family:'Archivo Black';font-size:184px;line-height:.84;letter-spacing:-.055em;text-transform:uppercase;font-weight:400}
+.h1 .hl{background:#D2FF3D;padding:0 18px 0 10px}
+.lead{margin-top:44px;font-size:40px;font-weight:900;letter-spacing:-.06em;line-height:1.3}
+.sub{margin-top:16px;font-size:18px;line-height:1.6;color:#3A3936}
+.fig{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.fig .hd{background:#111;color:#EAE8E3;padding:8px 12px;display:flex;justify-content:space-between}
+.fig .im{padding:24px;display:flex;justify-content:center;border-bottom:1px solid #111}
+.fig .im img{width:250px;display:block;border:1.5px solid #111}
+.fig .cap{padding:10px 12px;display:flex;justify-content:space-between}
+/* key numbers */
+.keys{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid #111}
+.keys>div{padding:20px 20px 22px;border-right:1px solid #111;display:flex;flex-direction:column;gap:10px}
+.keys>div:last-child{border-right:0;background:#D2FF3D}
+.keys b{font-family:'Archivo Black';font-weight:400;font-size:64px;letter-spacing:-.05em;line-height:1}
+.keys p{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.tag{display:inline-block;border:1.5px solid #111;padding:2px 7px;font-weight:700;font-size:12px;line-height:16px;margin-right:8px}
+.tagrow{display:flex;align-items:center;gap:0;font-size:14px;color:#3A3936}
+/* section head */
+.sh{display:flex;justify-content:space-between;align-items:end;padding:100px 0 14px;border-bottom:2px solid #111}
+.sh h2{font-family:'Archivo Black';font-size:96px;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;font-weight:400}
+.sh .r{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.sh .r p{font-size:19px;font-weight:700;letter-spacing:-.03em}
+/* missing */
+.miss{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:24px}
+.phone{border:2px solid #111;background:#F2F1EC}
+.phone .hd{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:2px solid #111}
+.phone .im{padding:20px;display:flex;justify-content:center}
+.phone .im img{width:240px;display:block;border:1.5px solid #111}
+.voc{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.voc .hd{background:#111;color:#EAE8E3;padding:9px 16px;display:flex;justify-content:space-between}
+.vr{display:grid;grid-template-columns:110px 200px 1fr;gap:16px;align-items:baseline;padding:22px 16px;border-bottom:1px solid #111}
+.vr h3{font-size:26px;font-weight:900;letter-spacing:-.05em}
+.vr p{font-size:20px;line-height:1.5;letter-spacing:-.02em}
+.cause{padding:26px 24px 30px 16px;display:flex;align-items:center;gap:56px}
+.cause>div:first-child{flex:none}.cause .flow{flex:1}
+.cause .big{font-size:34px;font-weight:900;letter-spacing:-.06em;line-height:1.3}
+.flow{display:flex;align-items:center}
+.node{border:2px solid #111;padding:10px 16px;font-weight:700;font-size:17px;background:#EAE8E3;white-space:nowrap}
+.g{width:15px;height:15px;transform:rotate(45deg);background:#D2FF3D;flex:none;border:1.5px solid #111}
+.w{height:2px;background:#111;flex:1;min-width:16px}
+/* ia */
+.ia{display:grid;grid-template-columns:340px 1fr;border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.ia .l{padding:22px;border-right:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.ia .l b{font-family:'Archivo Black';font-weight:400;font-size:120px;letter-spacing:-.06em;line-height:.85}
+.ia .l p{font-size:18px;font-weight:700}
+.ia .r{display:flex;flex-direction:column}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:2px solid #111}
+.tabs span{padding:26px 20px;font-size:22px;font-weight:900;letter-spacing:-.04em;border-right:1px solid #111}
+.tabs span:last-child{border-right:0;background:#D2FF3D}
+.irow{display:grid;grid-template-columns:200px 1fr;padding:16px 20px;border-bottom:1px solid #111;font-size:17px;align-items:baseline}
+.irow:last-child{border-bottom:0}
+/* decisions */
+.dec{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.dc{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.dc .hd{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:2px solid #111}
+.dc h3{padding:18px 18px 0;font-size:30px;font-weight:900;letter-spacing:-.05em}
+.dc .im{padding:18px;display:flex;justify-content:center}
+.dc .im img{width:300px;display:block;border:1.5px solid #111}
+.dc .d{padding:16px 18px;border-top:1px solid #111;font-size:17px;font-weight:700;line-height:1.5;letter-spacing:-.02em}
+.dc .q{padding:14px 18px 18px;border-top:1px solid #111;font-size:15px;line-height:1.55;color:#3A3936;margin-top:auto}
+/* scope */
+.scope{display:grid;grid-template-columns:repeat(3,1fr) 1.3fr;border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.scope>div{padding:18px 18px 22px;border-right:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;gap:40px;min-height:180px}
+.scope>div:last-child{border-right:0}
+.scope .on{background:#D2FF3D}
+.scope h3{font-size:26px;font-weight:900;letter-spacing:-.05em;line-height:1.3}
+.scope .st{align-self:flex-start;border:1.5px solid #111;padding:3px 8px}
+.scope .on .st{background:#111;color:#EAE8E3}
+.scope p{font-size:17px;line-height:1.6}
+.risk{display:grid;grid-template-columns:200px 1fr;padding:18px 0;border-bottom:2px solid #111;font-size:17px;line-height:1.6;align-items:baseline}
+/* proof */
+.proof{margin-top:0}
+.pr{display:grid;grid-template-columns:120px 420px 1fr;gap:22px;align-items:center;border-bottom:1px solid #111;padding:22px 0}
+.pr b{font-family:'Archivo Black';font-weight:400;font-size:56px;letter-spacing:-.05em;line-height:1}
+.pr .kr{font-size:40px;font-weight:900;letter-spacing:-.06em;line-height:1.1}
+.pr p{font-size:17px;line-height:1.55}
+.pr small{display:block;font-size:14px;color:#3A3936;margin-top:4px}
+.contrib{background:#111;color:#EAE8E3;padding:22px 24px;display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.contrib p{font-size:22px;font-weight:900;letter-spacing:-.04em}
+/* limits */
+.lim{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.lim>div{border:2px solid #111;background:#F2F1EC;padding:22px 24px 26px;display:flex;flex-direction:column;gap:14px}
+.lim .o{background:#D2FF3D}
+.lim p{font-size:20px;line-height:1.6;letter-spacing:-.02em}
+.lim h3{font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:1.35}
+/* next */
+.next{margin-top:100px;background:#111;color:#EAE8E3}
+.next .t{padding:40px 40px 48px;display:flex;justify-content:space-between;align-items:end}
+.next h2{font-family:'Archivo Black';font-size:150px;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;font-weight:400}
+.next .band{background:#D2FF3D;color:#111;padding:24px 40px 28px;display:flex;justify-content:space-between;align-items:baseline}
+.next .band b{font-family:'Archivo Black';font-weight:400;font-size:64px;letter-spacing:-.04em;line-height:1;text-transform:uppercase}
+.foot{display:flex;justify-content:space-between;margin-top:30px;border-top:2px solid #111;padding-top:12px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.pn{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.pn.to{border:4px solid #111}
+.pn .hd{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:2px solid #111}
+.pn.to .hd{background:#D2FF3D;color:#111}
+.pn .im{padding:40px 0;display:flex;justify-content:center;border-bottom:1px solid #111}
+.pn .im img{width:400px;display:block;border:1.5px solid #111}
+.pn .ft{padding:18px 18px 22px;display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:baseline}
+.pn .ft p{font-size:24px;font-weight:900;letter-spacing:-.05em;line-height:1.35}
+.miss{grid-template-columns:1fr!important}
+html{background:#EAE8E3}body{margin:0 auto!important}</style></head><body><div class="page">
+
+<div class="bar"><span class="logo">ahn.</span><div class="nav mono"><span>Index</span><span>Off the clock</span><span>Built</span><span class="on">Work</span></div><span class="mono" style="text-transform:none">hs2190.an@gmail.com</span></div>
+<div class="crumb mono"><span>Cases / 02 · Wepair</span><span>Case · Commissioned</span></div>
+<div class="spec mono">
+  <div><span>Client</span><b>위페어 파트너스</b></div>
+  <div><span>Type</span><b>B2B 공업사 현장 앱</b></div>
+  <div><span>Period</span><b>2025–26</b></div>
+  <div><span>Role</span><b>UX/UI 디자인 · 문제 정의</b></div>
+  <div><span>Team</span><b>개발 4명 · 영업팀 협업</b></div>
+  <div><span>Scale</span><b>공업사 약 250곳</b></div>
+</div>
+
+<section class="hero">
+  <h1 class="h1">Wepair<br><span class="hl">partners.</span></h1>
+  <p class="lead">화면이 아니라<br>일하는 순서의 재설계.</p>
+  <p class="sub">공업사 현장에서 차 한 대가 입고부터 정산까지 가는 순서를 기준으로 다시 세운 정보 구조.</p>
+</section>
+
+<div class="keys">
+  <div><span class="mono">하단 탭</span><b>4→3</b><p>공정 기준으로 재구성</p></div>
+  <div><span class="mono">결제 확인</span><b>2→1</b><p>탭 2번이던 동선을 한 화면으로</p></div>
+  <div><span class="mono">스프린트 회의</span><b>12</b><p class="tagrow"><span class="tag">관찰</span>현장 VOC를 모은 회의</p></div>
+  <div><span class="mono">플로우 1개 작업 시간</span><b>5H→2H</b><p class="tagrow" style="color:#111"><span class="tag">실측</span>디자인 작업 기준</p></div>
+</div>
+
+<div class="sh"><h2>What was missing.</h2><div class="r"><span class="mono">01 · Missing</span><p>무엇이 없었나.</p></div></div>
+<div class="miss">
+  <div class="voc">
+    <div class="hd mono"><span>VOC · 2주 스프린트 회의 12회</span><span>세일즈팀이 전한 현장의 말</span></div>
+    <div class="vr"><span class="mono">Which</span><h3>어느 차인지</h3><p>"다 비슷해 보여서 중요한 게 뭔지 한눈에 안 들어와요."</p></div>
+    <div class="vr"><span class="mono">Next</span><h3>다음 작업</h3><p>"결제내역이랑 정산현황을 한 화면에서 한 번에 보고 싶어요."</p></div>
+    <div class="vr"><span class="mono">Who</span><h3>누가 했는지</h3><p>"누가 무슨 작업을 하는지 구분이 안 돼요."</p></div>
+    <div class="cause">
+      <div style="display:grid;grid-template-columns:126px auto;align-items:baseline"><span class="mono">Cause</span><p class="big">기능 단위로 나뉜 화면,<br>보이지 않던 차 한 대의 공정.</p></div>
+      <div class="flow"><span class="node">입고</span><span class="w"></span><span class="g"></span><span class="w"></span><span class="node">선견적</span><span class="w"></span><span class="g"></span><span class="w"></span><span class="node">작업</span><span class="w"></span><span class="g"></span><span class="w"></span><span class="node" style="background:#111;color:#EAE8E3">결제 · 정산</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="sh"><h2>Before / after.</h2><div class="r"><span class="mono">02 · As-is / To-be</span><p>같은 화면, 같은 크기로.</p></div></div>
+<div class="cmp">
+  <div class="pn"><div class="hd mono"><span>As-is · 리뉴얼 전</span><span>작업목록</span></div><div class="im"><img src="{{img:asis}}"></div><div class="ft"><span class="mono">Problem</span><p>다 비슷해 보이는 차 카드,<br>바로 구분되지 않는 차량.</p></div></div>
+  <div class="pn to"><div class="hd mono"><span>To-be · 리뉴얼 후</span><span>작업목록</span></div><div class="im"><img src="{{img:to-list}}"></div><div class="ft"><span class="mono">Decision</span><p>번호판을 가장 크게,<br>나머지는 카드로 정리.</p></div></div>
+</div>
+
+<div class="sh"><h2>Decisions.</h2><div class="r"><span class="mono">03 · Decision</span><p>세 가지 말을 세 가지 결정으로.</p></div></div>
+<div class="ia">
+  <div class="l"><span class="mono">Information architecture</span><b>4→3</b><p>흩어진 공정을 하단 탭 세 개로.</p></div>
+  <div class="r">
+    <div class="tabs"><span>작업목록</span><span>입고등록</span><span>결제 현황</span></div>
+    <div class="irow"><span class="mono">차량 식별</span><span>번호판을 모든 공정의 기준 키로.</span></div>
+    <div class="irow"><span class="mono">결제 · 정산</span><span>결제 현황을 메인 탭으로, 결제내역과 정산내역은 하나로.</span></div>
+    <div class="irow"><span class="mono">작업 사진</span><span>작업 흐름 안에서 바로 촬영과 전송. 버튼은 엄지가 닿는 하단에.</span></div>
+    <div class="irow"><span class="mono">옮긴 것</span><span>우리공장은 우측 상단 설정으로, 현장톡뷰는 알림 아이콘으로.</span></div>
+  </div>
+</div>
+<div class="dec">
+  <div class="dc"><div class="hd mono"><span>DEC-01 · Which</span><span>To-be</span></div><h3>정보 위계</h3><div class="im"><img src="{{img:to-list}}"></div><p class="d">번호판을 가장 크게, 나머지는 카드로 정리.</p><p class="q"><span class="tag">관찰</span>출시 후 VOC: "뉴텍 대비 차량 식별이 훨씬 쉽다"</p></div>
+  <div class="dc"><div class="hd mono"><span>DEC-02 · Next</span><span>To-be</span></div><h3>결제 · 정산</h3><div class="im"><img src="{{img:to-pay}}"></div><p class="d">결제 현황을 메인 탭으로, 2탭에서 1탭으로.</p><p class="q">탭 2번과 한 단계 더 들어가야 보이던 확인을 한 화면에.</p></div>
+  <div class="dc"><div class="hd mono"><span>DEC-03 · Who</span><span>To-be</span></div><h3>작업 사진</h3><div class="im"><img src="{{img:to-photo}}"></div><p class="d">사진 기능은 엄지존 하단으로,<br>여러 장 선택과 공유 추가.</p><p class="q"><span class="tag">관찰</span>출시 후 VOC: "작업사진 전송, 원래 필요했던 기능"</p></div>
+</div>
+
+<div class="sh"><h2>Scope.</h2><div class="r"><span class="mono">04 · Postpone &amp; launch</span><p>근본 해결은 미루고, '누가'부터 출시.</p></div></div>
+<div class="scope">
+  <div><span class="st mono">보류</span><h3>팀 · 작업자 관리</h3></div>
+  <div><span class="st mono">보류</span><h3>권한 · 역할 설정</h3></div>
+  <div class="on"><span class="st mono">출시</span><h3>작업 기록에<br>작업자 남기기</h3></div>
+  <div><span class="mono">Why</span><p>개발팀 4명과 회의로 범위를 정해 '누가'만 먼저. 개인 계정과 역할별 권한은 공수가 커서 1차 시안까지만 만들고 보류.</p></div>
+</div>
+<div class="risk"><span class="mono">남은 위험</span><span>그대로 남은 공용 계정. 퇴사자가 생길 때마다 비밀번호 변경, 모두에게 보이는 정산 정보.</span></div>
+
+<div class="sh"><h2>Proof.</h2><div class="r"><span class="mono">05 · Proof</span><p>숫자마다 근거 표시.</p></div></div>
+<div class="proof">
+  <div class="pr"><span class="tag" style="justify-self:start">실측</span><b>5H→2H</b><p>플로우 1개를 디자인하는 시간.<small>2026.03 Claude Code와 Figma MCP 도입 후, 디자인 작업 기준으로 잰 값.</small></p></div>
+  <div class="pr"><span class="tag" style="justify-self:start">실측</span><b>0→1</b><p>디자인 시스템 첫 구축.<small>컴포넌트 12개, 토큰 24개.</small></p></div>
+  <div class="pr"><span class="tag" style="justify-self:start">관찰</span><span class="kr">출시 후 VOC</span><p>"뉴텍 대비 차량 식별이 훨씬 쉽다"<br>"작업사진 전송, 원래 필요했던 기능"<small>세일즈팀이 전한 현장 반응.</small></p></div>
+</div>
+<div class="contrib"><span class="mono">Contribution</span><p>디자인 담당. 개발 4명, 영업팀과 함께 출시.</p></div>
+
+<div class="sh"><h2>Limits.</h2><div class="r"><span class="mono">06 · Limits</span><p>확인하지 못한 것.</p></div></div>
+<div class="lim">
+  <div><span class="mono">Not measured</span><p>작업 등록 시간, 사진 촬영부터 등록까지 걸리는 시간을 재는 설계까지 완료. 데이터를 모으기 전에 프로젝트가 마무리돼, 현장 효과는 수치 없음.</p></div>
+  <div class="o"><span class="mono">Since then</span><h3>그 뒤로는 문제를 정의할 때<br>무엇으로 확인할지도 함께.</h3></div>
+</div>
+
+<section class="next">
+  <div class="t"><h2>Next case.</h2><span class="mono">Case 03</span></div>
+  <div class="band"><b>Gocha</b><span class="mono">B2C 방문정비 앱 · 2022–23</span></div>
+</section>
+<div class="foot mono"><span>ahn. From screens to systems</span><span>Ref. AHN-2026 / Case 02</span><span>© 2026 Ahn Hyeonseo</span></div>
+</div></body></html>

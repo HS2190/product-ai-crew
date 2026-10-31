@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><link rel="icon" href="../favicon.svg" type="image/svg+xml"><title>Case · Iris</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Noto+Sans+KR:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{word-break:keep-all;width:1440px;background:#EAE8E3;color:#111;font-family:'Noto Sans KR',sans-serif}
+.page{padding:28px 48px 48px}
+.mono{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.ab{font-family:'Archivo Black';font-weight:400;text-transform:uppercase}
+.bar{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #111;padding-bottom:14px}
+.logo{font-family:'Archivo Black';font-size:28px;letter-spacing:-.04em}
+.nav{display:flex;gap:6px}.nav span{padding:4px 8px}.nav .on{background:#111;color:#EAE8E3}
+.crumb{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #111}
+.spec{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:2px solid #111}
+.spec div{padding:12px 14px 14px;border-right:1px solid #111;display:flex;flex-direction:column;gap:6px}
+.spec div:last-child{border-right:0}
+.spec b{font-family:'Noto Sans KR';font-weight:700;font-size:14px;letter-spacing:-.01em}
+/* hero */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:96px 0 88px;border-bottom:2px solid #111}
+.h1{font-family:'Archivo Black';font-size:184px;line-height:.84;letter-spacing:-.055em;text-transform:uppercase;font-weight:400}
+.h1 .hl{background:#D2FF3D;padding:0 18px 0 10px}
+.lead{margin-top:44px;font-size:40px;font-weight:900;letter-spacing:-.06em;line-height:1.3}
+.sub{margin-top:16px;font-size:18px;line-height:1.6;color:#3A3936}
+.fig{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.fig .hd{background:#111;color:#EAE8E3;padding:8px 12px;display:flex;justify-content:space-between}
+.fig .im{padding:24px;display:flex;justify-content:center;border-bottom:1px solid #111}
+.fig .im img{width:250px;display:block;border:1.5px solid #111}
+.fig .cap{padding:10px 12px;display:flex;justify-content:space-between}
+/* key numbers */
+.keys{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid #111}
+.keys>div{padding:20px 20px 22px;border-right:1px solid #111;display:flex;flex-direction:column;gap:10px}
+.keys>div:last-child{border-right:0;background:#D2FF3D}
+.keys b{font-family:'Archivo Black';font-weight:400;font-size:64px;letter-spacing:-.05em;line-height:1}
+.keys p{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.tag{display:inline-block;border:1.5px solid #111;padding:2px 7px;font-weight:700;font-size:12px;line-height:16px;margin-right:8px}
+.tagrow{display:flex;align-items:center;gap:0;font-size:14px;color:#3A3936}
+/* section head */
+.sh{display:flex;justify-content:space-between;align-items:end;padding:100px 0 14px;border-bottom:2px solid #111}
+.sh h2{font-family:'Archivo Black';font-size:96px;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;font-weight:400}
+.sh .r{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.sh .r p{font-size:19px;font-weight:700;letter-spacing:-.03em}
+/* missing */
+.miss{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:24px}
+.phone{border:2px solid #111;background:#F2F1EC}
+.phone .hd{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:2px solid #111}
+.phone .im{padding:20px;display:flex;justify-content:center}
+.phone .im img{width:240px;display:block;border:1.5px solid #111}
+.voc{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.voc .hd{background:#111;color:#EAE8E3;padding:9px 16px;display:flex;justify-content:space-between}
+.vr{display:grid;grid-template-columns:110px 200px 1fr;gap:16px;align-items:baseline;padding:22px 16px;border-bottom:1px solid #111}
+.vr h3{font-size:26px;font-weight:900;letter-spacing:-.05em}
+.vr p{font-size:20px;line-height:1.5;letter-spacing:-.02em}
+.cause{padding:26px 24px 30px 16px;display:flex;align-items:center;gap:56px}
+.cause>div:first-child{flex:none}.cause .flow{flex:1}
+.cause .big{font-size:34px;font-weight:900;letter-spacing:-.06em;line-height:1.3}
+.flow{display:flex;align-items:center}
+.node{border:2px solid #111;padding:10px 16px;font-weight:700;font-size:17px;background:#EAE8E3;white-space:nowrap}
+.g{width:15px;height:15px;transform:rotate(45deg);background:#D2FF3D;flex:none;border:1.5px solid #111}
+.w{height:2px;background:#111;flex:1;min-width:16px}
+/* ia */
+.ia{display:grid;grid-template-columns:340px 1fr;border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.ia .l{padding:22px;border-right:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.ia .l b{font-family:'Archivo Black';font-weight:400;font-size:120px;letter-spacing:-.06em;line-height:.85}
+.ia .l p{font-size:18px;font-weight:700}
+.ia .r{display:flex;flex-direction:column}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:2px solid #111}
+.tabs span{padding:26px 20px;font-size:22px;font-weight:900;letter-spacing:-.04em;border-right:1px solid #111}
+.tabs span:last-child{border-right:0;background:#D2FF3D}
+.irow{display:grid;grid-template-columns:200px 1fr;padding:16px 20px;border-bottom:1px solid #111;font-size:17px;align-items:baseline}
+.irow:last-child{border-bottom:0}
+/* decisions */
+.dec{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.dc{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.dc .hd{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:2px solid #111}
+.dc h3{padding:18px 18px 0;font-size:30px;font-weight:900;letter-spacing:-.05em}
+.dc .im{padding:18px;display:flex;justify-content:center}
+.dc .im img{width:300px;display:block;border:1.5px solid #111}
+.dc .d{padding:16px 18px;border-top:1px solid #111;font-size:17px;font-weight:700;line-height:1.5;letter-spacing:-.02em}
+.dc .q{padding:14px 18px 18px;border-top:1px solid #111;font-size:15px;line-height:1.55;color:#3A3936;margin-top:auto}
+/* scope */
+.scope{display:grid;grid-template-columns:repeat(3,1fr) 1.3fr;border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.scope>div{padding:18px 18px 22px;border-right:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;gap:40px;min-height:180px}
+.scope>div:last-child{border-right:0}
+.scope .on{background:#D2FF3D}
+.scope h3{font-size:26px;font-weight:900;letter-spacing:-.05em;line-height:1.3}
+.scope .st{align-self:flex-start;border:1.5px solid #111;padding:3px 8px}
+.scope .on .st{background:#111;color:#EAE8E3}
+.scope p{font-size:17px;line-height:1.6}
+.risk{display:grid;grid-template-columns:200px 1fr;padding:18px 0;border-bottom:2px solid #111;font-size:17px;line-height:1.6;align-items:baseline}
+/* proof */
+.proof{margin-top:0}
+.pr{display:grid;grid-template-columns:120px 420px 1fr;gap:22px;align-items:center;border-bottom:1px solid #111;padding:22px 0}
+.pr b{font-family:'Archivo Black';font-weight:400;font-size:56px;letter-spacing:-.05em;line-height:1}
+.pr .kr{font-size:40px;font-weight:900;letter-spacing:-.06em;line-height:1.1}
+.pr p{font-size:17px;line-height:1.55}
+.pr small{display:block;font-size:14px;color:#3A3936;margin-top:4px}
+.contrib{background:#111;color:#EAE8E3;padding:22px 24px;display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.contrib p{font-size:22px;font-weight:900;letter-spacing:-.04em}
+/* limits */
+.lim{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.lim>div{border:2px solid #111;background:#F2F1EC;padding:22px 24px 26px;display:flex;flex-direction:column;gap:14px}
+.lim .o{background:#D2FF3D}
+.lim p{font-size:20px;line-height:1.6;letter-spacing:-.02em}
+.lim h3{font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:1.35}
+/* next */
+.next{margin-top:100px;background:#111;color:#EAE8E3}
+.next .t{padding:40px 40px 48px;display:flex;justify-content:space-between;align-items:end}
+.next h2{font-family:'Archivo Black';font-size:150px;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;font-weight:400}
+.next .band{background:#D2FF3D;color:#111;padding:24px 40px 28px;display:flex;justify-content:space-between;align-items:baseline}
+.next .band b{font-family:'Archivo Black';font-weight:400;font-size:64px;letter-spacing:-.04em;line-height:1;text-transform:uppercase}
+.foot{display:flex;justify-content:space-between;margin-top:30px;border-top:2px solid #111;padding-top:12px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.pn{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.pn.to{border:4px solid #111}
+.pn .hd{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:2px solid #111}
+.pn.to .hd{background:#D2FF3D;color:#111}
+.pn .im{padding:40px 0;display:flex;justify-content:center;border-bottom:1px solid #111}
+.pn .im img{width:400px;display:block;border:1.5px solid #111}
+.pn .ft{padding:18px 18px 22px;display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:baseline}
+.pn .ft p{font-size:24px;font-weight:900;letter-spacing:-.05em;line-height:1.35}
+.miss{grid-template-columns:1fr!important}
+
+.dm{display:block;flex:none}
+.spec b{text-transform:none}
+.flow .w{min-width:24px}
+.rows{border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.rows .hd{background:#111;color:#EAE8E3;padding:9px 16px;display:flex;justify-content:space-between}
+.rw{display:grid;grid-template-columns:126px 230px 1fr;align-items:baseline;padding:22px 16px;border-bottom:1px solid #111}
+.rw:last-child{border-bottom:0}
+.rw h3{font-size:26px;font-weight:900;letter-spacing:-.05em;line-height:1.3}
+.rw p{font-size:19px;line-height:1.55;letter-spacing:-.02em}
+.rw .on{background:#D2FF3D}
+.cz{display:grid;grid-template-columns:126px auto 1fr;align-items:center;column-gap:0;padding:26px 24px 30px 16px;border-top:1px solid #111}
+.cz .big{font-size:34px;font-weight:900;letter-spacing:-.06em;line-height:1.3;padding-right:56px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.drow{display:grid;grid-template-columns:420px 1fr;border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.drow .tx{padding:22px;border-right:1px solid #111;display:flex;flex-direction:column;gap:16px}
+.drow .tx h3{font-size:34px;font-weight:900;letter-spacing:-.05em;line-height:1.25}
+.drow .tx p{font-size:17px;line-height:1.6}
+.drow .tx .q{margin-top:auto;padding-top:16px;border-top:1px solid #111;font-size:16px;color:#3A3936}
+.drow .ims{display:grid;grid-template-columns:1fr 1fr}
+.drow .ims>div{display:flex;flex-direction:column}
+.drow .ims>div+div{border-left:1px solid #111}
+.drow .ims .lb{padding:9px 14px;border-bottom:1px solid #111;display:flex;justify-content:space-between}
+.drow .ims .to .lb{background:#111;color:#EAE8E3}
+.drow .ims .im{padding:24px;display:flex;justify-content:center;flex:1;align-items:flex-start}
+.drow .ims img{display:block;border:1.5px solid #111;max-width:100%}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.box{border:2px solid #111;background:#F2F1EC;display:flex;flex-direction:column}
+.box .hd{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:2px solid #111}
+.box .hd.dk{background:#111;color:#EAE8E3}
+.box .bd{padding:18px 18px 22px;display:flex;flex-direction:column;gap:12px;flex:1}
+.box h3{font-size:28px;font-weight:900;letter-spacing:-.05em;line-height:1.3}
+.box p{font-size:17px;line-height:1.6}
+.box .im{padding:18px;display:flex;justify-content:center;border-bottom:1px solid #111}
+.box .im img{display:block;border:1.5px solid #111;max-width:100%}
+.box.on{background:#D2FF3D}
+.box.ink{background:#111;color:#EAE8E3}
+.box.ink .hd{border-color:#444}
+.tbl2{border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.tbl2 .tr{display:grid;border-bottom:1px solid #111}
+.tbl2 .tr:last-child{border-bottom:0}
+.tbl2 .tr>*{padding:16px 16px;border-right:1px solid #111;font-size:17px;line-height:1.55}
+.tbl2 .tr>*:last-child{border-right:0}
+.tbl2 .th{background:#111;color:#EAE8E3}
+.tbl2 .th>*{border-color:#444;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 16px}
+.tbl2 b{font-weight:900;font-size:19px;letter-spacing:-.03em}
+.days{display:grid;grid-template-columns:200px repeat(16,1fr);border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.days>div{border-right:1px solid #C9C6BE;border-bottom:1px solid #111;padding:10px 6px;min-height:52px;font-size:14px;display:flex;align-items:center}
+.days .hdc{background:#111;color:#EAE8E3;border-color:#444;justify-content:center;min-height:36px}
+.days .nm{padding-left:14px;font-weight:700;border-right:1px solid #111}
+.days .bar{background:#111;color:#EAE8E3;font-weight:700;font-size:13px;justify-content:center;border-right:1px solid #111}
+.days .bar.o{background:#D2FF3D;color:#111}
+.lvl{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #111;margin-top:24px}
+.lvl>div{padding:20px 20px 24px;border-right:1px solid #111;display:flex;flex-direction:column;gap:12px;background:#F2F1EC}
+.lvl>div:last-child{border-right:0}
+.lvl b{font-family:'Archivo Black';font-weight:400;font-size:72px;letter-spacing:-.05em;line-height:.9}
+.lvl h3{font-size:28px;font-weight:900;letter-spacing:-.05em}
+.lvl p{font-size:16px;line-height:1.6}
+.lvl .o{background:#D2FF3D}.lvl .k{background:#111;color:#EAE8E3}
+.nums6{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.nums6>div{padding:20px;border-right:1px solid #111;border-bottom:1px solid #111;display:flex;flex-direction:column;gap:10px}
+.nums6>div:nth-child(3n){border-right:0}
+.nums6>div:nth-last-child(-n+3){border-bottom:0}
+.nums6 b{font-family:'Archivo Black';font-weight:400;font-size:64px;letter-spacing:-.05em;line-height:1}
+.nums6 p{font-size:16px;font-weight:700}
+.shot{border:2px solid #111;background:#F2F1EC;margin-top:24px}
+.shot .hd{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:2px solid #111;background:#111;color:#EAE8E3}
+.shot .im{padding:32px;display:flex;justify-content:center}
+.shot .im img{display:block;border:1.5px solid #111}
+.shot .cap{padding:12px 16px;border-top:1px solid #111;display:flex;justify-content:space-between;font-size:15px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.steps .box .im img{width:100%}
+.note{margin-top:14px;font-size:15px;color:#3A3936}
+html{background:#EAE8E3}body{margin:0 auto!important}</style><style>a.navl{color:inherit;text-decoration:none;padding:4px 8px}a.navl.on,a.navl:hover{background:#111;color:#EAE8E3}.logo a{color:inherit;text-decoration:none}a.nextl{display:block;color:inherit;text-decoration:none}a.nextl:hover .band b{text-decoration:underline;text-decoration-thickness:6px}</style></head><body><div class="page">
+<div class="bar"><span class="logo"><a href="../index.html">ahn.</a></span><div class="nav mono"><a class="navl" href="../index.html">Index</a><a class="navl" href="../index.html#otc">Off the clock</a><a class="navl on" href="../index.html#cases">Cases</a><a class="navl" href="../index.html#built">Built</a></div><span class="mono" style="text-transform:none">hs2190.an@gmail.com</span></div>
+<div class="crumb mono"><span>Cases / 05 · Iris</span><span>Case · Self-initiated</span></div>
+<div class="spec mono"><div><span>Project</span><b>개인 프로젝트</b></div><div><span>Type</span><b>디자인 시스템</b></div><div><span>Period</span><b>2026</b></div><div><span>Role</span><b>설계 · 구현 · npm 배포</b></div><div><span>Team</span><b>Crew로 단계를 나눠 진행</b></div><div><span>License</span><b>MIT · npm 0.2.0</b></div></div>
+<section class="hero">
+  <h1 class="h1"><span class="hl">Iris.</span></h1>
+  <p class="lead">Figma에서 끝나지 않고<br>코드와 배포까지 이어지는 디자인 시스템.</p>
+  <p class="sub">위페어 · 고챠 · 센시콘에서 세 번, 처음부터. 네 번째는 다시 쓰이게.</p>
+</section>
+<div class="keys"><div><span class="mono">컴포넌트 세트</span><b>117</b><p class="tagrow"><span class="tag">실측</span>Figma 기준</p></div><div><span class="mono">변수</span><b>293</b><p class="tagrow"><span class="tag">실측</span>8 컬렉션</p></div><div><span class="mono">배포 컴포넌트</span><b>44</b><p class="tagrow"><span class="tag">실측</span>npm 0.2.0</p></div><div><span class="mono">Figma ↔ 코드 대조</span><b>1,012</b><p class="tagrow" style="color:#111"><span class="tag">실측</span>건 하나씩 대조</p></div></div>
+<div class="sh"><h2>What was missing.</h2><div class="r"><span class="mono">01 · Missing</span><p>무엇이 없었나.</p></div></div>
+<div class="rows"><div class="hd mono"><span>세 번의 0→1</span><span>위페어 · 고챠 · 센시콘</span></div><div class="rw"><span class="mono">Problem</span><h3>매번 처음부터</h3><p>세 프로젝트에서 디자인 시스템을 세 번, 처음부터.</p></div><div class="rw"><span class="mono">Cause</span><h3>그 안에서만 사용</h3><p>같은 판단이었지만 그 프로젝트 안에서만.</p></div><div class="rw"><span class="mono">Decision</span><h3>코드까지 연결</h3><p>Figma 변수를 원본으로, 설치해서 쓰는 코드까지 연결.</p></div></div>
+<div class="sh"><h2>Token layers.</h2><div class="r"><span class="mono">02 · Raw / Role</span><p>컴포넌트는 역할 이름만.</p></div></div>
+<div class="grid2"><div class="box"><div class="hd dk mono"><span>Why</span><span>Dark mode</span></div><div class="bd"><h3>다크 모드를 붙이려다<br>하루 만에 멈춤.</h3><p>색 하나를 컴포넌트가 직접 부르면, 다크 모드는 컴포넌트를 전부 고쳐야 적용. 그래서 원료와 역할의 두 층 분리. 어느 원료를 가리킬지는 역할 층에서.</p></div></div><div class="box"><div class="tbl2" style="margin:0;border:0"><div class="tr th" style="grid-template-columns:1.4fr 1fr 1fr"><span>Role</span><span>Light</span><span>Dark</span></div><div class="tr" style="grid-template-columns:1.4fr 1fr 1fr"><span><b>label/normal</b></span><span>cN/10</span><span>cN/99</span></div><div class="tr" style="grid-template-columns:1.4fr 1fr 1fr"><span><b>background/normal</b></span><span>common/100</span><span>cN/15</span></div><div class="tr" style="grid-template-columns:1.4fr 1fr 1fr"><span><b>primary/normal</b></span><span>violet/50</span><span>violet/60</span></div></div></div></div>
+<div class="sh"><h2>Pipeline.</h2><div class="r"><span class="mono">03 · Figma to npm</span><p>파이프라인 위의 핸드오프.</p></div></div>
+<div class="rows"><div class="hd mono"><span>Pipeline</span><span>Figma가 원본, 코드는 빌드 결과</span></div><div class="cz" style="border-top:0"><span class="mono">Flow</span><p class="big">문서 수치는<br>손으로 쓰지 않기.</p><div class="flow"><span class="node">Figma 원본</span><span class="w"></span><svg class="dm" width="18" height="18" viewBox="0 0 18 18"><path d="M9 1.5L16.5 9L9 16.5L1.5 9Z" fill="#D2FF3D" stroke="#111" stroke-width="1.5"/></svg><span class="w"></span><span class="node">빌드 · CSS</span><span class="w"></span><svg class="dm" width="18" height="18" viewBox="0 0 18 18"><path d="M9 1.5L16.5 9L9 16.5L1.5 9Z" fill="#D2FF3D" stroke="#111" stroke-width="1.5"/></svg><span class="w"></span><span class="node">npm 배포</span><span class="w"></span><svg class="dm" width="18" height="18" viewBox="0 0 18 18"><path d="M9 1.5L16.5 9L9 16.5L1.5 9Z" fill="#D2FF3D" stroke="#111" stroke-width="1.5"/></svg><span class="w"></span><span class="node" style="background:#111;color:#EAE8E3">문서 사이트</span></div></div></div>
+<div class="tbl2"><div class="tr th" style="grid-template-columns:126px 220px 1fr"><span></span><span>Guard</span><span></span></div><div class="tr" style="grid-template-columns:126px 220px 1fr"><span><span class="mono">입력</span></span><span><b>규칙 파일</b></span><span>토큰 이름 규칙 · 산출 형식 · 검수 기준부터 문서화</span></div><div class="tr" style="grid-template-columns:126px 220px 1fr"><span><span class="mono">검증</span></span><span><b>1,012건 대조</b></span><span>Figma 변수를 원본으로, 컴포넌트와 코드 하나씩 대조 · 타입체크</span></div><div class="tr" style="grid-template-columns:126px 220px 1fr"><span><span class="mono">방향</span></span><span><b>직접 고친 3번</b></span><span>토큰 2층 분리 · 아이콘 30종 폐기 · 플랫폼 분기 이관</span></div></div>
+<div class="sh"><h2>Proof.</h2><div class="r"><span class="mono">04 · Proof</span><p>숫자마다 근거 표시.</p></div></div>
+<div class="nums6"><div><span class="mono">컴포넌트 세트</span><b>117</b><p class="tagrow"><span class="tag">실측</span>Figma</p></div><div><span class="mono">변수</span><b>293</b><p class="tagrow"><span class="tag">실측</span>8 컬렉션</p></div><div><span class="mono">배포 컴포넌트</span><b>44</b><p class="tagrow"><span class="tag">실측</span>npm 0.2.0</p></div>
+<div><span class="mono">CSS 변수</span><b>335</b><p class="tagrow"><span class="tag">실측</span>빌드 결과</p></div><div><span class="mono">아이콘</span><b>72×2</b><p class="tagrow"><span class="tag">실측</span>line · fill</p></div><div style="background:#D2FF3D"><span class="mono">공개</span><b>MIT</b><p class="tagrow" style="color:#111"><span class="tag">출처</span>npm · 문서 사이트</p></div></div>
+<div class="contrib"><span class="mono">Contribution</span><p>설계부터 배포까지 직접. 실행은 Crew 6단계, 방향은 직접.</p></div>
+<div class="sh"><h2>Limits.</h2><div class="r"><span class="mono">05 · Limits</span><p>확인하지 못한 것.</p></div></div>
+<div class="lim"><div><span class="mono">Not measured</span><p>혼자 만든 시스템. 여러 사람이 함께 쓰며 생기는 마찰은 아직 미확인.</p></div><div class="o"><span class="mono">Since then</span><h3>다음은 팀의 피드백으로<br>기준이 고쳐지는 구조.</h3></div></div>
+<a class="nextl" href="gitmate.html"><section class="next">
+  <div class="t"><h2>Next case.</h2><span class="mono">Case 06</span></div>
+  <div class="band"><b>GitMate</b><span class="mono">AI 도구 · 2026.08</span></div>
+</section></a>
+<div class="foot mono"><span>ahn. From screens to systems</span><span>Ref. AHN-2026 / IRS-02</span><span>© 2026 Ahn Hyeonseo</span></div>
+</div></body></html>
