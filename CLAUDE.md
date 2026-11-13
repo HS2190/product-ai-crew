@@ -9,6 +9,8 @@
 각 에이전트의 아웃풋을 다음 에이전트의 인풋으로 전달하며
 전체 파이프라인의 흐름을 관리한다.
 
+> **회사(팀)마다 디자인 시스템을 붙여 쓸 수 있다.** 회사 conventions에 고정 디자인 시스템을 지정하면 디자이너 단계가 그 시스템을 바로 적용하고, 없으면 디자인 스킬 선택 게이트에서 고른다(「회사 식별」, 「디자인 스킬 선택 게이트」 참조).
+
 ---
 
 ## 에이전트 목록 및 CLAUDE.md 경로
@@ -21,11 +23,12 @@
 | 디자이너 | UI 디자인, 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
 | UX 라이터 | UX 문구, 라이팅 가이드 | `agents/ux-writer/CLAUDE.md` |
 | Engineer | 프론트엔드 구현, 빌드 검증 | `agents/engineer/CLAUDE.md` |
-| Reviewer | 산출물 내용 품질 비평 | `agents/reviewer/CLAUDE.md` |
+| QA | 구현 화면 실제 검증, 테스트 케이스 · 버그 리포트 (FULL 마지막) | `agents/qa/CLAUDE.md` |
+| Reviewer | 산출물 내용 품질 비평 (검수 실행 = Codex) | `agents/reviewer/CLAUDE.md` |
 
 각 에이전트 호출 시 해당 CLAUDE.md를 먼저 읽고 역할과 인풋/아웃풋 형식을 파악한 후 작업을 지시한다.
 
-> Reviewer는 PM·기획자·디자이너·UX라이터가 만든 산출물을 *검수*하는 에이전트다. 생성 에이전트가 아니라, 각 단계 산출물이 다음 단계로 넘어가기 전에 내용 품질을 비평하는 레이어다. 호출 위치와 처리 규칙은 아래 「인풋/아웃풋 전달 규칙」과 「Reviewer 검수 처리」를 따른다.
+> Reviewer는 각 단계 에이전트가 만든 산출물을 *검수*하는 에이전트다. 검수 실행은 Codex가 한다(Claude가 만든 것을 다른 모델이 본다). 생성 에이전트가 아니라, 각 단계 산출물이 다음 단계로 넘어가기 전에 내용 품질을 비평하는 레이어다. 호출 위치와 처리 규칙은 아래 「인풋/아웃풋 전달 규칙」과 「Reviewer 검수 처리」를 따른다.
 
 ---
 
@@ -58,7 +61,7 @@ persona_path: workspace/[서비스명]/persona.md
 
 | 층 | 경로 | 담는 것 |
 |----|------|--------|
-| 개인 | `workspace/_memory/designer-profile.md` | 회사 불문 유지되는 나의 작업 취향·원칙 |
+| 개인 | `workspace/_memory/designer-profile.md` | 회사 불문 유지되는 나의 작업 취향·원칙 (처음엔 없음 — 첫 개인 선호가 승인될 때 생성) |
 | 회사 | `workspace/_memory/companies/[회사명]/decisions.md` | 그 회사에서 내린 판단과 근거 (결정 로그) |
 | 회사 | `workspace/_memory/companies/[회사명]/conventions.md` | 그 회사의 톤·디자인 규칙·기술 제약 |
 
@@ -67,7 +70,7 @@ persona_path: workspace/[서비스명]/persona.md
 ### 회사 식별
 
 - `workspace/[서비스명]/session.md`의 `company: [회사명]` 필드로 프로젝트가 속한 회사를 식별한다.
-- 새 프로젝트 시작 시 회사명을 사용자에게 확인한다. 회사가 없거나 개인 작업이면 `company: default`.
+- `company`가 비어 있으면 작업 시작 시 한 번 묻는다(개인 작업이면 `personal`). 정한 값은 session.md에 적고 다시 묻지 않는다.
 - 해당 회사 폴더가 없으면 `workspace/_memory/companies/_template/`를 복사해 `companies/[회사명]/`를 만든다.
 
 ### 기억 읽기 — 작업 시작 시 자동 주입 (핵심)
@@ -75,7 +78,7 @@ persona_path: workspace/[서비스명]/persona.md
 사용자가 "지난번 결정 참고해"라고 말하지 않아도, 오케스트레이터가 작업 시작 시 기억층을 **자동 로딩**해 모든 에이전트에 주입한다. 페르소나를 `persona_path`로 주입하는 것과 동일한 메커니즘이다.
 
 로딩 대상:
-- `workspace/_memory/designer-profile.md` (항상)
+- `workspace/_memory/designer-profile.md` (있으면)
 - `workspace/_memory/companies/[회사]/decisions.md` (있으면)
 - `workspace/_memory/companies/[회사]/conventions.md` (있으면)
 
@@ -90,12 +93,12 @@ persona_path: workspace/[서비스명]/persona.md
 
 ```
 💾 이 결정을 [회사] 기억에 남길까요?
-[결정] soft/hard 3단계 입력 채택
-[근거] 2단계는 강도 정보를 버리고 4단계는 변별이 어려움
+[결정] 목록 기본 정렬을 최신순으로
+[근거] 사용자가 가장 먼저 확인하는 건 최근 항목
 → 회사 결정에 남기기 / 개인 프로파일에 / 안 남김
 ```
 
-3. 사용자가 승인한 분류의 파일에 append한다. 승인하지 않으면 누적하지 않는다.
+3. 사용자가 승인한 분류의 파일에 append한다. 승인하지 않으면 누적하지 않는다. `designer-profile.md`가 아직 없으면 이때 새로 만든다(섹션: 글쓰기·카피 톤 / 디자인 원칙 / 작업 방식 / 기록 로그).
 
 **분류 기준**
 - 회사 불문 개인 취향 → `designer-profile.md`
@@ -123,7 +126,7 @@ persona_path: workspace/[서비스명]/persona.md
 
 | 모드 | 설명 | 에이전트 호출 순서 |
 |------|------|-----------------|
-| **FULL** | 신규 서비스/기능 전체 프로세스 (구현까지) | Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer |
+| **FULL** | 신규 서비스/기능 전체 프로세스 (구현 · 검증까지) | Researcher → PM → 기획자 → UX라이터 → 디자이너 → (가상 사용자 점검) → Engineer → QA |
 | **PLAN** | 리서치 + PRD + 화면 기획까지 | Researcher → PM → 기획자 |
 | **RESEARCH** | 리서치/경쟁사 분석만 필요 | Researcher 단독 |
 | **DESIGN** | 기획안이 있고 디자인만 필요 | 기획자 → 디자이너 |
@@ -156,10 +159,10 @@ persona_path: workspace/[서비스명]/persona.md
 
 ### 전체 파이프라인 흐름
 
-각 생성 에이전트(Researcher/PM/기획자/디자이너/UX라이터/Engineer)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
+각 생성 에이전트(Researcher/PM/기획자/UX라이터/디자이너/Engineer/QA)가 산출물을 내면, 다음 에이전트로 넘어가기 전에 **두 단계 게이트**를 거친다.
 
 1. **존재 검증 게이트** (기존) — 파일·필드가 있는지 확인. 실패하면 `blocked` 처리.
-2. **Reviewer 검수** — 내용 품질을 비평. `pass` / `revise`(같은 단계 재작업) / `rollback`(상류 단계로 되돌림) / `escalate`(사람 판단) 판정. Reviewer의 verdict와 근거는 각 단계 정지 보고 시 **항상 사용자에게 노출**되며, 사용자 판단이 Reviewer보다 우선한다(아래 「Reviewer 검수 처리」 참조).
+2. **Reviewer 검수** — 내용 품질을 비평. **검수 실행은 모든 단계에서 Codex(OpenAI, `codex exec` 읽기 전용)가 한다** — 만든 모델(Claude)과 검수 모델을 분리해 같은 사각지대를 피한다(`agents/reviewer/CLAUDE.md` 「검수 실행 모델 — Codex」). `pass` / `revise`(같은 단계 재작업) / `rollback`(상류 단계로 되돌림) / `escalate`(사람 판단) 판정. Reviewer의 verdict와 근거는 각 단계 정지 보고 시 **항상 사용자에게 노출**되며, 사용자 판단이 Reviewer보다 우선한다(아래 「Reviewer 검수 처리」 참조).
 
 ```
 [사용자 요청]
@@ -198,14 +201,25 @@ persona_path: workspace/[서비스명]/persona.md
   아웃풋: 화면 기획안, 기능 명세서, User Flow, 와이어프레임
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
+[UX 라이터 에이전트] (FULL / WRITE 모드)
+  인풋:  화면 기획안, 기능 명세서(상태·예외 정의), 브랜드 방향성, 보이스 가이드
+         (WRITE 모드에서 기존 화면 문구를 정비할 때만 디자인 화면을 받는다)
+  아웃풋: UX 라이팅 가이드, 화면별 문구 시트(copy_sheet) — FULL에서는 디자인 전에 문구를 먼저 확정
+        ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
+        ↓ pass
 [Figma 링크 수령] (FULL / DESIGN 모드, 디자이너 진입 직전 — 1회 정지)
   - 디자이너 호출 전에 멈추고 사용자에게 요청한다:
     "디자인을 받을 Figma 페이지 링크를 주세요. (Figma로 받지 않으려면 '스킵'이라고 알려주세요.)"
   - 링크 제공 → figma_link로 저장, 디자이너 인풋에 전달. 디자이너는 그 페이지에 그린다(figma_url 필수 산출).
   - '스킵' 또는 Figma MCP 미연결 → figma_link 없이 진행. 디자이너는 마크다운 스펙만 산출, figma_url은 N/A(사유 명시).
-  - 이 단계는 디자이너 진입 직전에만 1회 묻는다(Researcher~기획자 단계에서는 묻지 않는다).
+  - 이 단계는 디자이너 진입 직전에만 1회 묻는다(Researcher~UX라이터 단계에서는 묻지 않는다).
         ↓
-[디자인 스킬 선택 게이트] (FULL / DESIGN 모드, 디자이너 본작업 직전 — 정지)
+[디자인 스킬 선택 게이트] (FULL / DESIGN 모드, 디자이너 본작업 직전)
+  - ★ 회사 conventions에 고정 디자인 시스템이 지정돼 있으면(예: `skills/[회사-DS]`) 추천·정지 없이
+    그 스킬을 design_skill로 바로 적용한다. 진행 보고에 "적용 디자인 시스템: [스킬명]"을 명시하고,
+    사용자가 다른 스킬을 원하면 그 판단이 우선한다. 보조 스타일 스킬(모션·레이아웃 등)을 함께 쓰려 할 때만
+    추천 → 승인을 받는다. Figma 작업은 conventions에 적힌 라이브러리의 컴포넌트·Variables를 import해 쓴다.
+  - 고정 디자인 시스템이 없는 회사일 때만 아래 추천 게이트(정지)를 거친다.
   - 디자이너가 기획 결과물(screen_plan·feature_spec)·PRD·페르소나·conventions를 분석해
     이 프로젝트에 맞는 `skills/`의 디자인 스타일/시스템 스킬을 **추천**한다(1순위+대안, 각 근거).
   - 근거는 라벨 동어반복이 아니라 기획의 구체적 특징에 기반한다.
@@ -214,28 +228,44 @@ persona_path: workspace/[서비스명]/persona.md
   - Figma 링크 수령과는 **순차로** 묻는다(스킬 추천은 기획 분석 결과를 보여줘야 하므로 분리).
         ↓
 [디자이너 에이전트] (FULL / DESIGN 모드)
-  인풋:  화면 기획안, 기능 명세서, platform(mobile/web/both), 브랜드 방향성, figma_link(있으면), design_skill(승인된 스킬)
+  인풋:  화면 기획안, 기능 명세서, copy_sheet(문구 시트 — FULL), platform(mobile/web/both), 브랜드 방향성, figma_link(있으면), design_skill(승인된 스킬)
+  규칙:  화면 문구는 copy_sheet 문구 그대로 쓴다(임시 문구 금지). 공간에 안 맞으면 design_spec 「문구 조정 요청」에 적고,
+         오케스트레이터가 UX라이터에게 그 줄만 다시 다듬게 한 뒤 디자이너가 반영한다.
   아웃풋: 디자인 스펙(적용 스킬·전 화면 N개/전 컴포넌트 M개 명시), 컴포넌트 스펙, figma_draw_plan(figma_link 받았을 때)
         ↓
 [Figma 드로잉 위임] (figma_link 받았을 때만 — 오케스트레이터/메인 세션 수행)
   - 네이티브 서브에이전트는 Figma MCP 도구에 접근하지 못한다. 디자이너의 figma_draw_plan을 받아
     메인 세션이 위임받아 Figma에 그린다: Variables(토큰) → 컴포넌트+Variant → 전 화면(디바이스/브레이크포인트 사이즈) 배치.
   - 오토레이아웃·시멘틱 네이밍·토큰 참조(Figma 제작 표준) 준수. 완료 후 figma_url 확보 → 디자이너 산출의 figma_url로 채운다.
+  - **핸드오프 주석 배치**: 화면을 그린 뒤 figma_draw_plan의 핸드오프 배치표대로 흐름 섹션(정상 / 예외)과 화면 번호 · 설명을 붙인다.
+    회사 conventions에 핸드오프 주석 라이브러리 · 규칙이 있으면 그것을 따른다. Timestamp는 작업일.
+    라이브러리 import가 안 되면 비슷한 모양을 직접 그리지 말고 사용자에게 알린다.
   - Figma 호출 한도 고려: 핵심 컴포넌트·전 화면 위주, 많으면 핵심 플로우 우선.
+  - **Codex 검수용 화면 저장**: Codex는 Figma에 접근하지 못하므로 핵심 화면을 `get_screenshot`으로 받아 `workspace/[서비스명]/designer/review-shots/`에 PNG로 저장하고, Reviewer 호출 시 경로를 함께 넘긴다.
   - figma_link 없으면(스킵/미연결) 이 단계 생략, figma_url=N/A.
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
         ↓ pass
-[UX 라이터 에이전트] (FULL / WRITE 모드)
-  인풋:  화면 기획안, 디자인 화면, 브랜드 방향성, 보이스 가이드
-  아웃풋: UX 라이팅 가이드, 화면별 문구
-        ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
-        ↓ pass
+[가상 사용자 점검] (FULL 모드, 오케스트레이터/메인 세션 수행 — 판정 없음)
+  - 스킬 `user-voice-sim`으로 디자이너 Figma의 핵심 과업 흐름 3~5장을 persona_path 페르소나별로 인터뷰
+    (기본 Claude · Codex 두 모델 각각 실행, 사용자가 모델을 지정하면 그 모델만. 신뢰도 높음 = 두 모델 모두 같은 곳에서 막힘)
+  - figma_url 없으면(스킵) 또는 스킬 미설치면 생략하고 사유만 보고
+  - 결과: workspace/[서비스명]/feedback-sim/ — 신뢰도 높음만 수정 제안으로 사용자에게 보여 주고,
+    승인한 것만 원인별로 넘긴다(문구 → UX라이터 그 줄만 → 디자이너 반영 / 배치 → 디자이너). 1회로 끝낸다
+        ↓
 [Engineer 에이전트] (FULL / BUILD 모드)
   인풋:  디자인 스펙, 컴포넌트 스펙, Figma URL, 문구 시트, 기술 스택
   아웃풋: 동작하는 프론트엔드 코드, 빌드 결과, 미리보기 URL
         ↓  [존재 검증 게이트] → [Reviewer 검수] (이하 동일 패턴)
+        ↓ pass (BUILD 모드는 여기서 작업 완료 보고)
+[QA 에이전트] (FULL 모드만)
+  인풋:  기능 명세서, 화면 기획안, 문구 시트, 디자인 스펙, code_path · run_command · preview_url, implementation_notes, platform
+  아웃풋: 테스트 케이스, QA 리포트(실행 결과 · 탐색 세션 · 버그), qa_status(pass/fail), 기획 확인 목록
+  - qa_status: fail(치명 · 주요 남음) → 버그 리포트를 Engineer에 넘겨 수정 → QA 재테스트(retest_of). 최대 2회, 그래도 남으면 사용자 판단
+  - 「기획 확인」(문서끼리 다름 · 문서에 없는 상황)은 Engineer에게 넘기지 않고 사용자에게 보고
+  - qa_status: pass → 보통 · 사소 버그는 남은 목록으로 보고(고칠지는 사용자 판단)
+        ↓  [존재 검증 게이트] → [Reviewer 검수] (QA 산출물 품질)
         ↓ pass
-[작업 완료 보고]  ← 최종 산출물: Engineer 구현 코드
+[작업 완료 보고]  ← 최종 산출물: Engineer 구현 코드 + QA 테스트 케이스 · 리포트
 ```
 
 > 두 게이트의 순서는 **존재 검증 → 내용 비평**이다. 존재 검증을 통과해야 Reviewer를 호출한다. 존재 검증 실패는 기존대로 `blocked` 처리이고, 내용 비평은 그 다음 단계다.
@@ -271,7 +301,7 @@ memory_context: designer-profile.md + companies/[회사]/{decisions,conventions}
 ```
 role:           reviewer
 task:           [target_role] 산출물 검수
-target_role:    researcher / pm / planner / designer / ux-writer / engineer
+target_role:    researcher / pm / planner / designer / ux-writer / engineer / qa
 target_output:  [검수할 산출물 파일 경로(들)]
 persona_path:   workspace/[서비스명]/persona.md   # 존재할 때만
 revision_count: [이 산출물이 지금까지 재작업된 횟수]
@@ -338,18 +368,27 @@ rollback 사유: [rollback_reason — 무엇이 왜 상류 문제이고, 현재 
 
 ## 산출물 저장 경로 규칙
 
-모든 산출물은 서비스명 폴더 아래에 역할별로 저장한다. 프로젝트를 넘는 누적 기억은 `workspace/_memory/`에 별도로 둔다(「프로젝트 간 기억층」 참조).
+**작업물은 이 레포의 `workspace/[서비스명]/`에 역할별로 저장한다.** 프로젝트를 넘는 누적 기억은 `workspace/_memory/`에 둔다(「프로젝트 간 기억층」 참조). 작업물을 별도 레포로 관리하고 싶으면 이 문서의 `workspace/` 경로를 그 위치로 바꿔 쓴다.
+
+- `[서비스명]` 폴더가 없으면 새로 만든다.
+- 기존 디자인 분석 · 검토 문서가 있으면 `workspace/[서비스명]/analysis/`에 두고, 해당 서비스 작업 시 Researcher · PM · 기획자 인풋으로 함께 전달한다.
 
 ```
 workspace/
   _memory/            ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션)
+  persona-template.md ← 페르소나 템플릿
   [서비스명]/
+    analysis/         ← 기존 디자인 분석·검토 문서 (있으면)
+    persona.md        ← 서비스 페르소나
     researcher/       ← Researcher 산출물 (리서치 종합, 경쟁 분석, insights)
     pm/               ← PM 산출물 (PRD, 로드맵, 우선순위)
     planner/          ← 기획자 산출물 (화면 기획안, 기능 명세서, User Flow)
-    designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
     ux-writer/        ← UX 라이터 산출물 (라이팅 가이드, 문구 시트)
+    designer/         ← 디자이너 산출물 (디자인 스펙, 컴포넌트 스펙)
+    feedback-sim/     ← 가상 사용자 점검 결과 (user-voice-sim, 설치했을 때)
     engineer/         ← Engineer 산출물 (동작하는 프론트엔드 코드, 빌드 결과)
+    qa/               ← QA 산출물 (테스트 케이스, QA 리포트, 증거, Playwright 스크립트)
+    reviews/          ← Reviewer 검수 원문 ([단계]-r[회차].md)
     session.md        ← 작업 세션 체크포인트 (오케스트레이터 관리)
 ```
 
@@ -389,7 +428,7 @@ workspace/
 # 작업 세션
 
 service: [서비스명]
-company: [회사명]   # 기억층 회사 식별용. 없거나 개인 작업이면 default
+company: [회사명]   # 기억층 회사 식별용 (workspace/_memory/companies/[회사명]/). 개인 작업이면 personal
 feature: [기능명]
 mode: RESEARCH / FULL / PLAN / DESIGN / BUILD / WRITE / CUSTOM
 status: in_progress / complete
@@ -403,9 +442,11 @@ updated_at: YYYY-MM-DD
 | 1 | Researcher | complete | pass | 0 | 2026-05-04 |
 | 2 | PM | complete | pass | 0 | 2026-05-04 |
 | 3 | 기획자 | complete | revise→pass | 1 | 2026-05-04 |
-| 4 | 디자이너 | in_progress | - | 0 | - |
-| 5 | UX 라이터 | pending | - | 0 | - |
+| 4 | UX 라이터 | complete | pass | 0 | 2026-05-04 |
+| 5 | 디자이너 | in_progress | - | 0 | - |
+| 5-1 | 가상 사용자 점검 | pending | (판정 없음) | - | - |
 | 6 | Engineer | pending | - | 0 | - |
+| 7 | QA | pending | - | 0 | - |
 
 > 검수 결과 표기: `pass` / `revise(N)` / `rollback(N)` / `escalate`. 반복되면 `revise→pass`, `rollback→pass`처럼 최종 결과까지 남긴다. 사용자가 verdict를 뒤집었으면 `pass(사용자 revise 지시)`처럼 함께 남긴다.
 > 재작업 횟수는 산출물별로 누적 기록한다. 대화가 끊겨 재개해도 이 값이 유지돼야 2회 상한과 escalate 전환이 올바르게 동작한다.
@@ -488,6 +529,12 @@ PRD 핵심 내용, 기획 범위, 브랜드 방향성 등을 충분히 기재한
 - [ ] `build_status`가 `pass`인가
 - [ ] `implementation_notes`가 제공됐는가
 
+### QA 아웃풋 검증 (FULL)
+
+- [ ] `test_cases` 파일이 존재하는가
+- [ ] `qa_report` 파일이 존재하는가
+- [ ] `qa_status`가 `pass` / `fail` 중 하나인가
+
 ### 검증 실패 처리
 
 ```
@@ -511,7 +558,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 | 모드 | 검수 적용 |
 |------|----------|
-| **FULL** | Researcher·PM·기획자·디자이너·UX라이터·Engineer **각 단계마다** 검수 |
+| **FULL** | Researcher·PM·기획자·UX라이터·디자이너·Engineer·QA **각 단계마다** 검수 |
 | **PLAN** | Researcher·PM·기획자 **각 단계마다** 검수 |
 | **RESEARCH** | Researcher 단독이므로 그 산출물에 **1회** 검수 |
 | **DESIGN** | 기획자·디자이너 **각 단계마다** 검수 |
@@ -529,7 +576,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 사용자 요청을 받으면 아래 순서로 진행한다.
 
 1. **요청 분석** — 서비스명, 기능명, 작업 범위 파악
-2. **회사 식별 및 기억층 로딩** — `company` 확인(없으면 사용자에게 확인, 개인 작업이면 `default`). `workspace/_memory/designer-profile.md`(항상) + `companies/[회사]/decisions.md`·`conventions.md`(있으면)를 로딩해 `memory_context`로 준비
+2. **회사 식별 및 기억층 로딩** — `company` 확인(비어 있으면 한 번 묻기). `workspace/_memory/designer-profile.md`·`companies/[회사]/decisions.md`·`conventions.md`를 있는 것만 로딩해 `memory_context`로 준비
 3. **세션 확인** — `workspace/[서비스명]/session.md` 확인. `in_progress`이면 재개 여부 사용자에게 확인
 4. **모드 결정** — RESEARCH / FULL / PLAN / DESIGN / BUILD / WRITE / CUSTOM 판단
 5. **플랫폼 확정** — `platform`을 `mobile` / `web` / `both` 중 확정한다(사용자 미지정 시 묻는다). 이 값을 PM→기획자→디자이너→Engineer 인풋에 전달하며, 단계별 화면 설계·디자인(디바이스/브레이크포인트)·구현 기준이 분기된다.
@@ -550,7 +597,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 
 실행 모드: [FULL / PLAN / DESIGN / WRITE / CUSTOM]
 서비스/기능: [작업 대상]
-실행 에이전트: [Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer]
+실행 에이전트: [Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer → QA]
 
 ### 산출물 목록
 
@@ -559,9 +606,11 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 | Researcher | 리서치 종합, 경쟁 분석 | workspace/[서비스명]/researcher/... |
 | PM      | PRD   | workspace/[서비스명]/pm/PRD/... |
 | 기획자  | 화면 기획안, 기능 명세서 | workspace/[서비스명]/planner/... |
-| 디자이너 | 디자인 스펙, 컴포넌트 스펙 | workspace/[서비스명]/designer/... |
 | UX 라이터 | 라이팅 가이드, 문구 시트 | workspace/[서비스명]/ux-writer/... |
+| 디자이너 | 디자인 스펙, 컴포넌트 스펙 | workspace/[서비스명]/designer/... |
+| 가상 사용자 점검 | 페르소나별 반응, 오해 지점 · 수정 후보 | workspace/[서비스명]/feedback-sim/... |
 | Engineer | 동작하는 프론트엔드 코드, 빌드 결과 | workspace/[서비스명]/engineer/... |
+| QA | 테스트 케이스, QA 리포트 (버그 · 기획 확인 · 실행 못함) | workspace/[서비스명]/qa/... |
 
 ### 기억층 추가
 - 없음 / [이번 작업에서 승인되어 누적된 항목 — 예: [회사] decisions에 "soft/hard 3단계 채택" 추가]
@@ -572,7 +621,7 @@ Reviewer 검수(2단계)는 모드에 따라 아래처럼 적용한다.
 ### 최종 아웃풋
 
 이 시스템의 범위는 디자인 → **프론트엔드 구현**까지다.
-FULL 모드의 최종 산출물은 **Engineer의 구현 코드(동작하는 프론트엔드)**다.
+FULL 모드의 최종 산출물은 **Engineer의 구현 코드(동작하는 프론트엔드)**와 **QA의 테스트 케이스 · 리포트**다.
 (백엔드·DB·API는 범위에 포함되지 않으며, 데이터는 mock/정적으로 처리한다.)
 ```
 
@@ -601,6 +650,7 @@ FULL 모드의 최종 산출물은 **Engineer의 구현 코드(동작하는 프�
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 컴포넌트 스펙·디자인 QA·피그마 작업
 - [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — UI 문구 추출·검토·개선
 - [[agents/engineer/CLAUDE|Engineer 가이드]] — 프론트엔드 구현·빌드 검증 (파이프라인 마지막, 최종 산출물)
+- [[agents/qa/CLAUDE|QA 가이드]] — 구현 화면 실제 검증 · 테스트 케이스 · 버그 리포트 (FULL 마지막)
 - [[agents/reviewer/CLAUDE|Reviewer 가이드]] — 산출물 내용 품질 비평 (존재 검증 위에 얹는 2단계 게이트)
 
 ### 템플릿·인프라

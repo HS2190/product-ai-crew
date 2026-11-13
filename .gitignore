@@ -1,9 +1,6 @@
-# 산출물 폴더 — 작업 연동을 위해 트래킹 활성화
-# workspace/
-# !workspace/**/.gitkeep
-
-# gitmate은 자체 GitHub 저장소(github.com/HS2190/gitmate)로 분리 관리 — 상위 repo에서 제외
-workspace/gitmate/
+# 작업물은 workspace/[서비스명]/에 저장한다. 커밋하지 않으려면 아래 줄의 주석을 푼다.
+# workspace/*/
+# !workspace/_memory/
 
 # proprietary/source-available 라이선스 스킬 — 재배포 불가하므로 로컬 전용 관리 (출처: anthropics/skills, Gabberflast/academic-pptx-skill)
 skills/pptx/

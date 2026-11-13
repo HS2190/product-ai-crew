@@ -1,7 +1,7 @@
 # Product AI Crew — 사용 가이드
 
 Claude Code 기반 멀티 에이전트 제품 조직 시스템.
-Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer 6개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 Reviewer의 내용 품질 검수를 거친다. 리서치부터 동작하는 프론트엔드 구현까지가 범위다.
+Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer → QA 7개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 Reviewer의 내용 품질 검수를 거친다. 리서치부터 동작하는 프론트엔드 구현 · 검증(QA, FULL 모드)까지가 범위다.
 
 ---
 
@@ -16,7 +16,8 @@ Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer 6�
 | UI/UX 디자이너 | `designer/CLAUDE.md` | 화면 디자인, 컴포넌트 스펙, Figma 반영 |
 | UX 라이터 | `ux-writer/CLAUDE.md` | UX 문구 작성, 라이팅 가이드, 금지 표현 관리 |
 | Engineer | `engineer/CLAUDE.md` | 프론트엔드 구현, 빌드 검증 (최종 산출물) |
-| Reviewer | `reviewer/CLAUDE.md` | 각 단계 산출물의 내용 품질 비평 (pass/revise/escalate) |
+| QA | `qa/CLAUDE.md` | 구현 화면 실제 검증, 테스트 케이스 · 버그 리포트 (FULL 마지막) |
+| Reviewer | `reviewer/CLAUDE.md` | 각 단계 산출물의 내용 품질 비평 (pass/revise/rollback/escalate) — 검수 실행은 Codex |
 
 ---
 
@@ -24,7 +25,7 @@ Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer 6�
 
 | 모드 | 언제 쓰는가 | 에이전트 순서 |
 |------|-----------|-------------|
-| **FULL** | 기능을 아무것도 없는 상태에서 구현까지 만들 때 | Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer |
+| **FULL** | 기능을 아무것도 없는 상태에서 구현 · 검증까지 만들 때 | Researcher → PM → 기획자 → UX라이터 → 디자이너 → (가상 사용자 점검) → Engineer → QA |
 | **PLAN** | 리서치·PRD·기획서까지 필요할 때 | Researcher → PM → 기획자 |
 | **RESEARCH** | 리서치·경쟁사 분석만 필요할 때 | Researcher 단독 |
 | **DESIGN** | 기획안이 이미 있고 디자인만 필요할 때 | 기획자 → 디자이너 |
@@ -61,14 +62,20 @@ PM
 기획자
  └─ 화면 기획안, 기능 명세서, User Flow 작성
         ↓ [존재 검증] → [Reviewer 검수]
-디자이너
- └─ 디자인 스펙, 컴포넌트 스펙, Figma 반영
-        ↓ [존재 검증] → [Reviewer 검수]
 UX라이터
- └─ 화면별 문구 시트, UX라이팅 가이드 작성
+ └─ 화면별 문구 시트, UX라이팅 가이드 작성 (디자인 전에 문구 확정)
         ↓ [존재 검증] → [Reviewer 검수]
+디자이너
+ └─ 디자인 스펙, 컴포넌트 스펙, Figma 반영 (문구 시트 문구로 그림)
+        ↓ [존재 검증] → [Reviewer 검수]
+(가상 사용자 점검 — 판정 없음)
+ └─ user-voice-sim으로 핵심 화면 사용자 반응 (Claude · Codex 두 모델), 두 모델 모두 막힌 곳(신뢰도 높음)만 승인 후 라이터 · 디자이너에 반영
+        ↓
 Engineer
- └─ 동작하는 프론트엔드 코드, 빌드 결과 (최종 산출물)
+ └─ 동작하는 프론트엔드 코드, 빌드 결과
+        ↓ [존재 검증] → [Reviewer 검수]
+QA (FULL)
+ └─ 테스트 케이스 · 실제 실행 · 탐색적 테스트 · 버그 리포트 (Engineer와 최대 2회 왕복)
         ↓ [존재 검증] → [Reviewer 검수]
 완료 보고
 ```
@@ -187,7 +194,8 @@ Engineer가 `frontend-design`·`react-components`·`impeccable` 등 스킬을 �
 |------|------|
 | PM → 기획자 | 기획자는 PRD를 인풋으로 받아야 함 |
 | 기획자 → 디자이너 | 디자이너는 화면 기획안을 인풋으로 받아야 함 |
-| 디자이너 → UX라이터 | UX라이터는 디자인 화면을 인풋으로 받아야 함 |
+| 기획자 → UX라이터 | UX라이터는 화면 기획안(상태·예외 포함)을 인풋으로 받아야 함 |
+| UX라이터 → 디자이너 | 디자이너는 문구 시트 문구로 화면을 그려야 함 (FULL) |
 
 ---
 
@@ -294,8 +302,8 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 **반자동 누적 (쓰기)** — 자동 저장하지 않는다. 기억할 가치가 있는 결정·선호가 나오면 오케스트레이터가 *제안*하고, 사용자가 *승인한 것만* 누적된다.
 
 **2층 구조 / 회사 분리**
-- 개인 층(`designer-profile.md`): 회사 불문 유지되는 나의 작업 취향.
-- 회사 층(`companies/[회사명]/`): 회사별로 분리 — A사의 결정이 B사로 새지 않는다.
+- 개인 층(`designer-profile.md`): 회사 불문 유지되는 나의 작업 취향. 처음엔 없고, 첫 개인 선호가 승인될 때 생성된다.
+- 회사 층(`companies/[회사명]/`): 회사별로 분리 — A사의 결정이 B사로 새지 않는다. 새 회사는 `companies/_template/`를 복사해 만든다.
 
 **넣지 않는 것** — 산출물(PRD·디자인·코드), 리서치 원본 데이터, 일회성 정보, 세션 진행 상태는 기억층에 넣지 않는다. 기억층은 **판단과 선호**만 담는다.
 
@@ -305,17 +313,23 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 
 ## 산출물 저장 경로 참고
 
+작업물은 `workspace/[서비스명]/`에, 기억층은 `workspace/_memory/`에 둔다.
+
 ```
 workspace/
-├── _memory/          ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션)
-│   ├── designer-profile.md
+├── _memory/           ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션)
+│   ├── designer-profile.md   ← 첫 개인 선호 승인 시 생성
 │   └── companies/[회사명]/{decisions,conventions}.md
 └── [서비스명]/
+    ├── analysis/      ← 기존 디자인 분석·검토 문서 (있으면)
     ├── researcher/    ← 리서치 종합, 경쟁 분석, insights
     ├── pm/            ← PRD, 로드맵, 기능 우선순위
     ├── planner/       ← 화면 기획안, 기능 명세서, User Flow
-    ├── designer/      ← 디자인 스펙, 컴포넌트 스펙
     ├── ux-writer/     ← 라이팅 가이드, 화면별 문구 시트
+    ├── designer/      ← 디자인 스펙, 컴포넌트 스펙
+    ├── feedback-sim/  ← 가상 사용자 점검 결과 (user-voice-sim, 설치했을 때)
     ├── engineer/      ← 동작하는 프론트엔드 코드, 빌드 결과
+    ├── qa/            ← 테스트 케이스, QA 리포트, 증거, Playwright 스크립트
+    ├── reviews/       ← Reviewer 검수 원문
     └── session.md     ← 작업 세션 체크포인트 (오케스트레이터 자동 관리)
 ```

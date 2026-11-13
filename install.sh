@@ -70,10 +70,10 @@ for plugin in design figma frontend-design frontend-design-audit; do
   fi
 done
 
-# workspace 폴더 생성
-echo "[3/3] workspace 폴더 초기화..."
-mkdir -p "$REPO_DIR/workspace"
-echo "  ✓ workspace/ 폴더 준비 완료"
+# 작업 폴더 준비
+echo "[3/3] 작업 폴더 준비..."
+mkdir -p "$REPO_DIR/workspace/_memory"
+echo "  ✓ workspace/ — 작업물은 workspace/[서비스명]/에 저장됩니다"
 
 echo ""
 echo "설치 완료! Claude Code에서 이 폴더를 열어 사용하세요."

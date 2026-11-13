@@ -1,10 +1,9 @@
 # Product AI Crew
 
-Claude Code 기반 AI 멀티 에이전트 제품 조직.
-Researcher, PM, 서비스 기획자, UI/UX 디자이너, UX 라이터, Engineer 6개 롤을 독립 에이전트로 구성하고,
-오케스트레이터가 요청을 분석해 적합한 에이전트를 자동으로 순차 호출한다.
-각 단계 산출물은 Reviewer가 내용 품질을 검수한다(존재 검증 → 내용 비평 2단계 게이트).
-범위는 리서치부터 동작하는 **프론트엔드 구현**까지다(백엔드·DB·API는 범위 밖, 데이터는 mock/정적).
+Claude Code 위에서 동작하는 AI 멀티 에이전트 제품팀.
+Researcher · PM · 기획자 · UX 라이터 · 디자이너 · Engineer · QA 7개 역할을 독립 에이전트로 두고, 오케스트레이터가 요청을 분석해 필요한 에이전트를 차례로 호출한다.
+각 단계 산출물은 Reviewer가 검수한다(존재 검증 → 내용 비평 2단계 게이트). 검수는 만든 모델과 다른 모델(Codex)이 맡는다.
+범위는 리서치부터 동작하는 **프론트엔드 구현 · 검증(QA)**까지다(백엔드 · DB · API는 범위 밖, 데이터는 mock/정적).
 
 ---
 
@@ -12,14 +11,87 @@ Researcher, PM, 서비스 기획자, UI/UX 디자이너, UX 라이터, Engineer 
 
 | 에이전트 | 역할 | 파일 |
 |---------|------|------|
-| 오케스트레이터 | 요청 분석 → 모드 판단 → 에이전트 순차 호출 | `CLAUDE.md` |
-| Researcher | 리서치 수집·종합, 경쟁 분석, insights 도출 | `agents/researcher/CLAUDE.md` |
-| PM | 제품 전략 수립, PRD 작성, 기능 우선순위 결정 | `agents/pm/CLAUDE.md` |
-| 서비스 기획자 | 화면 기획, 기능 명세서, User Flow 설계 | `agents/planner/CLAUDE.md` |
-| UI/UX 디자이너 | 화면 디자인, 컴포넌트 스펙, 디자인 시스템 | `agents/designer/CLAUDE.md` |
-| UX 라이터 | UX 문구 작성, 라이팅 가이드, 금지 표현 관리 | `agents/ux-writer/CLAUDE.md` |
-| Engineer | 프론트엔드 구현, 빌드 검증 (최종 산출물) | `agents/engineer/CLAUDE.md` |
-| Reviewer | 각 단계 산출물의 내용 품질 비평 (pass/revise/escalate) | `agents/reviewer/CLAUDE.md` |
+| 오케스트레이터 | 요청 분석 → 모드 판단 → 에이전트 순차 호출 · 세션 · 기억층 관리 | `CLAUDE.md` |
+| Researcher | 리서치 수집 · 종합, 경쟁 분석, insights 도출 | `agents/researcher/CLAUDE.md` |
+| PM | 제품 전략, PRD, 기능 우선순위 | `agents/pm/CLAUDE.md` |
+| 기획자 | 화면 기획, 기능 명세서, User Flow, 상태 · 예외 정의 | `agents/planner/CLAUDE.md` |
+| UX 라이터 | 화면 문구를 디자인 전에 확정, 라이팅 가이드, 금지 표현 관리 | `agents/ux-writer/CLAUDE.md` |
+| 디자이너 | 디자인 시스템 위에서 화면 디자인(문구 시트 문구로), 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
+| Engineer | 프론트엔드 구현, 빌드 검증 | `agents/engineer/CLAUDE.md` |
+| QA | 구현 화면을 실제로 써 보며 검증, 테스트 케이스 · 버그 리포트 (FULL 마지막) | `agents/qa/CLAUDE.md` |
+| Reviewer | 각 단계 산출물 비평 (pass / revise / rollback / escalate) | `agents/reviewer/CLAUDE.md` |
+
+---
+
+## 실행 모드
+
+| 모드 | 사용 상황 | 에이전트 순서 |
+|------|---------|-------------|
+| **FULL** | 신규 서비스 · 기능 전체 (구현 · 검증까지) | Researcher → PM → 기획자 → UX라이터 → 디자이너 → (가상 사용자 점검) → Engineer → QA |
+| **PLAN** | 리서치 · 기획서까지 | Researcher → PM → 기획자 |
+| **RESEARCH** | 리서치 · 경쟁사 분석만 | Researcher 단독 |
+| **DESIGN** | 기획안 있고 디자인만 | 기획자 → 디자이너 |
+| **BUILD** | 디자인 스펙 · 문구 있고 구현만 | Engineer 단독 (또는 디자이너 → Engineer) |
+| **WRITE** | 문구 작업만 | UX라이터 단독 |
+| **CUSTOM** | 직접 조합 | 사용자 정의 |
+
+### 호출 예시
+
+```
+"팀 일정 조율 서비스, 전체 프로세스 진행해줘"
+"예약 화면 기획안 있어, 디자인만 해줘"
+"설정 화면 디자인 스펙 있어, 코드로 구현만 해줘"
+"회원가입 플로우 UX 문구 전체 검토해줘"
+```
+
+---
+
+## 설치
+
+```bash
+git clone https://github.com/HS2190/product-ai-crew.git
+cd product-ai-crew
+chmod +x install.sh && ./install.sh
+claude
+```
+
+`install.sh`는 `skills/`를 `~/.claude/skills`에, `plugins/`를 `~/.claude/plugins`에 심링크로 연결한다. 이미 있는 스킬은 덮어쓰지 않는다.
+
+### 함께 쓰면 좋은 것 (선택)
+
+| 도구 | 쓰는 곳 | 없으면 |
+|------|--------|-------|
+| [Codex CLI](https://github.com/openai/codex) (`codex login`) | Reviewer 검수를 다른 모델에 맡김 | Claude가 직접 검수하고 결과에 "같은 모델 검수"라고 표시 |
+| `user-voice-sim` 스킬 (`~/.claude/skills/user-voice-sim`) | FULL의 가상 사용자 점검 | 그 단계를 건너뛰고 사유만 보고 |
+| Figma MCP | 디자이너 단계의 Figma 작화 | 마크다운 스펙만 산출 |
+| Playwright | QA의 화면 실행 테스트 | 실행 못 한 항목을 `not_run`으로 보고 |
+
+외부 스킬 일부는 라이선스 문제로 이 레포에 넣지 않았다. 출처와 설치 방법은 [THIRD_PARTY.md](THIRD_PARTY.md)에 있다. 설치하면 스킬 인덱스에 자동으로 잡힌다.
+
+---
+
+## 내 디자인 시스템 붙이기
+
+회사(팀)마다 고정 디자인 시스템을 붙일 수 있다. 붙이면 디자이너 단계가 스킬 고르기 없이 그 시스템을 바로 적용하고, 없으면 기획 결과를 보고 디자인 스킬을 추천한 뒤 사용자가 고를 때까지 기다린다.
+
+1. 디자인 시스템을 스킬로 만든다: `skills/[회사-DS]/SKILL.md` (토큰 · 컴포넌트 · 레이아웃 규칙, 코드 토큰 파일이 있으면 `references/tokens.css`)
+2. `workspace/_memory/companies/_template/`을 복사해 `companies/[회사명]/`을 만든다.
+3. `conventions.md`의 「고정 디자인 시스템」에 스킬 경로 · Figma 라이브러리 · 핸드오프 주석 규칙을 적는다.
+4. 작업을 시작할 때 회사명을 알려 주면(또는 오케스트레이터가 물으면) 그 회사의 규칙 · 결정이 모든 에이전트에 자동으로 들어간다.
+
+---
+
+## 기억층
+
+프로젝트를 넘어 쌓이는 판단과 선호를 `workspace/_memory/`에 둔다.
+
+| 층 | 경로 | 담는 것 |
+|----|------|--------|
+| 개인 | `designer-profile.md` | 회사가 바뀌어도 유지되는 작업 취향 · 원칙 (첫 개인 선호 승인 시 생성) |
+| 회사 | `companies/[회사명]/decisions.md` | 그 회사에서 내린 판단과 근거 |
+| 회사 | `companies/[회사명]/conventions.md` | 톤 · 디자인 규칙 · 기술 제약 · 고정 디자인 시스템 |
+
+작업을 시작하면 자동으로 모든 에이전트에 주입되고, 새 항목은 오케스트레이터가 제안하고 사용자가 승인한 것만 저장된다. 자세한 내용은 `workspace/_memory/README.md`.
 
 ---
 
@@ -29,127 +101,34 @@ Researcher, PM, 서비스 기획자, UI/UX 디자이너, UX 라이터, Engineer 
 product-ai-crew/
 ├── CLAUDE.md              ← 오케스트레이터 (진입점)
 ├── README.md
-├── install.sh             ← 로컬 설치 스크립트
-│
-├── agents/                ← 에이전트 롤 정의
-│   ├── researcher/CLAUDE.md
-│   ├── pm/CLAUDE.md
-│   ├── planner/CLAUDE.md
-│   ├── designer/CLAUDE.md
-│   ├── ux-writer/CLAUDE.md
-│   ├── engineer/CLAUDE.md
-│   └── reviewer/CLAUDE.md
-│
-├── workflows/             ← 워크플로우 정의
-│   ├── research-process.md ← RESEARCH 모드
-│   ├── full-process.md    ← FULL 모드
-│   ├── plan-process.md    ← PLAN 모드
-│   ├── quick-design.md    ← DESIGN 모드
-│   ├── build-process.md   ← BUILD 모드
-│   ├── ux-writing.md      ← WRITE 모드
-│   └── custom-flow.md     ← CUSTOM 모드
-│
-├── skills/                ← Claude Code 스킬
-└── plugins/               ← Claude Code 플러그인
-    ├── design/
-    ├── figma/
-    ├── frontend-design/
-    └── frontend-design-audit/
+├── THIRD_PARTY.md         ← 이 레포에 넣지 않은 외부 스킬 출처 · 설치
+├── BACKLOG.md             ← 시스템 개선 아이디어
+├── install.sh
+├── product-ai-crew-instructions.md   ← claude.ai 프로젝트용 합본 (자동 생성)
+├── agents/                ← 에이전트 역할 정의
+├── .claude/agents/        ← Claude Code 서브에이전트 등록
+├── workflows/             ← 모드별 워크플로우
+├── skills/                ← 스킬 (INDEX.md = 스킬 인덱스, 세션 시작 시 자동 갱신)
+├── plugins/
+├── scripts/
+│   ├── build-skill-index.py
+│   └── build-instructions.py
+└── workspace/
+    ├── persona-template.md
+    ├── _memory/                    ← 프로젝트 간 기억층
+    └── [서비스명]/                 ← 작업물 (역할별 폴더 + session.md)
 ```
 
-> `workspace/` 폴더는 서비스별 산출물 저장 경로로 `.gitignore` 처리됩니다.
+작업물은 `workspace/[서비스명]/`에 역할별로 저장된다. 작업물을 커밋하지 않으려면 `.gitignore`의 해당 줄 주석을 푼다.
 
----
+### Claude.ai 프로젝트로 쓸 때
 
-## 설치 방법
+1. [claude.ai/projects](https://claude.ai/projects)에서 새 프로젝트를 만든다.
+2. **Project Instructions**에 `product-ai-crew-instructions.md` 내용을 붙여 넣는다.
+3. 디자인 시스템이 있으면 그 명세 문서와 `conventions.md`를 **Project Knowledge**에 올린다.
 
-### GitHub에서 클론해서 사용
+`product-ai-crew-instructions.md`는 `CLAUDE.md` · `agents/*/CLAUDE.md` · `workflows/*.md`를 합친 파일이다. 원본을 고친 뒤 다시 만든다.
 
 ```bash
-git clone https://github.com/HS2190/product-ai-crew.git
-cd product-ai-crew
-chmod +x install.sh && ./install.sh
+python3 scripts/build-instructions.py
 ```
-
-이후 Claude Code에서 이 폴더를 열어 사용한다.
-
-```bash
-claude
-```
-
-### Claude.ai Project로 사용
-
-1. [claude.ai/projects](https://claude.ai/projects) 에서 새 프로젝트 생성
-2. **Project Instructions** 에 `CLAUDE.md` 내용 붙여넣기
-3. **Project Knowledge** 에 아래 파일 업로드:
-   - `agents/researcher/CLAUDE.md`
-   - `agents/pm/CLAUDE.md`
-   - `agents/planner/CLAUDE.md`
-   - `agents/designer/CLAUDE.md`
-   - `agents/ux-writer/CLAUDE.md`
-   - `agents/engineer/CLAUDE.md`
-   - `agents/reviewer/CLAUDE.md`
-   - `workflows/research-process.md`
-   - `workflows/full-process.md`
-   - `workflows/plan-process.md`
-   - `workflows/quick-design.md`
-   - `workflows/build-process.md`
-   - `workflows/ux-writing.md`
-   - `workflows/custom-flow.md`
-
----
-
-## 실행 모드
-
-| 모드 | 사용 상황 | 에이전트 순서 |
-|------|---------|-------------|
-| **FULL** | 신규 서비스/기능 전체 (구현까지) | Researcher → PM → 기획자 → 디자이너 → UX라이터 → Engineer |
-| **PLAN** | 리서치·기획서까지 | Researcher → PM → 기획자 |
-| **RESEARCH** | 리서치·경쟁사 분석만 | Researcher 단독 |
-| **DESIGN** | 기획안 있고 디자인만 | 기획자 → 디자이너 |
-| **BUILD** | 디자인 스펙·문구 있고 구현만 | Engineer 단독 (또는 디자이너 → Engineer) |
-| **WRITE** | 문구 작업만 | UX라이터 단독 |
-| **CUSTOM** | 직접 조합 | 사용자 정의 |
-
-### 호출 예시
-
-```
-"[서비스명] [기능명] 전체 프로세스 진행해줘"
-"리서치랑 경쟁사 분석만 해줘"
-"PRD랑 화면 기획서까지만 만들어줘"
-"기획안 있어, 디자인만 해줘"
-"디자인 스펙 있어, 코드로 구현만 해줘"
-"로그인 화면 UX 문구 전체 검토해줘"
-```
-
----
-
-## 새로운 롤 추가 방법
-
-1. `agents/[롤명]/CLAUDE.md` 파일 생성
-2. `## 실행 모드` 및 `## 오케스트레이터 연동 (CREW 모드)` 섹션 포함
-3. `CLAUDE.md`(오케스트레이터) 에이전트 목록 및 파이프라인 흐름 업데이트
-4. 필요 시 `workflows/`에 새 워크플로우 파일 추가
-
----
-
-## 산출물 저장 경로
-
-프로젝트 산출물은 `workspace/[서비스명]/` 하위에 역할별로 저장하고, 프로젝트를 넘는 누적 기억은 `workspace/_memory/`에 둔다.
-
-```text
-workspace/
-├── _memory/        ← 프로젝트 간 기억층 (개인 프로파일 + 회사별 결정·컨벤션, 반자동 누적)
-│   ├── designer-profile.md
-│   └── companies/[회사명]/{decisions,conventions}.md
-└── [서비스명]/
-    ├── researcher/ ← 리서치 종합, 경쟁 분석, insights
-    ├── pm/         ← PRD, 로드맵, 우선순위
-    ├── planner/    ← 화면 기획안, 기능 명세서, User Flow
-    ├── designer/   ← 디자인 스펙, 컴포넌트 스펙
-    ├── ux-writer/  ← 라이팅 가이드, 문구 시트
-    ├── engineer/   ← 동작하는 프론트엔드 코드, 빌드 결과
-    └── session.md  ← 작업 세션 체크포인트 (오케스트레이터 자동 관리)
-```
-
-> 기억층은 작업 시작 시 자동 주입되어 "쓸수록 그 회사·디자이너에게 맞게 똑똑해지는" 작동부다. 자세한 내용은 `workspace/_memory/README.md` 참조.
