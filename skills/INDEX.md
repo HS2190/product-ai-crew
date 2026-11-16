@@ -2,7 +2,7 @@
 
 > 이 파일은 `scripts/build-skill-index.py`가 생성한다. 직접 수정하지 말 것.
 
-> 스킬 23개 · 플러그인 스킬 2개
+> 스킬 24개 · 플러그인 스킬 2개
 
 
 스킬을 고를 때는 이 인덱스에서 후보를 좁힌 뒤 **선택한 스킬의 SKILL.md만** 연다.
@@ -10,7 +10,7 @@
 `자동`은 `~/.claude/skills`에 등록되어 설명 매칭으로 저절로 뜨는 스킬이다. 나머지는 경로를 열어 직접 적용한다.
 
 
-## 최상위 (16개)
+## 최상위 (17개)
 
 | 스킬 | 설명 | 자동 | 경로 |
 |---|---|:--:|---|
@@ -30,6 +30,7 @@
 | **guizang-ppt** ⚠️`name: guizang-ppt-skill` | 生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。提供两种风格：① "电子杂志 × 电子墨水"（衬线 + 流体背景 + 暖色） ② "瑞士国际主义"（无衬线 + 网格点阵 + IKB/柠檬黄/柠檬绿/安全橙高亮）。当用户需要制作分享 / 演讲 / 发布会风格的… | ● | `skills/guizang-ppt` |
 | **ppt-master** | AI-driven multi-format SVG content generation system. | ● | `skills/ppt-master` |
 | **presentation-deck** | Structure compelling design presentations for stakeholders, reviews, and showcases. | ● | `skills/presentation-deck` |
+| **qa-practice** | QA 실무 체크리스트 모음 — 기획 · 디자인 · 구현 · QA 단계에서 실제로 자주 깨지는 지점(권한 우회 · 연타 중복 · 경계값 · 앱 밖 복귀 · 긴 텍스트 · 오류 코드별 화면 · 캐시)과 테스트 케이스 · 탐색적 테스트 · 버그 리포트 방법. |  | `skills/qa-practice` |
 
 ## 다른 스킬에 포함된 하위 스킬 (7개)
 
