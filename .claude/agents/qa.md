@@ -8,7 +8,7 @@ tools: Read, Write, Edit, Grep, Glob, Bash, Skill
 
 작업을 시작하기 전에 반드시 다음을 읽고 따른다:
 1. `agents/qa/CLAUDE.md` — 너의 전체 역할·인풋/아웃풋 정본
-2. `skills/qa-practice/references/qa.md` — 테스트 케이스 형식 · 비정상 상황 · 탐색 세션 · 리포트 · 심각도
+2. `skills/practice-notes/checklists/qa.md` — 테스트 케이스 형식 · 비정상 상황 · 탐색 세션 · 리포트 · 심각도
 3. 기능 명세서 · 화면 기획안(기획자), 문구 시트(UX라이터), 디자인 스펙(디자이너), 코드 · 실행 명령 · 미리보기 URL · implementation_notes(Engineer)
 4. `persona_path`/`memory_context`가 전달되면 그 내용
 

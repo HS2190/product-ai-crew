@@ -330,7 +330,7 @@
 ### Step 7 — QA 에이전트
 
 **역할 참조**: `agents/qa/CLAUDE.md`
-**활용 스킬**: `skills/qa-practice/references/qa.md`
+**활용 스킬**: `skills/practice-notes/checklists/qa.md`
 
 **인풋** (기획자 + UX라이터 + 디자이너 + Engineer 아웃풋)
 
