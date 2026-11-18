@@ -29,7 +29,7 @@
 | **frontend-slides** | Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. | ● | `skills/frontend-slides` |
 | **guizang-ppt** ⚠️`name: guizang-ppt-skill` | 生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。提供两种风格：① "电子杂志 × 电子墨水"（衬线 + 流体背景 + 暖色） ② "瑞士国际主义"（无衬线 + 网格点阵 + IKB/柠檬黄/柠檬绿/安全橙高亮）。当用户需要制作分享 / 演讲 / 发布会风格的… | ● | `skills/guizang-ppt` |
 | **ppt-master** | AI-driven multi-format SVG content generation system. | ● | `skills/ppt-master` |
-| **practice-notes** | 크루 실무 지식 모음 — 역할별 체크리스트(기획 · UX 라이팅 · 디자인 · 구현 · QA · 검수에서 실제로 자주 깨지는 지점)와 주제별 개념 문서(크기 · 단위, 글자, 상태 설계, 흐름 · 구조, 컴포넌트 이름사전, 플랫폼, API · HTTP · 캐시). |  | `skills/practice-notes` |
+| **practice-notes** | 크루 실무 지식 모음 — 역할별 체크리스트(기획 · UX 라이팅 · 디자인 · 구현 · QA · 검수에서 실제로 자주 깨지는 지점)와 주제별 개념 문서(크기 · 단위, 글자, 상태 설계, 흐름 · 구조, 컴포넌트 이름사전, 플랫폼, API · HTTP · 캐시, 테스트 설계 · 종류). |  | `skills/practice-notes` |
 | **presentation-deck** | Structure compelling design presentations for stakeholders, reviews, and showcases. | ● | `skills/presentation-deck` |
 
 ## 다른 스킬에 포함된 하위 스킬 (7개)
