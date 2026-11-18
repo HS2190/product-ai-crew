@@ -21,24 +21,27 @@ updated_at: YYYY-MM-DD
 
 | # | 단계 | 상태 | 검수 결과 | 검수 파일 | 완료일 |
 |---|------|------|----------|----------|-------|
-| 1 | Researcher | complete | revise→pass | reviews/researcher-02.md | 2026-05-04 |
-| 2 | PM | complete | pass | reviews/pm-01.md | 2026-05-04 |
-| 3 | 기획자 | in_progress | - | - | - |
+| 1 | Researcher | pending | - | - | - |
+| 2 | PM | pending | - | - | - |
+| 3 | 기획자 | pending | - | - | - |
 | 4 | UX 라이터 | pending | - | - | - |
 | 5 | 디자이너 | pending | - | - | - |
 | 5c | 가상 사용자 점검 | pending | (판정 없음) | - | - |
 | 6 | Engineer | pending | - | - | - |
 | 7 | QA | pending | - | - | - |
 
+> 모드에 없는 단계는 행을 지우거나 `skipped (사유)`. 적는 예: `complete · revise→pass · reviews/researcher-02.md · 2026-05-04`.
 > 검수 결과 표기: `pass` / `revise(N)` / `rollback(N)` / `escalate`. 반복되면 `revise→pass`처럼 최종까지 남기고, 사용자가 뒤집었으면 `pass(사용자 revise 지시)`처럼 적는다.
 
 ## 횟수 (상한 2 — 대화가 끊겨도 이 값으로 이어 간다)
 
 | 종류 | 대상 | 횟수 |
 |------|-----|-----|
-| revise | planner | 1 |
-| rollback (되돌린 대상별) | planner | 0 |
+| revise | (단계) | 0 |
+| rollback (되돌린 대상별) | (상류 역할) | 0 |
 | QA 재테스트 | qa | 0 |
+
+> 단계 · 대상마다 한 줄씩 추가한다. 예: `revise · planner · 1`.
 
 ## 산출물 경로
 

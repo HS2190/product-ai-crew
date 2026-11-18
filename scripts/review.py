@@ -69,9 +69,11 @@ def build_prompt(a, rollbacks):
         lines += ["", "근거 자료 (주장 · 결정이 이것과 맞는지 대조):", *[f"- {os.path.abspath(r)}" for r in a.ref]]
     if a.image:
         lines += ["", f"첨부 이미지 {len(a.image)}장 = 실제 화면 캡처. 스펙과 화면이 다른 곳을 짚어라."]
+    if not a.prev:
+        lines += ["", "첫 검수다. 차단 결함은 이번에 빠짐없이 모두 적어라(다음 회차에 새로 내지 않는다)."]
     lines += ["", f"회차: revision_count={a.revision}, 상류별 rollback 횟수={rollbacks or '없음'} (상한 각 {CAP}회)"]
     if a.prev:
-        lines += [f"이전 검수: {os.path.abspath(a.prev)} — 지적한 것이 고쳐졌는지 먼저 확인하라."]
+        lines += [f"이전 검수: {os.path.abspath(a.prev)} — 재검수다. revise 사유는 ① 이전 지적이 안 고쳐짐 ② 이번 수정이 새로 만든 결함, 이 둘뿐이다. 지난 회차부터 있던 부분에서 새로 찾은 것은 남은 약점에 [놓친 차단]으로 적고 pass하라."]
     if a.note:
         lines += ["", f"추가 지시: {a.note}"]
     lines += ["", "답 형식 (이 형식 그대로, 첫 줄은 verdict):", "```",

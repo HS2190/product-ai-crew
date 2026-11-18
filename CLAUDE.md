@@ -151,10 +151,11 @@ python3 scripts/review.py --project "[프로젝트]" --stage [단계] \
 ### 판정 처리
 
 - **어떤 판정이든 verdict와 근거(review_notes)를 사용자에게 보여 준다.** `pass`도 예외가 아니다. **사용자 판단이 검수보다 우선한다.** 사용자가 뒤집으면 session.md에 `pass(사용자 revise 지시)`처럼 남긴다.
-- `pass` → session.md 갱신 후 다음 단계.
+- `pass` → session.md 갱신 후 다음 단계. 남은 약점 중 `[놓친 차단]`은 다음 단계 input에 '반드시 처리할 것'으로 넘기고(그 단계에서 고칠 수 없는 상류 문제면 사용자에게 보여 준다), 완료 보고 「남은 것」에도 적는다.
 - `revise` → 검수 파일을 `review_notes`로 넘겨 같은 단계를 다시 호출 → 「횟수」 +1 → 다시 게이트 → 검수.
 - `rollback` → session.md 「횟수」의 그 대상 rollback을 바로 +1 하고 log.md에 경위를 남긴 뒤, `rollback_reason`과 함께 `rollback_to` 상류를 다시 호출하고 거기서부터 하류로 다시 진행(중간 단계는 영향받은 부분만). 되돌리기 전에 알린다:
   `상류 되돌림 (rollback) · 대상 [파일] · 되돌릴 상류 [역할] · [대상별 횟수]회 · 사유 [rollback_reason] · 이의가 있으면 알려 주세요`
+- escalate 뒤 사용자가 방향을 정해 재지시하면 그 산출물의 revise 횟수를 0부터 다시 센다(「횟수」 표에 `0 (MM-DD 사용자 재지시: [요지])`). 그대로 수용하면 진행표에 `pass(사용자 수용)`.
 - `escalate` → 멈추고 보고한다:
   `사용자 판단 필요 (escalate) · 대상 [파일] · 재작업 [N]회 · 사유 [escalate_reason] · 검수 의견 [review_notes] · 진행: 1) 방향을 정해 재지시 2) 그대로 수용하고 다음 단계 3) 범위 조정 후 재시작`
 
