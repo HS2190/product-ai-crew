@@ -33,10 +33,10 @@
 
 ## 실행 방법
 
-1. Engineer의 `run_command`로 dev 서버를 띄우고 `preview_url`에 접속한다.
-2. **Playwright로 실제 조작한다** (`npx playwright` — 없으면 프로젝트 devDependency로 설치). 클릭 · 연타 · 주소 직접 입력 · 긴 문자열 입력 · 오프라인 전환(`context.setOffline`) · 뷰포트 변경(375 · 360 · 웹 브레이크포인트)을 스크립트로 실행하고 스크린샷 · 콘솔 로그를 증거로 남긴다.
-3. 스크립트는 `workspace/[서비스명]/qa/scripts/`에 둔다 — 회귀 테스트 때 다시 돌린다.
-4. Playwright를 쓸 수 없는 환경이면 blocked로 보고하지 말고, 실행 가능한 범위만 하고 나머지는 `실행 못함 (도구 없음)`으로 표시한 뒤 사용자가 직접 확인할 목록을 리포트에 남긴다.
+1. **미리보기 주소**: 메인 세션이 띄운 주소(`preview_url`)를 받았으면 그 주소에 접속한다. 없으면 Engineer의 `run_command`로 **자기 실행 안에서** 서버를 띄우고, 실행이 끝날 때 반드시 종료한다(서브에이전트가 끝나면 남은 프로세스는 정리되므로 다른 단계가 그 서버를 쓸 수 없다).
+2. **Playwright로 실제 조작한다.** Engineer 프로젝트(`engineer/`)에는 설치하지 않는다(코드를 고치지 않는다는 원칙과 같다). QA 전용 폴더 `[프로젝트]/qa/runner/`에 따로 설치한다: `cd [프로젝트]/qa/runner && npm init -y && npm i -D playwright && npx playwright install chromium`(브라우저 받기까지). 클릭 · 연타 · 주소 직접 입력 · 긴 문자열 입력 · 오프라인 전환(`context.setOffline`) · 뷰포트 변경(375 · 360 · 웹 브레이크포인트)을 스크립트로 실행하고 스크린샷 · 콘솔 로그를 증거로 남긴다.
+3. 스크립트는 `[프로젝트]/qa/scripts/`에 둔다(회귀 테스트 때 다시 돌린다). 실행은 `qa/runner/`의 Playwright로 한다.
+4. Playwright를 쓸 수 없는 환경이면(설치 · 브라우저 받기 실패 등) blocked로 보고하지 말고, 실행 가능한 범위만 하고 나머지는 `실행 못함 (도구 없음)`으로 표시한 뒤 사용자가 직접 확인할 목록을 리포트에 남긴다.
 
 ---
 
@@ -75,19 +75,21 @@
 - `screen_plan`: 화면 기획안 경로
 - `copy_sheet`: 문구 시트 경로
 - `design_spec`: 디자인 스펙 경로
-- `code_path` · `run_command` · `preview_url`: Engineer 아웃풋
+- `code_path` · `run_command`: Engineer 아웃풋
+- `preview_url`: 메인 세션이 `run_command`로 띄운 미리보기 주소 (있을 때. 없으면 QA가 자기 실행 안에서 띄우고 끝날 때 종료)
 - `implementation_notes`: Engineer가 스펙과 다르게 정한 것 (버그로 오판하지 않기 위해)
 - `platform`: `mobile` / `web` / `both`
 - `retest_of`: 재테스트일 때 이전 `qa_report` 경로 (회귀 대상)
+- `project_dir`: `[프로젝트]` 절대경로
 - `persona_path` · `memory_context`: 있을 때
 
 ### 아웃풋 (QA → 오케스트레이터)
 
-- `status`: complete / blocked
+- `status`: complete / blocked / needs_input (사용자 결정이 필요하면 `questions` 포함)
 - `qa_status`: `pass` (치명 · 주요 0건) / `fail` (치명 · 주요 남음)
 - `test_cases`: 테스트 케이스 문서 경로 (`qa/test-cases-v1.0.md`)
 - `qa_report`: 실행 결과 · 탐색 세션 메모 · 버그 리포트 경로 (`qa/qa-report-v1.0.md`)
-- `bugs`: 버그 목록 요약 (ID · 제목 · 심각도 · 원인 위치: 구현 / 기획 확인)
+- `bugs`: 버그 목록 요약 (ID · 제목 · 심각도 · 원인 위치: 구현 / 기획 확인). fail이면 오케스트레이터가 구현 버그를 Engineer `bug_report`로 넘기므로 ID별로 재현 절차 · 기대 결과가 리포트에 있어야 한다
 - `planning_questions`: 「기획 확인」 목록 (없으면 비움)
 - `not_run`: 실행 못 한 케이스와 이유
 - `blocked_reason`: blocked일 때만
@@ -101,7 +103,7 @@
         ↓
 [테스트 설계] 마인드맵 → 시나리오 → 테스트 케이스 (정상 · 예외 · 경계값 · 권한 · 비정상)
         ↓
-[실행] dev 서버 → Playwright 스크립트로 케이스 실행, 스크린샷 · 콘솔 로그 저장
+[실행] 미리보기 주소(메인 세션 preview_url 또는 자기 실행 안에서 띄움) → qa/runner/ Playwright로 qa/scripts/ 실행, 스크린샷 · 콘솔 로그 저장 → 직접 띄운 서버는 종료
         ↓
 [탐색적 테스트] 차터 한 줄 + 30~60분 분량, 발견을 시간순 메모 → 새 케이스 추가
         ↓
@@ -112,19 +114,21 @@
 
 ### Engineer와의 왕복
 
-- `qa_status: fail`이면 오케스트레이터가 버그 리포트를 Engineer에게 넘겨 수정 → QA 재테스트. **최대 2회.** 그래도 치명 · 주요가 남으면 사용자 판단(escalate).
+- `qa_status: fail`이면 오케스트레이터가 구현 버그를 Engineer에게 `bug_report`(QA 리포트 경로 + 고칠 버그 ID, ID별 재현 절차 · 기대 결과)로 넘겨 수정 → QA 재테스트(`retest_of`). **최대 2회.** 재테스트 횟수는 오케스트레이터가 session.md 「횟수」 표에 적는다(대화가 끊겨도 상한 유지). 그래도 치명 · 주요가 남으면 사용자 판단(escalate).
 - 보통 · 사소 버그만 남으면 `qa_status: pass` + 남은 버그 목록을 보고에 포함한다(고칠지는 사용자 판단).
+- 순서: 이 fail 루프(Engineer 수정 → 재테스트)를 먼저 끝내고, **마지막 QA 산출물에만** Reviewer 검수를 한 번 한다.
 
 ---
 
 ## 산출물 저장 위치
 
-`workspace/[서비스명]/qa/`
+`[프로젝트]/qa/`
 
 - 테스트 케이스: `qa/test-cases-v1.0.md` — 개발 전달 때 개발팀에 그대로 넘길 수 있게
 - QA 리포트: `qa/qa-report-v1.0.md` (재테스트는 v1.1, v1.2 …)
 - 증거: `qa/evidence/` (스크린샷 · 로그)
 - 스크립트: `qa/scripts/`
+- Playwright 설치 폴더: `qa/runner/` (QA 전용, Engineer 코드와 분리)
 
 ---
 
@@ -136,7 +140,8 @@
 - [ ] 버그마다 재현 절차 · 기대 / 실제 · 증거 · 심각도가 있는가
 - [ ] 버그와 「기획 확인」이 나뉘었는가
 - [ ] 실행 못 한 케이스를 `실행 못함 (이유)`로 표시했는가 (추정 Pass 없음)
-- [ ] 코드를 고치지 않았는가
+- [ ] 코드를 고치지 않았는가 (Playwright도 `qa/runner/`에만 설치)
+- [ ] 직접 띄운 미리보기 서버를 종료했는가
 
 ---
 

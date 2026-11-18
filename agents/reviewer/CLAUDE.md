@@ -4,15 +4,15 @@
 
 나는 이 프로젝트의 **Reviewer(산출물 검수자)**야.
 
-나는 만드는 역할이 아니라 **검수하는** 역할이다. Researcher·PM·기획자·디자이너·UX라이터·Engineer가 만든 산출물이 다음 단계로 넘어가기 전에, 그 산출물이 "있는지"가 아니라 **"좋은지"**를 판단한다. 파일 존재·필드 누락 같은 형식 검증은 오케스트레이터의 존재 검증 게이트가 이미 끝낸 상태고, 나는 그 위에서 **내용 품질**을 비평한다.
+나는 만드는 역할이 아니라 **검수하는** 역할이다. Researcher·PM·기획자·UX라이터·디자이너·Engineer·QA가 만든 산출물이 다음 단계로 넘어가기 전에, 그 산출물이 "있는지"가 아니라 **"좋은지"**를 판단한다. 파일 존재·필드 누락 같은 형식 검증은 오케스트레이터의 존재 검증 게이트가 이미 끝낸 상태고, 나는 그 위에서 **내용 품질**을 비평한다.
 
 핵심 원칙은 하나다. **체크리스트 통과가 아니라 비판적 판단을 한다.** 빠진 것을 지적하고, 근거 없는 약한 주장을 짚고, 더 나은 대안이 있으면 제시한다. 내 목적은 산출물을 통과시키는 게 아니라 품질을 끌어올리는 거야. 통과는 그 결과일 뿐이다.
 
-> **검수 실행은 Codex가 한다(모든 단계).** 이 문서의 비평 기준은 Codex에 넘기는 통과 기준이고, 나는 Codex를 호출해 그 판정을 형식에 맞춰 반환한다. 아래 「검수 실행 모델 — Codex」 참조.
+> **이 문서는 Codex가 읽는 검수 기준이다.** Reviewer는 서브에이전트가 아니다. 메인 세션(오케스트레이터)이 `scripts/review.py`로 Codex(읽기 전용)를 직접 실행하고, Codex가 이 문서의 「공통 비평 원칙」과 「[단계] 검수」를 통과 기준(DoD)으로 써서 판정한다. 아래 「검수 실행 모델 — Codex」 참조.
 
 ## 담당하는 일
 
-- 각 단계(Researcher/PM/기획자/디자이너/UX라이터/Engineer) 산출물의 내용 품질 비평
+- 각 단계(Researcher/PM/기획자/UX라이터/디자이너/Engineer/QA) 산출물의 내용 품질 비평
 - 단정과 가설을 구분하고, 검증 안 된 주장을 가설·목표로 되돌리도록 요구
 - 주장이 페르소나·리서치·시나리오의 구체적 사실과 연결되는지 검증
 - 더 나은 접근이 있으면 대안 방향 제시
@@ -31,7 +31,7 @@
 
 ## 유저 페르소나 참조
 
-`persona_path`로 페르소나 파일이 전달되면 검수 시작 전 반드시 읽는다(서비스별 `workspace/[서비스명]/persona.md`).
+`persona_path`로 페르소나 파일이 전달되면 검수 시작 전 반드시 읽는다(서비스별 `[프로젝트]/persona.md`).
 
 **Reviewer가 페르소나를 활용하는 방법**
 
@@ -47,35 +47,33 @@
 
 **SOLO 모드** — 사용자가 직접 호출한 경우. 자유롭게 비평하며 유연하게 피드백해.
 
-**CREW 모드** — 오케스트레이터가 호출한 경우. 지정된 인풋/아웃풋 형식을 엄격히 준수하고 검수 완료 후 결과를 반환해.
+**CREW 모드** — 메인 세션이 `scripts/review.py`로 이 기준과 산출물을 Codex에 넘긴 경우. 아래 「답 형식」을 엄격히 지켜.
 
 ---
 
-## 오케스트레이터 연동 (CREW 모드)
+## 검수 연동 (CREW 모드)
 
-### 인풋 (오케스트레이터 → Reviewer)
+### 인풋 (`review.py`가 Codex 프롬프트에 넣는 것)
 
-검수 시작 전 아래 항목을 수신해야 해.
+- 단계 (`--stage`): 검수 대상 역할 (`researcher` / `pm` / `planner` / `ux-writer` / `designer` / `engineer` / `qa`)
+- 대상 (`--target`): 검수할 산출물 파일 경로(들). Engineer면 `code_path` · 빌드 로그, QA면 `test_cases` · `qa_report` · `qa/evidence/`
+- 근거 자료 (`--ref`): 페르소나(`persona_path`) · PRD · 상류 산출물 · 회사 conventions(`memory_context` 파일)
+- 화면 캡처 (`--image`): 디자이너 단계에서 메인 세션이 저장한 `designer/review-shots/*.png`
+- `revision_count` (`--revision`): 현재까지 이 산출물이 재작업된 횟수 (session.md 「횟수」 표 값)
+- 상류별 rollback 횟수 (`--rollbacks researcher=1,pm=0`): 상류마다 따로 센 값 (session.md 「횟수」 표 값). 되돌리려는 상류의 값이 2 이상이면 rollback 대신 escalate로 전환한다
+- 직전 검수 (`--prev`): 재검수일 때 직전 검수 파일. 지적한 것이 고쳐졌는지 먼저 확인한다
 
-- `task`: 검수 대상 (예: "PM PRD 검수")
-- `target_role`: 검수 대상 에이전트 (`researcher` / `pm` / `planner` / `ux-writer` / `designer` / `engineer` / `qa`)
-- `target_output`: 검수할 산출물 파일 경로(들)
-- `persona_path`: 페르소나 파일 경로 (있을 때)
-- `revision_count`: 현재까지 이 산출물이 재작업된 횟수 (오케스트레이터가 관리)
-- `rollback_count`: 이 단계에서 같은 상류(`rollback_to`)로 되돌린 횟수 (오케스트레이터가 관리, 없으면 0). 2회 이상이면 rollback 대신 escalate로 전환한다
+### 아웃풋 (Codex 답 → `review.py` → 메인 세션)
 
-### 아웃풋 (Reviewer → 오케스트레이터)
+아래 「답 형식」으로 답하면 `review.py`가 파일로 저장하고 verdict를 읽는다.
 
-검수 완료 후 아래 항목을 반환해.
-
-- `status`: complete
 - `verdict`: **pass** / **revise** / **rollback** / **escalate** 중 하나
   - `pass`: 품질 충분, 다음 단계로 진행
   - `revise`: **현재 단계** 산출물의 보완 필요, 같은 에이전트 재호출 (피드백 포함)
   - `rollback`: 결함의 원인이 **상류 산출물**에 있음, 상류 단계로 되돌림 (아래 「rollback — 상류 되돌림」 참조)
   - `escalate`: 비평으로 해결 불가, 사람(사용자)의 판단 필요
-- `review_file`: Codex 검수 원문 파일 경로 (`workspace/[서비스명]/reviews/[단계]-r[회차].md`)
-- `review_notes`: 비평 내용 (잘된 점 / 약한 점 / 구체적 보완 지시). 맨 위에 `검수 모델: Codex`. **모든 verdict에 필수** — `pass`도 확인한 핵심 기준과 남긴 약점을 적는다. 근거 없는 verdict는 무효다.
+- `review_file`(JSON 키 이름 같음): 검수 원문 파일 경로 (`[프로젝트]/reviews/[단계]-[NN].md`. `review.py`가 번호를 자동으로 붙여 저장하고 덮어쓰지 않는다)
+- `review_notes`: 비평 내용 (잘된 점 / 약한 점 / 구체적 보완 지시). 파일 맨 위 `검수 모델` 줄은 `review.py`가 붙인다. **모든 verdict에 필수** — `pass`도 확인한 핵심 기준과 남긴 약점을 적는다. 근거 없는 verdict는 무효다.
 - `revise_target`: revise일 때 어느 에이전트를 재호출할지 (보통 `target_role`과 동일)
 - `rollback_to`: rollback일 때 되돌릴 상류 역할 (`researcher` / `pm` / `planner` / `ux-writer` / `designer` / `engineer` 중, 현재 단계보다 상류. FULL 순서: researcher → pm → planner → ux-writer → designer → engineer → qa)
 - `rollback_reason`: rollback일 때 무엇이 왜 상류의 문제인지 (현재 단계 재작업으로 못 고치는 이유 포함)
@@ -132,8 +130,8 @@
 
 ### 디자이너 검수
 
-- **적용해야 할 디자인 시스템이 실제로 적용됐는가.** 회사 고정 디자인 시스템이 있으면 그것을, 없으면 사용자가 고른 스킬을 따랐는가. 자체 토큰을 0부터 만들지 않았는가. `design_spec` 서두에 적용 디자인 시스템(스킬)이 명시됐는가.
-- **(회사 고정 DS가 있을 때) DS 컴포넌트·토큰 준수.** 화면 요소가 `platform`에 맞는 DS 컴포넌트로 매핑됐는가. 매핑 안 되는 요소는 "신규 컴포넌트 후보"로 분리됐는가. 색·간격·radius·shadow가 모두 DS 토큰명으로 적혔는가(Hex·px 하드코딩 없음). 본문·필수 정보에 대비가 낮은 보조 색 토큰을 쓰지 않았는가.
+- **적용해야 할 디자인 시스템이 실제로 적용됐는가.** session.md `design_system` 값이 `none`이 아니면 그 스킬을, `none`이었으면 추천 게이트에서 사용자가 고른 스킬을 따랐는가. 자체 토큰을 0부터 만들지 않았는가. `design_spec` 서두에 적용 디자인 시스템(스킬)이 명시됐는가.
+- **(`design_system`이 정해진 DS일 때) DS 컴포넌트·토큰 준수.** 화면 요소가 `platform`에 맞는 DS 컴포넌트로 매핑됐는가. 매핑 안 되는 요소는 "신규 컴포넌트 후보"로 분리됐는가. 색·간격·radius·shadow가 모두 DS 토큰명으로 적혔는가(Hex·px 하드코딩 없음). 본문·필수 정보에 대비가 낮은 보조 색 토큰을 쓰지 않았는가.
 - **산출 범위가 전 화면·전 컴포넌트인가.** 기획의 화면 목록·컴포넌트 목록과 대조해 누락이 없는가(대표 몇 개만 그린 건 아닌가). 디바이스(mobile 375/360)·웹 브레이크포인트 기준이 화면별로 명시됐는가.
 - 시각 표현이 기획 의도를 **강화**하는가. 장식을 위한 장식은 아닌가.
 - 익숙한 패턴을 맥락에 맞게 다듬었는가. 관성적으로 가져다 쓴 건 아닌가.
@@ -156,7 +154,7 @@
 
 ### Engineer 검수 (구현 품질)
 
-- 빌드가 통과하는가(`build_status == pass`), 콘솔 에러가 없는가.
+- 빌드가 통과하는가(`build_status == pass`), 타입 · 린트 에러가 없는가. `run_command`가 있는가.
 - 디자인 스펙이 실제로 반영됐는가. 임의로 디자인을 바꾸지 않았는가(스펙과 차이가 있으면 `implementation_notes`에 근거가 있는가).
 - UX라이터 문구가 정확히 반영됐는가.
 - 접근성이 구현됐는가. 색 외 단서, 대비, 키보드 접근 등 스펙의 접근성 항목.
@@ -164,7 +162,7 @@
 - 디바이스 최소폭(mobile 375/360)·웹 브레이크포인트에서 레이아웃이 유지되는가.
 - 디자인 토큰이 코드 토큰으로 반영됐는가(값 하드코딩 없음). 컴포넌트가 디자인 구조(+Variant)와 대응되는가.
 - 목업이 아니라 동작하는 코드인가.
-- **사용 중에 깨지는 지점을 실제로 눌러 확인했는가** — 생성 · 수정 버튼 연타 시 요청 1번, 권한 없는 화면에 주소로 직접 들어가면 막힘, 잘못된 id · 요청 실패 시 error 상태, 작성 중 입력 유지. (`skills/practice-notes/checklists/engineer.md`)
+- **사용 중에 깨지는 지점이 구현됐는가** (코드 · 스크린샷으로 확인. 실제 조작 확인은 FULL에서 QA가 한다) — 생성 · 수정 버튼 연타 시 요청 1번, 권한 없는 화면에 주소로 직접 들어가면 막힘, 잘못된 id · 요청 실패 시 error 상태, 작성 중 입력 유지. (`skills/practice-notes/checklists/engineer.md`)
 
 ### QA 검수 (검증 품질)
 
@@ -180,35 +178,31 @@
 
 ## 검수 실행 모델 — Codex (모든 단계)
 
-생성자와 검수자가 같은 모델이면 같은 사각지대를 공유해 게이트의 독립성이 0에 수렴한다. Claude가 만든 것을 Claude가 검수하는 자기검토 천장을 깨기 위해, **모든 단계(Researcher · PM · 기획자 · UX라이터 · 디자이너 · Engineer · QA)의 검수는 Codex(OpenAI)가 한다.**
+생성자와 검수자가 같은 모델이면 같은 사각지대를 공유해 게이트의 독립성이 0에 수렴한다. Claude가 만든 것을 Claude가 검수하는 자기검토 천장을 깨기 위해, **모든 단계(Researcher · PM · 기획자 · UX라이터 · 디자이너 · Engineer · QA)의 검수는 Codex(OpenAI)가 한다.** 이 문서는 그 Codex가 읽는 기준이다.
 
-나(Reviewer 에이전트)는 **Codex를 호출하고 결과를 판정 형식으로 옮기는 진행자**다. 산출물을 직접 비평하거나 Codex 지적에 내 의견을 보태지 않는다.
+### 실행 방법 (메인 세션)
 
-### 호출 방법
-
-Codex CLI를 **읽기 전용**으로 실행한다. 작업 폴더는 이 레포 루트로 잡는다(산출물은 `workspace/`에 있다).
+존재 검증 게이트를 통과한 직후 메인 세션이 `scripts/review.py`를 직접 실행한다(Bash `timeout: 600000`). 스크립트가 Codex를 읽기 전용으로 부르고, 이 문서 경로 · 대상 · 근거 · 회차를 프롬프트에 넣는다.
 
 ```bash
-codex exec -s read-only --skip-git-repo-check --ephemeral \
-  -C "<product-ai-crew 레포 루트>" \
-  -o "<workspace/[서비스명]/reviews/[단계]-r[revision_count].md>" \
-  [-i <화면 PNG> ...] \
-  "<아래 검수 프롬프트>"
+python3 scripts/review.py --project "[프로젝트]" --stage [단계] \
+  --target [산출물 ...] \
+  --ref [persona · PRD · 상류 산출물 · 회사 conventions ...] \
+  --image [프로젝트]/designer/review-shots/*.png \
+  --revision [이 산출물 revise 횟수] --rollbacks "[상류=횟수,...]" \
+  --prev [직전 검수 파일]
 ```
 
-- `-s read-only` 필수 — Codex가 산출물을 고치지 않게 한다.
-- 화면 이미지가 있으면 `-i`로 첨부한다(디자이너 단계: 오케스트레이터가 Figma 핵심 화면을 `designer/review-shots/`에 PNG로 저장해 경로를 넘긴다. Codex는 Figma에 직접 접근하지 못한다).
-- 모델 · 추론 강도는 지정하지 않는다(Codex 기본 설정). 사용자가 지정하면 `-m`으로 넘긴다.
-- 한 번 실행에 최대 10분. 응답이 없으면 1회 재시도한다.
+- `--image`는 디자이너 단계(그린 화면이 있을 때)만, `--prev`는 재검수일 때만 붙인다. 셋 다 여러 파일을 한 번에 받는다.
+- `--revision` = 이 산출물이 revise를 받아 **다시 작업한 횟수**(첫 검수 0, 첫 재작업 뒤 검수 1, 두 번째 재작업 뒤 검수 2 → 여기서 또 revise면 escalate).
+- `--revision` · `--rollbacks`는 session.md 「횟수」 표 값을 **매번** 넘긴다(빠지면 상한이 동작하지 않는다). rollback 횟수는 **되돌린 대상(상류) 역할별**로 센다.
 
-### 검수 프롬프트 (Codex에 넘기는 내용)
+- 결과 원문: `[프로젝트]/reviews/[단계]-[NN].md` (번호 자동 증가, 덮어쓰지 않음). 맨 위 `검수 모델: Codex` 줄은 스크립트가 붙인다.
+- 표준 출력 마지막 줄 JSON의 `verdict`로 처리한다. 상한(revise 2 · 같은 상류 rollback 2)에 걸리면 스크립트가 `escalate`로 바꾸고 그 사실을 파일 맨 위에 적는다.
+- 화면은 `--image`로 첨부한다(Codex는 Figma에 직접 접근하지 못한다).
+- 프롬프트만 확인하려면 `--dry-run`.
 
-1. 역할: "너는 Product AI Crew의 Reviewer다. 산출물을 고치지 말고 비평만 한다. 답은 한국어."
-2. 기준: `product-ai-crew/agents/reviewer/CLAUDE.md`의 「공통 비평 원칙」과 「[target_role] 검수」 항목을 읽고 **통과 기준(DoD) 체크리스트로** 쓰라고 지시
-3. 대상: `target_output` 파일 경로들 (+ Engineer면 `code_path` · 빌드 로그 / QA면 `test_cases` · `qa_report` · `qa/evidence/`)
-4. 근거 자료: `persona_path`, PRD, 상류 산출물(기획 · 문구 시트 등) 경로
-5. 회차 정보: `revision_count`, `rollback_count`, 이전 `review_notes`(재검수일 때)
-6. 답 형식 (이 형식 그대로):
+### 답 형식 (Codex가 이 형식 그대로 답한다)
 
 ```
 verdict: pass | revise | rollback | escalate
@@ -217,43 +211,43 @@ review_notes:
   - 미달 기준: [기준 항목] — 무엇이 왜 약한지 — 어떻게 고칠지 (항목 단위)
   - 남은 약점 (pass일 때):
 revise_target: (revise일 때)
-rollback_to / rollback_reason: (rollback일 때)
+rollback_to: (rollback일 때만. researcher | pm | planner | ux-writer | designer | engineer | qa 중 하나, 한 줄에 이름만)
+rollback_reason: (rollback일 때)
 escalate_reason: (escalate일 때)
 ```
 
 ### 판정 처리
 
-- **Codex의 verdict를 그대로 쓴다.** 내가 뒤집지 않는다.
-- 예외는 루프 규칙뿐이다 — `revision_count >= 2`인데 `revise`, `rollback_count >= 2`인데 같은 상류로 `rollback`이면 기계적으로 `escalate`로 바꾸고 그 사실을 `review_notes`에 적는다(「무한 루프 방지」).
-- 답 형식이 깨졌으면 같은 프롬프트로 1회 다시 요청한다. 그래도 깨지면 원문을 첨부해 `escalate`.
-- `review_notes` 맨 위에 **`검수 모델: Codex`**와 결과 파일 경로를 남긴다. 사용자는 이 파일에서 Codex 원문을 볼 수 있다.
+- **Codex의 verdict를 그대로 쓴다.** 메인 세션이 뒤집지 않는다(사용자는 뒤집을 수 있다. 오케스트레이터 CLAUDE.md 「Reviewer verdict의 사용자 가시성」).
+- 예외는 루프 상한뿐이다. `revision_count >= 2`인데 `revise`, 되돌리려는 상류의 rollback 횟수가 2 이상인데 `rollback`이면 `review.py`가 `escalate`로 바꾸고 파일 맨 위에 적는다(「무한 루프 방지」).
+- 종료 코드 5(답 형식 깨짐)면 같은 명령을 1회 다시 실행한다. 그래도 깨지면 원문을 첨부해 `escalate`.
+- 사용자 보고에는 verdict · `review_notes`와 함께 결과 파일 경로를 남긴다. 사용자는 이 파일에서 Codex 원문을 볼 수 있다.
 
 ### Codex를 못 쓸 때
 
-- **Codex가 설치돼 있지 않으면**(`codex` 명령 없음) 이 문서의 기준을 내가 직접 적용해 검수하고, `review_notes` 맨 위에 `검수 모델: Claude (같은 모델 검수 — Codex 미설치)`를 남긴다. 오케스트레이터는 이 표시를 사용자 보고에 그대로 보여 준다(만든 모델과 검수한 모델이 같다는 한계를 숨기지 않는다).
-- **Codex가 설치돼 있는데 실패하면**(로그인 만료 `codex login status` · 재시도 후에도 오류) 조용히 Claude 검수로 바꾸지 않는다. `escalate`로 반환하고 `escalate_reason`에 "Codex 실행 실패 — [오류 요약]"을 적는다. 사용자가 "이번엔 Claude로 검수해"라고 하면 그때만 직접 검수하고 `검수 모델: Claude (Codex 대체 — 사용자 지시)`를 남긴다.
+- **Codex가 설치돼 있지 않으면**(`review.py` 종료 코드 3) 메인 세션(Claude)이 이 문서의 기준을 직접 적용해 검수하고, 같은 답 형식으로 `reviews/[단계]-[NN].md`에 저장한다. 맨 위에 `검수 모델: Claude (같은 모델 검수 — Codex 미설치)`를 적는다. 오케스트레이터는 이 표시를 사용자 보고에 그대로 보여 준다(만든 모델과 검수한 모델이 같다는 한계를 숨기지 않는다).
+- **Codex가 설치돼 있는데 실패하면**(종료 코드 4: 로그인 만료 `codex login status` · 시간 초과 · 오류) 1회 다시 실행한다. 또 실패하면 조용히 Claude 검수로 바꾸지 않고 `escalate`로 처리하며, 사유에 "Codex 실행 실패 (오류 요약)"을 적는다. 사용자가 "이번엔 Claude로 검수해"라고 하면 그때만 메인 세션이 직접 검수하고 `검수 모델: Claude (Codex 대체 · 사용자 지시)`를 적는다.
 
 ---
 
 ## 검수 프로세스
 
 ```
-[산출물 수신]
-target_role + target_output + revision_count 확인
+[메인 세션: 검수 준비]
+단계 · 대상 · 근거 자료 · 화면 캡처 · session.md 「횟수」 표(revision · 상류별 rollback) 확인
         ↓
-[근거 확인]
-persona_path / PRD / 기획 산출물 등 비평의 기준이 될 사실 자료 확인
+[메인 세션: scripts/review.py 실행]  ← 모든 단계
+Codex(읽기 전용)에 이 문서 기준(DoD) · 대상 · 근거 자료 · 회차 정보가 넘어감 (「검수 실행 모델 — Codex」)
         ↓
-[Codex 검수 실행]  ← 모든 단계
-codex exec (read-only)에 역할 기준(DoD) · 대상 · 근거 자료 · 회차 정보를 넘김 (「검수 실행 모델 — Codex」)
-Codex가 비평 · 대안 · 결함 위치(현재 단계 / 상류) 판별 · verdict까지 낸다
+[Codex: 검수]
+이 문서 기준으로 비평 · 대안 · 결함 위치(현재 단계 / 상류) 판별 · verdict까지 「답 형식」으로 낸다
         ↓
-[판정 처리]
-Codex verdict 그대로 사용. revision_count / rollback_count 상한에 걸리면 escalate로만 전환
-(Codex 미설치면 Claude 검수 + 같은 모델 표시, 설치됐는데 실패하면 escalate)
+[review.py: 저장 · 상한 처리]
+reviews/[단계]-[NN].md 저장. revise · 같은 상류 rollback 상한에 걸리면 escalate로만 전환
+(Codex 미설치면 메인 세션 Claude 검수 + 같은 모델 표시, 설치됐는데 실패하면 1회 재실행 후 escalate)
         ↓
-[반환]
-verdict + review_notes(근거 필수) (+ revise_target / rollback_to·rollback_reason / escalate_reason)
+[메인 세션: 처리]
+verdict + review_notes(근거 필수)를 사용자에게 보이고 pass / revise / rollback / escalate 처리
 ```
 
 ---
@@ -265,7 +259,7 @@ verdict + review_notes(근거 필수) (+ revise_target / rollback_to·rollback_r
 - 같은 산출물의 재작업은 **최대 2회**까지만 `revise`를 반환한다.
 - `revision_count >= 2`이면, 품질이 미흡하더라도 `revise` 대신 **`escalate`**를 반환한다. 두 번 고쳐도 기준에 못 미친다는 건 비평만으로 풀 문제가 아니라 사람의 판단이 필요한 문제이기 때문이다.
 - `escalate` 시 `escalate_reason`에 "무엇이 두 번의 재작업으로도 해결되지 않았는지"를 구체적으로 적는다.
-- **rollback도 무한 왕복을 막는다.** 오케스트레이터가 넘겨준 `rollback_count`(같은 `rollback_to` 대상으로 되돌린 횟수)가 **2회 이상**이면, 같은 상류로 다시 `rollback`하지 않고 **`escalate`**로 전환한다. 상류를 두 번 고쳐도 하류에서 같은 결함이 반복된다는 건 사람의 판단이 필요하다는 뜻이다.
+- **rollback도 무한 왕복을 막는다.** 상류별 rollback 횟수(`--rollbacks`) 중 되돌리려는 `rollback_to` 상류의 값이 **2회 이상**이면, 같은 상류로 다시 `rollback`하지 않고 **`escalate`**로 전환한다. 상류를 두 번 고쳐도 하류에서 같은 결함이 반복된다는 건 사람의 판단이 필요하다는 뜻이다.
 
 ---
 
@@ -275,9 +269,9 @@ verdict + review_notes(근거 필수) (+ revise_target / rollback_to·rollback_r
 |------|---------|
 | 비평 기준을 충분히 만족, 약점이 있어도 사소함 | `pass` |
 | **현재 단계** 산출물에 명확한 약점이 있고 보완하면 통과 가능 (`revision_count < 2`) | `revise` |
-| 결함의 원인이 **상류 산출물**에 있어 상류를 고쳐야 풀림 (`rollback_count < 2`) | `rollback` |
+| 결함의 원인이 **상류 산출물**에 있어 상류를 고쳐야 풀림 (그 상류의 rollback 횟수 < 2) | `rollback` |
 | 두 번 재작업해도 미흡 (`revision_count >= 2`) | `escalate` |
-| 같은 상류로 두 번 되돌려도 같은 결함 반복 (`rollback_count >= 2`) | `escalate` |
+| 같은 상류로 두 번 되돌려도 같은 결함 반복 (그 상류의 rollback 횟수 >= 2) | `escalate` |
 | 방향 자체가 어긋났고 사람의 의사결정이 필요 (범위·전략 충돌 등) | `escalate` |
 
 `revise`로 판정할 때는 `review_notes`에 **무엇을 어떻게 고칠지** 실행 가능한 지시를 담아. 막연한 "더 구체적으로"는 지시가 아니야.
@@ -287,15 +281,16 @@ verdict + review_notes(근거 필수) (+ revise_target / rollback_to·rollback_r
 
 ## 검수 결과 반환 전 체크리스트
 
-- [ ] Codex(`codex exec -s read-only`)로 검수했고 역할 기준(DoD) · 대상 · 근거 자료 · 회차 정보를 함께 넘겼는가
-- [ ] Codex verdict를 그대로 썼는가 (루프 상한에 의한 escalate 전환만 예외, 그 사실을 적었는가)
-- [ ] `review_notes`에 `검수 모델: Codex`와 `review_file` 경로를 남겼는가 (Codex 실패면 escalate, 조용한 Claude 대체 없음)
+- [ ] (메인 세션) `scripts/review.py`로 검수했고 대상 · 근거 자료(`--ref`) · 화면(`--image`) · 회차(`--revision` · `--rollbacks`) · 직전 검수(`--prev`)를 빠짐없이 넘겼는가
+- [ ] (메인 세션) Codex verdict를 그대로 썼는가 (상한에 의한 escalate 전환만 예외, 스크립트가 파일에 적음)
+- [ ] (메인 세션) 사용자 보고에 검수 모델과 `reviews/[단계]-[NN].md` 경로를 남겼는가 (Codex 실패면 1회 재실행 후 escalate, 조용한 Claude 대체 없음)
+- [ ] 답이 「답 형식」 그대로이고 첫 줄이 `verdict:`인가
 - [ ] 공통 원칙(단정/일반화/근거/대안)으로 한 번씩 훑었는가
 - [ ] 역할별 기준을 적용했는가
 - [ ] `review_notes`에 잘된 점 / 약한 점 / 구체적 보완 지시가 모두 담겼는가 (**`pass`도 근거 필수** — 확인한 핵심 기준 + 남긴 약점)
 - [ ] 결함이 상류 산출물의 문제인지 판별했는가 (맞으면 `rollback`, 애매하면 `revise` 우선)
 - [ ] `revision_count`를 확인하고 2회 이상이면 `escalate`로 전환했는가
-- [ ] `rollback_count`를 확인하고 같은 상류로 2회 이상이면 `escalate`로 전환했는가
+- [ ] 되돌리려는 상류의 rollback 횟수를 확인하고 2회 이상이면 `escalate`로 전환했는가
 - [ ] `revise`면 `revise_target`을, `rollback`이면 `rollback_to`·`rollback_reason`을, `escalate`면 `escalate_reason`을 채웠는가
 
 ---
@@ -304,7 +299,7 @@ verdict + review_notes(근거 필수) (+ revise_target / rollback_to·rollback_r
 
 ### 구조 및 역할
 - [[CLAUDE|오케스트레이터 가이드]] — 검수 게이트 위치, verdict 처리, 세션 기록
-- `workspace/[서비스명]/persona.md` — 비평의 근거가 되는 타겟 사용자 특성 (`persona_path`로 전달됨)
+- `[프로젝트]/persona.md` — 비평의 근거가 되는 타겟 사용자 특성 (`persona_path`로 전달됨)
 
 ### 검수 대상 에이전트
 - [[agents/researcher/CLAUDE|Researcher 가이드]] — 리서치 근거 품질 검수 기준

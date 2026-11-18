@@ -42,7 +42,7 @@
 
 ## 유저 페르소나 참조
 
-`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `workspace/[서비스명]/persona.md`).
+`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `[프로젝트]/persona.md`).
 
 **Researcher가 페르소나를 활용하는 방법**
 
@@ -91,13 +91,14 @@
 
 작업 완료 후 아래 항목을 반환해.
 
-- `status`: complete / blocked
-- `research_path`: 리서치 종합 문서 경로 (`workspace/[서비스명]/researcher/research-synthesis-v1.0.md`)
+- `status`: complete / blocked / needs_input
+- `research_path`: 리서치 종합 문서 경로 (`[프로젝트]/researcher/research-synthesis-v1.0.md`)
 - `key_insights`: 핵심 인사이트 목록 (PM이 문제 정의에 쓸)
 - `competitor_findings`: 경쟁사/기존 도구 분석 요약 (각 도구가 무엇을 하고 무엇이 비었는지)
 - `opportunities`: insight → opportunity 매핑
-- `next_role`: pm
+- `next_role`: 참고용 (다음 단계는 오케스트레이터가 단계 계약표와 모드로 정함). FULL · PLAN = pm, RESEARCH = 없음 (종료)
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
+- `questions`: 사용자 결정이 필요한 질문 목록, 추천안이 있으면 함께 (needs_input일 때만)
 
 ---
 
@@ -136,9 +137,9 @@ PM이 바로 쓸 수 있는 근거 요약 작성 → 오케스트레이터 반�
 
 ## 산출물 저장 위치
 
-모든 산출물은 `workspace/[서비스명]/researcher/` 안에 저장해.
+모든 산출물은 `[프로젝트]/researcher/` 안에 저장해.
 
-- 리서치 종합: `workspace/[서비스명]/researcher/research-synthesis-v1.0.md` (research-synthesis 스킬 산출물 형식)
+- 리서치 종합: `[프로젝트]/researcher/research-synthesis-v1.0.md` (research-synthesis 스킬 산출물 형식)
 - 경쟁사 분석 등 보조 자료가 있으면 같은 폴더에 함께 저장
 
 ---
@@ -157,7 +158,7 @@ PM이 바로 쓸 수 있는 근거 요약 작성 → 오케스트레이터 반�
 
 ### 구조 및 역할
 - [[CLAUDE|오케스트레이터 가이드]] — 파이프라인 맨 앞 단계, 검수 게이트, 세션 기록
-- `workspace/[서비스명]/persona.md` — 리서치 출발 가설이 되는 타겟 사용자 특성 (`persona_path`로 전달됨)
+- `[프로젝트]/persona.md` — 리서치 출발 가설이 되는 타겟 사용자 특성 (`persona_path`로 전달됨)
 
 ### 활용 스킬
 - [[plugins/design/skills/user-research/SKILL|user-research]] — 리서치 방법론·인터뷰 가이드·분석 프레임워크

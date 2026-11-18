@@ -12,6 +12,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "product-ai-crew-instructions.md")
 
 SECTIONS = [
+    ("0. 크루 설정 (crew.config.md)", "crew.config.md"),
     ("1. 오케스트레이터 (Orchestrator)", "CLAUDE.md"),
     ("2. Researcher (리서치 수집·종합자)", "agents/researcher/CLAUDE.md"),
     ("3. PM (Product Manager)", "agents/pm/CLAUDE.md"),

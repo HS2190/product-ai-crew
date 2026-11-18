@@ -25,35 +25,35 @@ CUSTOM 모드는 사용자가 필요한 에이전트를 직접 조합해서 지�
 
 ## Claude Code 실행 메커니즘
 
-### 병렬 실행 — Task 툴 사용
+### 병렬 실행 — Agent 도구(subagent_type) 사용
 
-Claude Code에서 병렬 실행은 **Task 툴**로 독립적인 서브에이전트를 동시에 호출하는 방식으로 동작한다.
+Claude Code에서 병렬 실행은 **Agent 도구(subagent_type)**로 독립적인 서브에이전트(`.claude/agents/`)를 동시에 호출하는 방식으로 동작한다.
 
 **병렬 호출 구조**
 
 ```
-오케스트레이터가 Task 툴을 사용해 두 에이전트를 동시에 호출:
+오케스트레이터가 Agent 도구를 사용해 두 에이전트를 동시에 호출:
 
-Task 1 — PM 에이전트
+호출 1 — PM 에이전트 (subagent_type: pm)
   agents/pm/CLAUDE.md 로드
   mode: CREW
   input: { service_name, feature_name, business_goal, target_user }
-  output_path: workspace/[서비스명]/pm/
+  output_path: [프로젝트]/pm/
 
-Task 2 — UX 라이터 에이전트
+호출 2 — UX 라이터 에이전트 (subagent_type: ux-writer)
   agents/ux-writer/CLAUDE.md 로드
   mode: CREW
   input: { task, screen_plan, voice_guide }
-  output_path: workspace/[서비스명]/ux-writer/
+  output_path: [프로젝트]/ux-writer/
 
-→ 두 Task 동시 실행 → 각각 완료되면 오케스트레이터가 결과 수집
+→ 두 호출 동시 실행 → 각각 완료되면 오케스트레이터가 결과 수집
 ```
 
 **주의사항**
 
-- 각 Task는 독립적인 컨텍스트에서 실행되므로, 인풋에 필요한 모든 정보를 명시적으로 포함해야 한다 (대화 이력 공유 없음)
-- 병렬 실행 결과는 각각 `session.md`에 기록하되, 두 Task 모두 완료된 후에 session.md를 업데이트한다
-- 하나의 Task가 `blocked`이면 해당 Task만 중단하고 나머지는 계속 실행한다
+- 각 호출은 독립적인 컨텍스트에서 실행되므로, 인풋에 필요한 모든 정보를 명시적으로 포함해야 한다 (대화 이력 공유 없음). `project_dir` · `persona_path` · `memory_context` · `platform`은 항상 함께 넘긴다 (`CLAUDE.md` 「에이전트 호출 시 전달 형식」)
+- 병렬 실행 결과는 호출마다 끝나는 대로(존재 검증 · 검수까지 마친 뒤) 바로 `session.md`에 기록한다
+- 하나의 호출이 `blocked` 또는 `needs_input`이면 해당 호출만 멈추고 나머지는 계속 실행한다
 
 ### 순차 실행 — 기본 방식
 
@@ -76,10 +76,15 @@ Task 2 — UX 라이터 에이전트
 
 | 에이전트 키워드 | 해당 에이전트 | CLAUDE.md 경로 |
 |--------------|------------|---------------|
+| `researcher` / `리서처` | Researcher | `agents/researcher/CLAUDE.md` |
 | `pm` | PM | `agents/pm/CLAUDE.md` |
 | `planner` / `기획자` | 서비스 기획자 | `agents/planner/CLAUDE.md` |
 | `designer` / `디자이너` | UI/UX 디자이너 | `agents/designer/CLAUDE.md` |
 | `ux-writer` / `UX라이터` | UX 라이터 | `agents/ux-writer/CLAUDE.md` |
+| `engineer` / `엔지니어` | Engineer | `agents/engineer/CLAUDE.md` |
+| `qa` | QA | `agents/qa/CLAUDE.md` |
+
+> 검수는 서브에이전트가 아니다. 검수 = 메인 세션이 `scripts/review.py`를 직접 실행한다 (기준 = `agents/reviewer/CLAUDE.md`).
 
 ---
 
@@ -121,14 +126,14 @@ Task 2 — UX 라이터 에이전트
 
 ## 사용 예시
 
-### 예시 1 — PM + UX라이터 (문구 방향성 먼저 잡을 때)
+### 예시 1 — PM → UX라이터 (문구 방향성 먼저 잡을 때)
 
 **상황**: 기획·디자인 전에 서비스 브랜드 톤앤매너와 문구 방향성을 먼저 정의하고 싶을 때.
 
 **실행 방법**
 
 ```
-"CUSTOM 모드로 PM과 UX라이터를 병렬로 실행해줘.
+"CUSTOM 모드로 PM → UX라이터 순서로 실행해줘.
  PM은 [서비스명] 브랜드 방향성과 톤앤매너를 정의해줘.
  UX라이터는 그 방향성을 바탕으로 보이스 가이드 초안을 작성해줘."
 ```
@@ -137,15 +142,18 @@ Task 2 — UX 라이터 에이전트
 
 ```
 [오케스트레이터]
-    ├─ PM 에이전트 (병렬)
-    │    인풋: 서비스명, 비즈니스 목표, 타겟 사용자
-    │    아웃풋: 브랜드 방향성, 톤앤매너 정의
-    │
-    └─ UX라이터 에이전트 (병렬)
-         인풋: 기존 보이스 가이드, 서비스 개요
-         아웃풋: 보이스 가이드 초안
-         ↓
-[오케스트레이터] PM 아웃풋으로 UX라이터 가이드 검토 및 정합
+    ↓
+PM 에이전트
+    인풋: 서비스명, 비즈니스 목표, 타겟 사용자, platform
+    아웃풋: 브랜드 방향성, 톤앤매너 정의
+    ↓ (brand_direction 전달)
+UX라이터 에이전트
+    인풋: PM의 brand_direction, 기존 보이스 가이드(있으면), PRD
+    아웃풋: 보이스 가이드 초안
+    ↓
+[오케스트레이터] 결과 수집 후 보고
+
+※ UX라이터가 PM 결과(brand_direction)를 쓰므로 병렬이 아니라 순차로 실행한다.
 ```
 
 ---
@@ -227,9 +235,9 @@ CUSTOM 모드 실행 전 오케스트레이터는 아래를 반드시 확인한�
 2. 의존성이 있는 에이전트는 순서 보장 (병렬 실행 금지)
 3. 의존성이 없는 에이전트는 병렬 실행 허용
 
-### blocked 상태 처리
+### blocked · needs_input 처리
 
-병렬 실행 중 하나의 에이전트가 `blocked`를 반환하면:
+병렬 실행 중 하나의 에이전트가 `blocked` 또는 `needs_input`을 반환하면 (needs_input은 에이전트가 낸 `questions`를 메인 세션이 사용자에게 묻고 답을 넣어 다시 호출):
 
 1. 해당 에이전트만 중단하고 사용자에게 보고
 2. 나머지 에이전트는 계속 실행 (다른 에이전트에 의존성이 없는 경우)

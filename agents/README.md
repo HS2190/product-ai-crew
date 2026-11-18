@@ -1,7 +1,7 @@
 # Product AI Crew — 사용 가이드
 
 Claude Code 기반 멀티 에이전트 제품 조직 시스템.
-Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer → QA 7개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 Reviewer의 내용 품질 검수를 거친다. 리서치부터 동작하는 프론트엔드 구현 · 검증(QA, FULL 모드)까지가 범위다.
+Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer → QA 7개의 AI 에이전트가 오케스트레이터의 지휘 아래 순차 실행되고, 각 단계 산출물은 내용 품질 검수(Reviewer 기준, 메인 세션이 `scripts/review.py`로 Codex 실행)를 거친다. 리서치부터 동작하는 프론트엔드 구현 · 검증(QA, FULL 모드)까지가 범위다.
 
 ---
 
@@ -13,11 +13,11 @@ Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer �
 | Researcher | `researcher/CLAUDE.md` | 리서치 수집·종합, 경쟁 분석, insights 도출 |
 | PM | `pm/CLAUDE.md` | 비즈니스 목표 정의, PRD 작성, 기능 우선순위 결정 |
 | 서비스 기획자 | `planner/CLAUDE.md` | 화면 기획, 기능 명세서, User Flow 설계 |
-| UI/UX 디자이너 | `designer/CLAUDE.md` | 화면 디자인, 컴포넌트 스펙, Figma 반영 |
+| UI/UX 디자이너 | `designer/CLAUDE.md` | 화면 디자인, 컴포넌트 스펙, Figma 드로잉 플랜 (그리기는 메인 세션) |
 | UX 라이터 | `ux-writer/CLAUDE.md` | UX 문구 작성, 라이팅 가이드, 금지 표현 관리 |
 | Engineer | `engineer/CLAUDE.md` | 프론트엔드 구현, 빌드 검증 (최종 산출물) |
 | QA | `qa/CLAUDE.md` | 구현 화면 실제 검증, 테스트 케이스 · 버그 리포트 (FULL 마지막) |
-| Reviewer | `reviewer/CLAUDE.md` | 각 단계 산출물의 내용 품질 비평 (pass/revise/rollback/escalate) — 검수 실행은 Codex |
+| Reviewer | `reviewer/CLAUDE.md` | 각 단계 산출물의 내용 품질 비평 기준 (pass/revise/rollback/escalate). 서브에이전트가 아니라 Codex가 읽는 검수 기준 문서이고, 실행은 메인 세션이 `scripts/review.py`로 한다 |
 
 ---
 
@@ -50,23 +50,27 @@ Researcher → PM → 기획자 → UX라이터 → 디자이너 → Engineer �
 
 **실행 흐름:**
 
-각 단계 산출물은 **존재 검증 → Reviewer 검수** 2단계 게이트를 통과해야 다음 단계로 넘어간다.
+각 단계 산출물은 **존재 검증 → Reviewer 검수**(메인 세션 `scripts/review.py`) 2단계 게이트를 통과해야 다음 단계로 넘어간다. 판정은 pass / revise / rollback / escalate 4종이다.
 
 ```
 Researcher
  └─ 리서치 종합, 경쟁 분석, key_insights 도출
-        ↓ [존재 검증] → [Reviewer 검수] (pass/revise/escalate)
+        ↓ [존재 검증] → [Reviewer 검수] (pass/revise/rollback/escalate)
 PM
  └─ PRD 작성, 기능 우선순위 정의 (리서치 insights 인용)
-        ↓ [존재 검증] → [Reviewer 검수] (pass/revise/escalate)
+        ↓ [존재 검증] → [Reviewer 검수] (pass/revise/rollback/escalate)
 기획자
  └─ 화면 기획안, 기능 명세서, User Flow 작성
         ↓ [존재 검증] → [Reviewer 검수]
 UX라이터
  └─ 화면별 문구 시트, UX라이팅 가이드 작성 (디자인 전에 문구 확정)
         ↓ [존재 검증] → [Reviewer 검수]
+(메인 세션) Figma 링크 · 디자인 시스템 확정
+        ↓
 디자이너
- └─ 디자인 스펙, 컴포넌트 스펙, Figma 반영 (문구 시트 문구로 그림)
+ └─ 디자인 스펙, 컴포넌트 스펙, figma_draw_plan (문구 시트 문구로 그림)
+        ↓
+(메인 세션) Figma 그리기 · 검수용 화면 캡처 (Figma 링크를 받았을 때)
         ↓ [존재 검증] → [Reviewer 검수]
 (가상 사용자 점검 — 판정 없음)
  └─ user-voice-sim으로 핵심 화면 사용자 반응 (Claude · Codex 두 모델), 두 모델 모두 막힌 곳(신뢰도 높음)만 승인 후 라이터 · 디자이너에 반영
@@ -80,7 +84,7 @@ QA (FULL)
 완료 보고
 ```
 
-**산출물:** `workspace/[서비스명]/researcher/`, `pm/`, `planner/`, `designer/`, `ux-writer/`, `engineer/` 각 폴더에 저장 (최종 산출물은 `engineer/`의 동작하는 코드)
+**산출물:** `[프로젝트]/researcher/`, `pm/`, `planner/`, `ux-writer/`, `designer/`, `engineer/`, `qa/` 각 폴더에 저장 (최종 산출물은 `engineer/`의 동작하는 코드)
 
 ---
 
@@ -98,7 +102,7 @@ QA (FULL)
 
 Researcher가 `user-research`·`research-synthesis` 스킬을 활용해 themes → insights → opportunities를 종합한다. 결과는 PM이 `research_path`로 이어받아 PLAN/FULL로 확장할 수 있다.
 
-**산출물:** 리서치 종합 문서 (`workspace/[서비스명]/researcher/research-synthesis-v1.0.md`)
+**산출물:** 리서치 종합 문서 (`[프로젝트]/researcher/research-synthesis-v1.0.md`)
 
 ---
 
@@ -145,7 +149,7 @@ Researcher가 `user-research`·`research-synthesis` 스킬을 활용해 themes �
 
 Engineer가 `frontend-design`·`react-components`·`impeccable` 등 스킬을 활용해 React(기본 Vite+TS) 코드로 구현하고, 빌드 통과·미리보기로 스펙 일치를 자가 확인한다. 데이터는 mock/정적으로 처리하며 백엔드는 범위 밖이다.
 
-**산출물:** 동작하는 프론트엔드 코드 (`workspace/[서비스명]/engineer/`)
+**산출물:** 동작하는 프론트엔드 코드 (`[프로젝트]/engineer/`)
 
 ---
 
@@ -177,7 +181,7 @@ Engineer가 `frontend-design`·`react-components`·`impeccable` 등 스킬을 �
 "CUSTOM 모드로 기획자 → 디자이너를 3회 반복 실행해줘."
 ```
 
-**병렬 실행은 Claude Code Task 툴로 동작함**
+**병렬 실행은 Claude Code Agent 도구(subagent_type)로 동작함**
 각 에이전트가 독립적인 서브에이전트로 호출되어 동시에 실행됨.
 각 Task에 필요한 인풋을 명시적으로 전달해야 함 (대화 이력 공유 없음).
 
@@ -257,15 +261,16 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 **각 에이전트 아웃풋은 2단계 게이트를 통과해야 다음 단계로 넘어감**
 산출물은 두 단계를 차례로 거친다.
 - **1단계 — 존재 검증**: 필수 항목(파일 존재 여부, 필드 누락 등)을 자동 검증함. 실패 시 `blocked`로 처리하고 누락 항목을 사용자에게 보고함.
-- **2단계 — Reviewer 내용 비평**: 존재 검증을 통과하면 Reviewer가 산출물의 *내용 품질*을 비평함. "있는지"가 아니라 "좋은지"를 본다.
+- **2단계 — Reviewer 내용 비평**: 존재 검증을 통과하면 메인 세션이 `scripts/review.py`로 Codex에 Reviewer 기준(`reviewer/CLAUDE.md`)과 산출물을 넘겨 *내용 품질*을 비평함. "있는지"가 아니라 "좋은지"를 본다. 결과는 `[프로젝트]/reviews/[단계]-[NN].md`.
   - `pass` → 다음 단계로 진행
   - `revise` → 같은 에이전트가 피드백을 받아 재작업 (같은 산출물 **최대 2회**)
-  - `escalate` → 2회 재작업으로도 미흡하거나 방향 자체가 어긋난 경우. 작업을 멈추고 **사용자 판단**을 요청함.
+  - `rollback` → 결함 원인이 상류 산출물에 있음. 상류 에이전트를 다시 부르고 거기서부터 하류로 재진행 (같은 상류 **최대 2회**)
+  - `escalate` → 상한을 넘었거나 방향 자체가 어긋난 경우. 작업을 멈추고 **사용자 판단**을 요청함.
 
-재작업 횟수는 `session.md`에 기록되어, 대화가 끊겨 재개해도 2회 상한이 유지됨.
+재작업 · rollback 횟수는 `session.md` 「횟수」 표에 기록되어, 대화가 끊겨 재개해도 2회 상한이 유지됨.
 
 **작업 도중 대화가 끊겨도 이어서 진행 가능**
-오케스트레이터는 각 에이전트 완료 시마다 `workspace/[서비스명]/session.md`에 진행 상태를 기록함.
+오케스트레이터는 각 에이전트 완료 시마다 `[프로젝트]/session.md`에 진행 상태를 기록함.
 같은 작업을 다시 요청하면 "이어서 진행할까요?" 확인 후 멈춘 단계부터 재개함.
 
 ### 더 잘 활용하는 방법
@@ -284,11 +289,11 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 자료가 없으면 Researcher가 경쟁사 분석·웹 검색·페르소나 범위에서 수행하되 한계를 명시한다.
 
 **피그마 MCP 활용**
-디자이너 에이전트는 피그마 MCP가 연결되어 있으면 피그마 파일을 직접 열고 읽고 수정.
-피그마 URL만 공유하면 별도 스크린샷 없이 바로 작업 가능.
+Figma 읽기 · 그리기는 메인 세션(오케스트레이터)이 한다. 서브에이전트는 Figma MCP를 쓸 수 없어서, 볼 화면은 메인 세션이 캡처해 `shots_dir`로 넘기고 디자이너의 `figma_draw_plan`은 메인 세션이 그린다.
+피그마 URL만 공유하면 캡처 · 그리기는 메인 세션이 맡는다.
 
 **산출물 저장 위치**
-모든 산출물은 자동으로 `workspace/[서비스명]/` 하위에 저장됨.
+모든 산출물은 자동으로 `[프로젝트]/` 하위에 저장됨.
 이 폴더는 `.gitignore` 처리되어 있어 로컬에만 유지됨.
 
 ---
@@ -313,7 +318,7 @@ FULL보다 가볍고, 개발팀에 공유할 초안 만들기에 적합.
 
 ## 산출물 저장 경로 참고
 
-작업물은 `workspace/[서비스명]/`에, 기억층은 `workspace/_memory/`에 둔다.
+작업물은 `[프로젝트]/`에, 기억층은 `workspace/_memory/`에 둔다.
 
 ```
 workspace/

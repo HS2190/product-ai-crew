@@ -34,13 +34,13 @@
 | 서비스명 | 작업 대상 서비스 이름 |
 | 기능명 | 리서치 주제 또는 구현할 기능 |
 | 리서치 자료 | 사용자 제공 자료 경로 (인터뷰·설문·티켓 등). 없으면 비움 |
-| 페르소나 | `workspace/[서비스명]/persona.md` (있을 때) |
+| 페르소나 | `[프로젝트]/persona.md` (있을 때) |
 
 **필수 아웃풋**
 
 | 산출물 | 저장 경로 |
 |-------|---------|
-| 리서치 종합 | `workspace/[서비스명]/researcher/research-synthesis-v1.0.md` |
+| 리서치 종합 | `[프로젝트]/researcher/research-synthesis-v1.0.md` |
 | 핵심 인사이트 (key_insights) | 종합 문서 내 포함 |
 | 경쟁사 분석 (competitor_findings) | 종합 문서 내 포함 |
 
@@ -53,8 +53,8 @@
 
 **Reviewer 검수**
 
-- 산출물 완료 후 Reviewer가 근거 품질 비평 (`agents/reviewer/CLAUDE.md`)
-- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+- 산출물 완료 후 메인 세션이 `scripts/review.py`로 근거 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
+- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / rollback → 맨 앞 단계라 상류가 없어 해당 없음 (입력 자료 문제면 escalate) / escalate → 사용자 판단
 
 **다음 에이전트로 전달**
 
@@ -78,12 +78,13 @@
 | 기능명 | 구현할 기능 또는 스프린트 주제 |
 | 비즈니스 목표 | 이 기능이 해결하는 비즈니스 문제 |
 | 타겟 사용자 | 페르소나 또는 사용자 유형 |
+| 플랫폼 (platform) | `mobile` / `web` / `both` (오케스트레이터가 0단계에 확정) |
 
 **필수 아웃풋**
 
 | 산출물 | 저장 경로 |
 |-------|---------|
-| PRD | `workspace/[서비스명]/pm/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
+| PRD | `[프로젝트]/pm/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
 | 기능 목록 및 우선순위 | PRD 내 포함 |
 | In Scope / Out of Scope | PRD 내 포함 |
 | 브랜드 방향성 및 톤앤매너 | PRD 내 포함 또는 별도 전달 |
@@ -94,12 +95,12 @@
 - [ ] 기능 목록 및 우선순위 확정 (Must Have / Should Have / Nice to Have)
 - [ ] In Scope / Out of Scope 명확히 구분됨
 - [ ] KPI/OKR 정의됨
-- [ ] `[확인 필요]` 항목 목록 정리됨
+- [ ] `[확인 필요]` 항목이 `[프로젝트]/open-items.md`에 ID로 정리됨
 
 **Reviewer 검수**
 
-- 산출물 완료 후 Reviewer가 내용 품질 비평 (`agents/reviewer/CLAUDE.md`)
-- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+- 산출물 완료 후 메인 세션이 `scripts/review.py`로 내용 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
+- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / rollback → researcher 재호출 후 PM 재진행 (같은 상류 최대 2회) / escalate → 사용자 판단
 
 **다음 에이전트로 전달**
 
@@ -122,17 +123,18 @@
 | PRD | PM 아웃풋 |
 | 기능 목록 | PM 아웃풋 |
 | 우선순위 | PM 아웃풋 |
-| 타겟 플랫폼 | 사용자 제공 또는 PRD 내 명시 |
+| 타겟 플랫폼 | `mobile` / `web` / `both` (오케스트레이터가 0단계에 확정) |
 | 브랜드 방향성 | PM 아웃풋 |
 
 **필수 아웃풋**
 
 | 산출물 | 저장 위치 |
 |-------|---------|
-| 화면 기획안 | Figma |
-| 기능 명세서 | `workspace/[서비스명]/planner/` |
-| User Flow | Figma / FigJam |
-| 와이어프레임 | Figma |
+| 화면 기획안 | `[프로젝트]/planner/` (md) |
+| 기능 명세서 | `[프로젝트]/planner/` (md) |
+| User Flow | `[프로젝트]/planner/` (md, 텍스트 다이어그램) |
+| 와이어프레임 | `[프로젝트]/planner/` (md) |
+| 확인 필요 | `[프로젝트]/open-items.md` |
 
 **완료 조건**
 
@@ -140,12 +142,12 @@
 - [ ] 기능 명세서 작성 완료 (예외 처리 포함)
 - [ ] User Flow 시각화 완료
 - [ ] Empty State 정의됨
-- [ ] `[확인 필요]` 항목 해소 완료
+- [ ] `[확인 필요]`는 근거 없이 임의 확정하지 않고, 남은 것은 `[프로젝트]/open-items.md`에 ID로 명시됨 (`agents/planner/CLAUDE.md` 「확인 필요 모으기」)
 
 **Reviewer 검수**
 
-- 산출물 완료 후 Reviewer가 내용 품질 비평 (`agents/reviewer/CLAUDE.md`)
-- pass → 파이프라인 종료 / revise → 현재 Step 재작업 (최대 2회) / escalate → 사용자 판단
+- 산출물 완료 후 메인 세션이 `scripts/review.py`로 내용 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
+- pass → 파이프라인 종료 / revise → 현재 Step 재작업 (최대 2회) / rollback → 상류(pm 또는 researcher) 재호출 후 하류로 재진행 (같은 상류 최대 2회) / escalate → 사용자 판단
 
 **파이프라인 종료**
 

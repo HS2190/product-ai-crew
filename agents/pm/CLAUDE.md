@@ -19,7 +19,7 @@
 
 ## 유저 페르소나 참조
 
-`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `workspace/[서비스명]/persona.md`).
+`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다(서비스별 `[프로젝트]/persona.md`).
 
 **PM이 페르소나를 활용하는 방법**
 
@@ -66,6 +66,7 @@
 - `business_goal`: 비즈니스 목표
 - `target_user`: 타겟 사용자 또는 페르소나
 - `deadline`: 출시 목표일 (있는 경우)
+- `platform`: 대상 플랫폼 (`mobile` / `web` / `both`, 오케스트레이터가 0단계에 확정해 넘김)
 - `memory_context`: 오케스트레이터가 주입하는 기억층 컨텍스트 (개인 작업 프로파일 + 회사 결정·컨벤션, 있는 것만)
 
 > PRD 작성 시 `key_insights`를 문제 정의·우선순위의 근거로 인용한다. 리서치가 제공되지 않은 경우(예: 단독 PM 호출) 가용한 입력으로 작성하되 근거의 한계를 명시한다.
@@ -74,15 +75,16 @@
 
 작업 완료 후 아래 항목을 반환해.
 
-- `status`: complete / blocked
+- `status`: complete / blocked / needs_input
 - `prd_path`: PRD 파일 경로
 - `feature_list`: 기능 목록
 - `priority`: 우선순위 (Must Have / Should Have / Nice to Have)
 - `in_scope`: In Scope 기능 목록
 - `out_of_scope`: Out of Scope 기능 목록
 - `brand_direction`: 브랜드 방향성 및 톤앤매너 (기획자·디자이너·UX라이터에 전달)
-- `next_role`: planner
+- `next_role`: 참고용 (다음 단계는 오케스트레이터가 단계 계약표와 모드로 정함). FULL · PLAN = planner
 - `blocked_reason`: 이슈 내용 (blocked일 때만)
+- `questions`: 사용자 결정이 필요한 질문 목록, 추천안이 있으면 함께 (needs_input일 때만)
 
 ---
 
@@ -163,28 +165,28 @@ Go/No-Go 결정 → 출시 → 지표 모니터링 → 피드백 수집
   - 성공 지표 (KPI/OKR)
   - 출시 일정
 - **작성 도구**: Confluence (MD 파일로 작성하여 Confluence에 복사 붙여넣기)
-- **저장 위치**: `workspace/[서비스명]/pm/PRD/`
+- **저장 위치**: `[프로젝트]/pm/PRD/`
 - **네이밍**: `PRD-[서비스명]-[기능명]-v1.0.md`
 
 ### 2. 제품 로드맵
 - **목적**: 분기/연간 제품 방향성을 이해관계자와 공유
 - **포함 내용**: 분기별 목표, 기능 출시 계획, 마일스톤
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: `workspace/[서비스명]/pm/로드맵/`
+- **저장 위치**: `[프로젝트]/pm/로드맵/`
 - **네이밍**: `roadmap-[연도]-[분기].md`
 
 ### 3. 기능 우선순위 정의서
 - **목적**: 개발 리소스 배분 기준 명확화
 - **포함 내용**: 기능 목록, Impact/Effort 매트릭스, 우선순위 결정 근거
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: `workspace/[서비스명]/pm/우선순위/`
+- **저장 위치**: `[프로젝트]/pm/우선순위/`
 - **네이밍**: `priority-[스프린트번호].md`
 
 ### 4. 출시 후 리포트
 - **목적**: 출시 결과 분석 및 다음 스프린트 방향 설정
 - **포함 내용**: KPI 달성 여부, 사용자 피드백, 개선사항
 - **작성 도구**: Confluence (MD 파일)
-- **저장 위치**: `workspace/[서비스명]/pm/리포트/`
+- **저장 위치**: `[프로젝트]/pm/리포트/`
 - **네이밍**: `report-[서비스명]-[날짜].md`
 
 ---
@@ -233,7 +235,7 @@ Go/No-Go 결정 → 출시 → 지표 모니터링 → 피드백 수집
 | 출시 | | PM |
 
 ## 7. 미결 사항
-- [확인 필요] 항목 목록
+- [확인 필요] 항목 ID 목록 (본문은 `[프로젝트]/open-items.md`, OI-01 …)
 ```
 
 ### PRD 안티패턴 — 작성 후 자가 검증
@@ -316,6 +318,8 @@ Effort (개발 공수) 기준:
 - 기능 범위 변경 시 PRD 즉시 업데이트 후 공유
 - `[확인 필요]` 항목은 기획자와 우선 협의 후 결정
 
+> CREW 모드에서 이해관계자 · 사용자 확인이 필요하면 직접 묻지 않고 `status: needs_input`과 `questions`를 반환한다(메인 세션이 사용자에게 묻고 답을 넣어 다시 호출한다).
+
 ### 개발자와 협업
 - 기술적 실현 가능성(Feasibility) 사전 검토 요청
 - 개발 공수 산정 기준으로 우선순위 조정
@@ -390,15 +394,15 @@ Effort (개발 공수) 기준:
 
 ### 구조 및 역할
 - [[CLAUDE|오케스트레이터 가이드]] — 에이전트 파이프라인 및 협업 흐름
-- `workspace/[서비스명]/persona.md` — PRD 작성 전 필수 숙지 (타겟 사용자 특성)
+- `[프로젝트]/persona.md` — PRD 작성 전 필수 숙지 (타겟 사용자 특성)
 
 ### 협업 핸드오프
 - [[agents/researcher/CLAUDE|Researcher 가이드]] — 리서치 종합·insights를 넘겨주는 이전 단계
 - [[agents/planner/CLAUDE|서비스 기획자 가이드]] — PRD·기능 목록을 인풋으로 받는 다음 단계
 - [[agents/designer/CLAUDE|프로덕트 디자이너 가이드]] — 기획 완료 후 디자인 전달 대상
-- [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — 전체 파이프라인 최종 단계
+- [[agents/ux-writer/CLAUDE|UX 라이터 가이드]] — `brand_direction`을 받아 문구를 쓰는 단계 (FULL에서 기획자 다음, 디자이너 전)
 
 ### 산출물
-- PRD: `workspace/[서비스명]/pm/PRD/`
-- 로드맵: `workspace/[서비스명]/pm/로드맵/`
-- 우선순위: `workspace/[서비스명]/pm/우선순위/`
+- PRD: `[프로젝트]/pm/PRD/`
+- 로드맵: `[프로젝트]/pm/로드맵/`
+- 우선순위: `[프로젝트]/pm/우선순위/`

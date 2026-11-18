@@ -26,7 +26,7 @@
 
 - [ ] 리서치 주제(서비스명·기능명 또는 질문)가 명확한가
 - [ ] 사용자 제공 리서치 자료(인터뷰·설문·티켓 등)가 있는가 — 없으면 가용 범위(경쟁사 분석·웹 검색·페르소나)에서 수행하고 한계를 명시
-- [ ] 페르소나 파일(`workspace/[서비스명]/persona.md`)이 있는가 (있으면 출발 가설로 전달)
+- [ ] 페르소나 파일(`[프로젝트]/persona.md`)이 있는가 (있으면 출발 가설로 전달)
 
 ---
 
@@ -57,7 +57,7 @@
 
 | 산출물 | 저장 경로 |
 |-------|---------|
-| 리서치 종합 | `workspace/[서비스명]/researcher/research-synthesis-v1.0.md` |
+| 리서치 종합 | `[프로젝트]/researcher/research-synthesis-v1.0.md` |
 | 핵심 인사이트 (key_insights) | 종합 문서 내 포함 |
 | 경쟁사 분석 (competitor_findings) | 종합 문서 내 포함 |
 | insight → opportunity 매핑 | 종합 문서 내 포함 |
@@ -71,8 +71,8 @@
 
 **Reviewer 검수**
 
-- 산출물 완료 후 Reviewer가 근거 품질 비평 1회 (`agents/reviewer/CLAUDE.md`)
-- pass → 파이프라인 종료 / revise → 재작업 (최대 2회) / escalate → 사용자 판단
+- 산출물 완료 후 메인 세션이 `scripts/review.py`로 근거 품질 검수 1회 (기준 = `agents/reviewer/CLAUDE.md`)
+- pass → 파이프라인 종료 / revise → 재작업 (최대 2회) / rollback → 맨 앞 단계라 상류가 없어 해당 없음 (입력 자료 문제면 escalate) / escalate → 사용자 판단
 
 **파이프라인 종료**
 

@@ -70,6 +70,14 @@ for plugin in design figma frontend-design frontend-design-audit; do
   fi
 done
 
+# 권장 외부 구성 확인 (없어도 설치는 계속)
+if [ ! -d "$REPO_DIR/plugins/design" ] && [ ! -e "$HOME/.claude/plugins/design" ]; then
+  echo "  ⚠ plugins/design 없음 — Researcher(FULL · PLAN · RESEARCH)가 쓰는 리서치 스킬이 빠집니다. THIRD_PARTY.md 「먼저 설치할 것」 참고"
+fi
+if ! command -v codex >/dev/null 2>&1 && [ ! -x "$HOME/.local/bin/codex" ]; then
+  echo "  ⚠ codex 없음 — 검수를 Claude가 대신하고 '같은 모델 검수'로 표시합니다 (설치: README 「함께 쓰면 좋은 것」)"
+fi
+
 # 작업 폴더 준비
 echo "[3/3] 작업 폴더 준비..."
 mkdir -p "$REPO_DIR/workspace/_memory"

@@ -57,6 +57,18 @@ claude
 
 `install.sh`는 `skills/`를 `~/.claude/skills`에, `plugins/`를 `~/.claude/plugins`에 심링크로 연결한다. 이미 있는 스킬은 덮어쓰지 않는다.
 
+### 설정 (`crew.config.md`)
+
+설치마다 다른 값은 이 파일 하나에만 둔다. 에이전트 · 워크플로우 문서는 고치지 않는다.
+
+| 키 | 기본값 | 뜻 |
+|----|-------|----|
+| `projects_root` | `workspace` | 작업물 위치. 별도 레포에 두려면 그 경로(예: `../my-design-docs/projects`) |
+| `default_company` | 비어 있음 | 기억층 회사. 비어 있으면 작업 시작 때 한 번 묻는다 |
+| `reviewer` | `codex` | 검수 모델. Codex가 없으면 Claude가 대신하고 '같은 모델 검수'로 표시 |
+
+회사 전용 규칙(톤 · 고정 디자인 시스템 · 핸드오프 규칙)은 `workspace/_memory/companies/[회사명]/conventions.md`에, 프로젝트마다 다른 디자인 시스템은 그 프로젝트 `session.md`의 `design_system:`에 적는다.
+
 ### 함께 쓰면 좋은 것 (선택)
 
 | 도구 | 쓰는 곳 | 없으면 |
