@@ -1,94 +1,42 @@
 # 리서치 워크플로우 (RESEARCH)
 
-## 개요
-
-- **실행 모드**: RESEARCH
-- **호출 순서**: Researcher 단독 실행
-- **사용 상황**: 리서치·경쟁사 분석·사용자 니즈 종합만 필요할 때 (PRD/기획 전 단계 또는 독립 리서치)
-- **오케스트레이터 참조**: `CLAUDE.md`
-
----
-
-## 사용 예시
+- **순서**: 0 → 1 (Researcher 단독). 순서 · 필드 · 검수 처리 · 상한은 `CLAUDE.md` 단계 계약표가 정본이다.
+- **언제**: 리서치 · 경쟁사 분석 · 사용자 니즈 종합만 필요할 때 (PRD · 기획 전 단계 또는 독립 리서치)
 
 ```
 "[기능명] 관련 경쟁사 분석해줘."
 "기존 사용자 피드백 종합해서 인사이트 뽑아줘."
-"이 시장에서 유사 서비스들이 이 문제를 어떻게 푸는지 리서치해줘."
 "인터뷰 전사 정리해서 themes/insights로 종합해줘. [자료 경로]"
 ```
 
----
+## 0. 시작 점검
 
-## 사전 준비 조건
+- [ ] 리서치 주제(서비스명 · 기능명 또는 질문)가 명확한가
+- [ ] 사용자 제공 리서치 자료(인터뷰 · 설문 · 티켓)가 있는가. 없으면 가용 범위(경쟁사 분석 · 웹 검색 · 페르소나)에서 하고 한계를 적는다
+- [ ] `[프로젝트]/persona.md`가 있는가 (있으면 출발 가설로 넘긴다)
 
-오케스트레이터가 RESEARCH 모드를 실행하기 전 아래를 확인한다.
+## 1. Researcher
 
-- [ ] 리서치 주제(서비스명·기능명 또는 질문)가 명확한가
-- [ ] 사용자 제공 리서치 자료(인터뷰·설문·티켓 등)가 있는가 — 없으면 가용 범위(경쟁사 분석·웹 검색·페르소나)에서 수행하고 한계를 명시
-- [ ] 페르소나 파일(`[프로젝트]/persona.md`)이 있는가 (있으면 출발 가설로 전달)
+역할 정본: `agents/researcher/CLAUDE.md` · 스킬: `user-research` · `research-synthesis`
 
----
+**입력**: `task` · `service_name` / `feature_name` · `research_input`(없으면 비움) · 공통 입력(`persona_path` · `memory_context` 등)
 
-## 단계별 실행 정의
+**산출물**
 
-### Step 1 — Researcher 에이전트
-
-**역할 참조**: `agents/researcher/CLAUDE.md`
-**활용 스킬**: `plugins/design/skills/user-research/SKILL.md`, `plugins/design/skills/research-synthesis/SKILL.md`
-
-**인풋**
-
-| 항목 | 설명 |
-|------|------|
-| `task` | 리서치 주제 (예: "[기능명] 경쟁사 분석 및 사용자 니즈 종합") |
-| `service_name` / `feature_name` | 서비스명 / 리서치 주제 |
-| `research_input` | 사용자 제공 자료 경로 (인터뷰·설문·티켓 등). 없으면 비움 |
-| `persona_path` | 페르소나 파일 경로 (있을 때) |
-
-**수행 작업**
-
-- 경쟁사·유사 서비스 분석 (무엇을 하고 무엇이 비었는지)
-- 가용 데이터 수집 (웹검색/커넥터 활용 가능 시)
-- research-synthesis 형식으로 themes → insights → opportunities 종합
-- 관찰/해석 분리, 추정·한계 명시
-
-**필수 아웃풋**
-
-| 산출물 | 저장 경로 |
-|-------|---------|
-| 리서치 종합 | `[프로젝트]/researcher/research-synthesis-v1.0.md` |
-| 핵심 인사이트 (key_insights) | 종합 문서 내 포함 |
-| 경쟁사 분석 (competitor_findings) | 종합 문서 내 포함 |
-| insight → opportunity 매핑 | 종합 문서 내 포함 |
+| 산출물 | 경로 |
+|-------|------|
+| 리서치 종합 (research-synthesis 형식) | `[프로젝트]/researcher/research-synthesis-v1.0.md` |
+| key_insights · competitor_findings · insight → opportunity | 종합 문서 안 |
 
 **완료 조건**
 
-- [ ] 리서치 종합 문서 작성 완료 (research-synthesis 형식)
-- [ ] 경쟁사/기존 도구 분석 완료
-- [ ] 관찰과 해석 분리, 추정·한계 명시
-- [ ] key_insights / opportunities 정리됨
+- [ ] research-synthesis 형식으로 종합 완료
+- [ ] 경쟁사 / 기존 도구 분석 (무엇을 하는가 + 무엇이 비었는가)
+- [ ] 관찰과 해석 분리, 추정 · 한계 명시
+- [ ] key_insights · opportunities 정리
 
-**Reviewer 검수**
+**검수**: `review.py --stage researcher` 1회. rollback 대상 없음 (맨 앞 단계. 입력 자료 문제면 escalate).
 
-- 산출물 완료 후 메인 세션이 `scripts/review.py`로 근거 품질 검수 1회 (기준 = `agents/reviewer/CLAUDE.md`)
-- pass → 파이프라인 종료 / revise → 재작업 (최대 2회) / rollback → 맨 앞 단계라 상류가 없어 해당 없음 (입력 자료 문제면 escalate) / escalate → 사용자 판단
+## 이어서
 
-**파이프라인 종료**
-
-- 리서치 종합 완료 → 오케스트레이터에 최종 보고
-
----
-
-## 전체 완료 조건
-
-- [ ] Researcher 리서치 종합 완료 및 저장
-- [ ] Reviewer 검수 `pass` (또는 escalate 시 사용자 판단 완료)
-- [ ] 오케스트레이터 작업 완료 보고 전달
-
----
-
-## 참고
-
-리서치 결과로 제품을 만들어야 하면 오케스트레이터에게 `PLAN`(리서치+기획) 또는 `FULL`(전체) 모드 실행을 요청한다.
-이미 RESEARCH로 종합한 산출물이 있으면 PM이 그 `research_path`를 인풋으로 받아 이어서 진행할 수 있다.
+- 제품까지 만들려면 PLAN(리서치 + 기획) 또는 FULL로 이어 간다. 이미 만든 `research_path`는 PM 입력으로 그대로 쓴다.

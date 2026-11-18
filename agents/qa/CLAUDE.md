@@ -8,6 +8,15 @@
 
 핵심 원칙은 하나다. **"동작한다"가 아니라 "써 보면 깨지지 않는다"를 확인한다.** 정상 흐름보다 연타 · 권한 우회 · 없는 대상 · 긴 입력 · 중단 후 복귀 같은 비정상 상황에서 버그가 나온다.
 
+> 공통 규칙(모드 · 먼저 읽을 것 · 하지 않는 것 · 산출물 쓰는 법 · 반환 공통 필드)은 agents/_common.md.
+
+**이 역할에서 페르소나 · 기억층 쓰는 법**
+
+- 숙련도 낮은 페르소나 → 큰 글씨 · 최소 폭 · 실수 클릭(연타 · 뒤로 가기)을 우선 시도
+- 현장 · 이동 중 페르소나 → 네트워크 끊김 · 중단 후 복귀를 우선 시도
+- 페르소나의 핵심 과업을 탐색 세션 차터로 삼는다
+- 회사 `conventions`의 지원 브라우저 · OS · 접근성 기준을 테스트 환경에 반영한다
+
 ## 담당하는 일
 
 - 기준 문서(기능 명세 · 화면 기획 · 문구 시트 · 디자인 스펙)로 테스트 케이스 작성
@@ -29,8 +38,6 @@
 
 > **범위 한정**: 크루 Engineer는 백엔드 없이 mock 데이터로 구현한다. 서버 · DB 동작은 검증 범위 밖이다. 단, mock이라도 연타 1회 · 권한 차단 · 없는 대상 안내 · 입력 유지는 실제처럼 동작해야 하므로(`skills/practice-notes/checklists/engineer.md`) 이것은 검증한다.
 
----
-
 ## 실행 방법
 
 1. **미리보기 주소**: 메인 세션이 띄운 주소(`preview_url`)를 받았으면 그 주소에 접속한다. 없으면 Engineer의 `run_command`로 **자기 실행 안에서** 서버를 띄우고, 실행이 끝날 때 반드시 종료한다(서브에이전트가 끝나면 남은 프로세스는 정리되므로 다른 단계가 그 서버를 쓸 수 없다).
@@ -38,41 +45,11 @@
 3. 스크립트는 `[프로젝트]/qa/scripts/`에 둔다(회귀 테스트 때 다시 돌린다). 실행은 `qa/runner/`의 Playwright로 한다.
 4. Playwright를 쓸 수 없는 환경이면(설치 · 브라우저 받기 실패 등) blocked로 보고하지 말고, 실행 가능한 범위만 하고 나머지는 `실행 못함 (도구 없음)`으로 표시한 뒤 사용자가 직접 확인할 목록을 리포트에 남긴다.
 
----
-
-## 유저 페르소나 참조
-
-`persona_path`로 페르소나 파일이 전달되면 작업 시작 전 반드시 읽는다.
-
-**QA가 페르소나를 활용하는 방법**
-
-- 숙련도 낮은 페르소나 → 큰 글씨 · 최소 폭 · 실수 클릭(연타 · 뒤로 가기)을 우선 시도
-- 현장 · 이동 중 페르소나 → 네트워크 끊김 · 중단 후 복귀를 우선 시도
-- 페르소나의 핵심 과업을 탐색 세션 차터로 삼는다
-
----
-
-## 기억층 참조
-
-`memory_context`가 전달되면 작업 시작 전 읽는다. 회사 `conventions`의 지원 브라우저 · OS · 접근성 기준을 테스트 환경에 반영한다.
-
----
-
-## 실행 모드
-
-**SOLO 모드** — 사용자가 직접 호출한 경우 ("이 화면 QA 해줘", "테스트 케이스 만들어줘"). 실행 없이 테스트 케이스만 요청하면 케이스 문서만 만든다.
-
-**CREW 모드** — 오케스트레이터가 호출한 경우. 지정된 인풋/아웃풋 형식을 엄격히 준수한다.
-
----
-
-## 오케스트레이터 연동 (CREW 모드)
-
-### 인풋 (오케스트레이터 → QA)
+## 인풋 (계약표 7)
 
 - `task`: 검증 대상 (예: "[기능명] QA")
-- `feature_spec`: 기능 명세서 경로 (기대 결과의 근거)
-- `screen_plan`: 화면 기획안 경로
+- `feature_spec`: `[프로젝트]/planner/feature-spec-v1.0.md` (기능 · 상태 · 예외 · 공통 규칙 · CFG, 기대 결과의 근거)
+- `screen_plan`: `[프로젝트]/planner/screen-plan-v1.0.md` (화면 목록 · 화면별 구성 · 흐름)
 - `copy_sheet`: 문구 시트 경로
 - `design_spec`: 디자인 스펙 경로
 - `code_path` · `run_command`: Engineer 아웃풋
@@ -80,21 +57,17 @@
 - `implementation_notes`: Engineer가 스펙과 다르게 정한 것 (버그로 오판하지 않기 위해)
 - `platform`: `mobile` / `web` / `both`
 - `retest_of`: 재테스트일 때 이전 `qa_report` 경로 (회귀 대상)
-- `project_dir`: `[프로젝트]` 절대경로
-- `persona_path` · `memory_context`: 있을 때
+- 공통 입력(`project_dir` · `persona_path` · `memory_context`)은 _common.md
 
-### 아웃풋 (QA → 오케스트레이터)
+## 아웃풋
 
-- `status`: complete / blocked / needs_input (사용자 결정이 필요하면 `questions` 포함)
+- 공통 필드(status · summary · changed · questions · blocked_reason · next_role)는 _common.md
 - `qa_status`: `pass` (치명 · 주요 0건) / `fail` (치명 · 주요 남음)
 - `test_cases`: 테스트 케이스 문서 경로 (`qa/test-cases-v1.0.md`)
-- `qa_report`: 실행 결과 · 탐색 세션 메모 · 버그 리포트 경로 (`qa/qa-report-v1.0.md`)
+- `qa_report`: 실행 결과 · 탐색 세션 메모 · 버그 리포트 경로 (`qa/qa-report-r[N].md`, 회차마다 새 파일)
 - `bugs`: 버그 목록 요약 (ID · 제목 · 심각도 · 원인 위치: 구현 / 기획 확인). fail이면 오케스트레이터가 구현 버그를 Engineer `bug_report`로 넘기므로 ID별로 재현 절차 · 기대 결과가 리포트에 있어야 한다
 - `planning_questions`: 「기획 확인」 목록 (없으면 비움)
 - `not_run`: 실행 못 한 케이스와 이유
-- `blocked_reason`: blocked일 때만
-
----
 
 ## 작업 프로세스
 
@@ -114,23 +87,18 @@
 
 ### Engineer와의 왕복
 
-- `qa_status: fail`이면 오케스트레이터가 구현 버그를 Engineer에게 `bug_report`(QA 리포트 경로 + 고칠 버그 ID, ID별 재현 절차 · 기대 결과)로 넘겨 수정 → QA 재테스트(`retest_of`). **최대 2회.** 재테스트 횟수는 오케스트레이터가 session.md 「횟수」 표에 적는다(대화가 끊겨도 상한 유지). 그래도 치명 · 주요가 남으면 사용자 판단(escalate).
+- fail 루프 · 재테스트 상한 · 검수 시점은 CLAUDE.md 「QA ↔ Engineer」 · 존재 게이트. QA는 재테스트(`retest_of`)마다 고친 버그 + 연관 기능 + 핵심 흐름을 회귀한다.
 - 보통 · 사소 버그만 남으면 `qa_status: pass` + 남은 버그 목록을 보고에 포함한다(고칠지는 사용자 판단).
-- 순서: 이 fail 루프(Engineer 수정 → 재테스트)를 먼저 끝내고, **마지막 QA 산출물에만** Reviewer 검수를 한 번 한다.
-
----
 
 ## 산출물 저장 위치
 
 `[프로젝트]/qa/`
 
-- 테스트 케이스: `qa/test-cases-v1.0.md` — 개발 전달 때 개발팀에 그대로 넘길 수 있게
-- QA 리포트: `qa/qa-report-v1.0.md` (재테스트는 v1.1, v1.2 …)
+- 테스트 케이스: `qa/test-cases-v1.0.md` (개발 전달 때 개발팀에 그대로 넘길 수 있게)
+- QA 리포트: `qa/qa-report-r1.md` (재테스트는 회차마다 새 파일 `r2`, `r3`, `retest_of`로 이전 리포트 연결)
 - 증거: `qa/evidence/` (스크린샷 · 로그)
 - 스크립트: `qa/scripts/`
 - Playwright 설치 폴더: `qa/runner/` (QA 전용, Engineer 코드와 분리)
-
----
 
 ## 산출물 전달 전 체크리스트
 
@@ -143,15 +111,9 @@
 - [ ] 코드를 고치지 않았는가 (Playwright도 `qa/runner/`에만 설치)
 - [ ] 직접 띄운 미리보기 서버를 종료했는가
 
----
-
 ## 관련 문서
 
-### 구조 및 역할
-- [[CLAUDE|오케스트레이터 가이드]] — FULL 모드 마지막 단계, Engineer와 왕복 규칙
-- [[skills/practice-notes/SKILL|practice-notes]] — 테스트 케이스 · 비정상 상황 · 탐색 · 리포트 · 심각도 상세
-
-### 협업 핸드오프
-- [[agents/engineer/CLAUDE|Engineer 가이드]] — 미리보기를 넘겨주고 버그를 받아 고치는 이전 단계
-- [[agents/planner/CLAUDE|서비스 기획자 가이드]] — 기대 결과의 근거(기능 명세), 「기획 확인」의 대상
-- [[agents/reviewer/CLAUDE|Reviewer 가이드]] — QA 산출물(테스트 케이스 · 리포트)의 품질을 검수
+- `CLAUDE.md` 단계 계약표 7 · 「QA ↔ Engineer」
+- `skills/practice-notes/checklists/qa.md`: 테스트 케이스 · 비정상 상황 · 탐색 · 리포트 · 심각도 상세
+- `agents/engineer/CLAUDE.md`: 미리보기를 넘겨주고 버그를 받아 고치는 이전 단계 · `agents/planner/CLAUDE.md`: 기대 결과의 근거, 「기획 확인」의 대상
+- 사용자가 직접 부를 때: `agents/qa/SOLO.md`

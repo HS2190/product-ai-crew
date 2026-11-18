@@ -6,7 +6,7 @@ claude.ai 프로젝트의 Project Instructions에 붙여 넣는 합본이다.
 
     python3 scripts/build-instructions.py
 """
-import io, os, re
+import glob, io, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "product-ai-crew-instructions.md")
@@ -14,6 +14,7 @@ OUT = os.path.join(ROOT, "product-ai-crew-instructions.md")
 SECTIONS = [
     ("0. 크루 설정 (crew.config.md)", "crew.config.md"),
     ("1. 오케스트레이터 (Orchestrator)", "CLAUDE.md"),
+    ("1-1. 모든 에이전트 공통", "agents/_common.md"),
     ("2. Researcher (리서치 수집·종합자)", "agents/researcher/CLAUDE.md"),
     ("3. PM (Product Manager)", "agents/pm/CLAUDE.md"),
     ("4. 서비스 기획자 (Product Planner)", "agents/planner/CLAUDE.md"),
@@ -75,7 +76,10 @@ def main():
     parts = [HEADER.rstrip()]
     for title, rel in SECTIONS:
         parts.append(f"---\n\n# {title}\n\n{strip_title(read(rel))}")
-    wf = ["# 9. 워크플로우", "", "모드별 워크플로우 정의다. 각 워크플로우의 단계마다 존재 검증 + Reviewer 검수를 거친다."]
+    for rel in sorted(glob.glob(os.path.join(ROOT, "agents", "*", "SOLO.md"))):
+        rel = os.path.relpath(rel, ROOT)
+        parts.append(f"---\n\n# 부록 · {rel.split(os.sep)[1]} SOLO\n\n{strip_title(read(rel))}")
+    wf = ["# 10. 워크플로우", "", "모드별 워크플로우 정의다. 각 워크플로우의 단계마다 존재 검증 + Reviewer 검수를 거친다."]
     for rel in WORKFLOWS:
         wf += ["", demote(read(rel).strip("\n"))]
     parts.append("---\n\n" + "\n".join(wf))

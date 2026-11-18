@@ -1,171 +1,77 @@
 # 기획 프로세스 워크플로우 (PLAN)
 
-## 개요
-
-- **실행 모드**: PLAN
-- **호출 순서**: Researcher → PM → 기획자
-- **사용 상황**: 리서치 + PRD + 화면 기획서까지 필요한 경우 (디자인 전 단계)
-- **오케스트레이터 참조**: `CLAUDE.md`
-
----
-
-## 사용 예시
+- **순서**: 0 → 1 Researcher → 2 PM → 3 기획자. 순서 · 필드 · 검수 처리 · 상한은 `CLAUDE.md` 단계 계약표가 정본이다.
+- **언제**: 리서치 + PRD + 화면 기획까지 필요할 때 (디자인 전 단계)
 
 ```
 "PRD랑 화면 기획서까지만 만들어줘."
-"기능 정의부터 기획 완료까지만 해줘."
 "[기능명] 요구사항 정리하고 화면 기획까지 진행해줘."
 "디자인은 나중에, 지금은 기획 문서만 필요해."
 ```
 
----
+## 0. 시작 점검
 
-## 단계별 실행 정의
+- 서비스명 · 기능명 · platform을 정하고, 사용자가 가진 리서치 자료(인터뷰 · 설문 · 티켓)를 물어 `research_input`으로 넘긴다.
 
-### Step 1 — Researcher 에이전트
+## 1. Researcher
 
-**역할 참조**: `agents/researcher/CLAUDE.md`
-**활용 스킬**: `plugins/design/skills/user-research/SKILL.md`, `plugins/design/skills/research-synthesis/SKILL.md`
+역할 정본: `agents/researcher/CLAUDE.md`
 
-**인풋**
+**입력**: `task` · 서비스명 · 기능명 · `research_input` · 공통 입력
 
-| 항목 | 설명 |
-|------|------|
-| 서비스명 | 작업 대상 서비스 이름 |
-| 기능명 | 리서치 주제 또는 구현할 기능 |
-| 리서치 자료 | 사용자 제공 자료 경로 (인터뷰·설문·티켓 등). 없으면 비움 |
-| 페르소나 | `[프로젝트]/persona.md` (있을 때) |
-
-**필수 아웃풋**
-
-| 산출물 | 저장 경로 |
-|-------|---------|
+| 산출물 | 경로 |
+|-------|------|
 | 리서치 종합 | `[프로젝트]/researcher/research-synthesis-v1.0.md` |
-| 핵심 인사이트 (key_insights) | 종합 문서 내 포함 |
-| 경쟁사 분석 (competitor_findings) | 종합 문서 내 포함 |
+| key_insights · competitor_findings | 종합 문서 안 |
 
 **완료 조건**
+- [ ] research-synthesis 형식으로 종합 완료
+- [ ] 경쟁사 / 기존 도구 분석 완료
+- [ ] 관찰과 해석 분리, 추정 · 한계 명시
+- [ ] PM이 인용할 수 있는 key_insights 정리
 
-- [ ] 리서치 종합 문서 작성 완료 (research-synthesis 형식)
-- [ ] 경쟁사/기존 도구 분석 완료
-- [ ] 관찰과 해석 분리, 추정·한계 명시
-- [ ] PM이 인용할 수 있는 key_insights 정리됨
+**검수**: `review.py --stage researcher`. rollback 대상 없음 (입력 자료 문제면 escalate).
 
-**Reviewer 검수**
+## 2. PM
 
-- 산출물 완료 후 메인 세션이 `scripts/review.py`로 근거 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
-- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / rollback → 맨 앞 단계라 상류가 없어 해당 없음 (입력 자료 문제면 escalate) / escalate → 사용자 판단
+역할 정본: `agents/pm/CLAUDE.md`
 
-**다음 에이전트로 전달**
+**입력**: `research_path` · `key_insights` · 서비스명 · 기능명 · `business_goal` · `target_user` · `platform`
 
-- 리서치 종합 문서 경로 (`research_path`)
-- 핵심 인사이트 (`key_insights`)
-- 경쟁사 분석 요약 (`competitor_findings`)
-
----
-
-### Step 2 — PM 에이전트
-
-**역할 참조**: `agents/pm/CLAUDE.md`
-
-**인풋** (Researcher 아웃풋 + 사용자 인풋)
-
-| 항목 | 설명 |
-|------|------|
-| 리서치 종합 (research_path) | Researcher 아웃풋 |
-| 핵심 인사이트 (key_insights) | Researcher 아웃풋 — 문제 정의·우선순위 근거 |
-| 서비스명 | 작업 대상 서비스 이름 |
-| 기능명 | 구현할 기능 또는 스프린트 주제 |
-| 비즈니스 목표 | 이 기능이 해결하는 비즈니스 문제 |
-| 타겟 사용자 | 페르소나 또는 사용자 유형 |
-| 플랫폼 (platform) | `mobile` / `web` / `both` (오케스트레이터가 0단계에 확정) |
-
-**필수 아웃풋**
-
-| 산출물 | 저장 경로 |
-|-------|---------|
-| PRD | `[프로젝트]/pm/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
-| 기능 목록 및 우선순위 | PRD 내 포함 |
-| In Scope / Out of Scope | PRD 내 포함 |
-| 브랜드 방향성 및 톤앤매너 | PRD 내 포함 또는 별도 전달 |
-
-**완료 조건**
-
-- [ ] PRD 작성 완료
-- [ ] 기능 목록 및 우선순위 확정 (Must Have / Should Have / Nice to Have)
-- [ ] In Scope / Out of Scope 명확히 구분됨
-- [ ] KPI/OKR 정의됨
-- [ ] `[확인 필요]` 항목이 `[프로젝트]/open-items.md`에 ID로 정리됨
-
-**Reviewer 검수**
-
-- 산출물 완료 후 메인 세션이 `scripts/review.py`로 내용 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
-- pass → 다음 Step / revise → 현재 Step 재작업 (최대 2회) / rollback → researcher 재호출 후 PM 재진행 (같은 상류 최대 2회) / escalate → 사용자 판단
-
-**다음 에이전트로 전달**
-
-- PRD 파일 경로
-- 기능 목록
-- 우선순위
-- 타겟 플랫폼
-- 브랜드 방향성
-
----
-
-### Step 3 — 기획자 에이전트
-
-**역할 참조**: `agents/planner/CLAUDE.md`
-
-**인풋** (PM 아웃풋)
-
-| 항목 | 출처 |
-|------|------|
-| PRD | PM 아웃풋 |
-| 기능 목록 | PM 아웃풋 |
-| 우선순위 | PM 아웃풋 |
-| 타겟 플랫폼 | `mobile` / `web` / `both` (오케스트레이터가 0단계에 확정) |
-| 브랜드 방향성 | PM 아웃풋 |
-
-**필수 아웃풋**
-
-| 산출물 | 저장 위치 |
-|-------|---------|
-| 화면 기획안 | `[프로젝트]/planner/` (md) |
-| 기능 명세서 | `[프로젝트]/planner/` (md) |
-| User Flow | `[프로젝트]/planner/` (md, 텍스트 다이어그램) |
-| 와이어프레임 | `[프로젝트]/planner/` (md) |
+| 산출물 | 경로 |
+|-------|------|
+| PRD (기능 목록 · 우선순위 · In/Out of Scope · KPI · brand_direction 포함) | `[프로젝트]/pm/PRD/PRD-[서비스명]-[기능명]-v1.0.md` |
 | 확인 필요 | `[프로젝트]/open-items.md` |
 
 **완료 조건**
+- [ ] 기능 목록 · 우선순위 확정 (Must Have / Should Have / Nice to Have, Must 1개 이상)
+- [ ] In Scope / Out of Scope 구분 (제외 사유 포함)
+- [ ] KPI/OKR 정의
+- [ ] `[확인 필요]`가 `open-items.md`에 ID로 정리
 
-- [ ] 모든 화면 기획안 작성 완료
-- [ ] 기능 명세서 작성 완료 (예외 처리 포함)
-- [ ] User Flow 시각화 완료
-- [ ] Empty State 정의됨
-- [ ] `[확인 필요]`는 근거 없이 임의 확정하지 않고, 남은 것은 `[프로젝트]/open-items.md`에 ID로 명시됨 (`agents/planner/CLAUDE.md` 「확인 필요 모으기」)
+**검수**: `review.py --stage pm`. rollback 대상: researcher.
 
-**Reviewer 검수**
+## 3. 기획자
 
-- 산출물 완료 후 메인 세션이 `scripts/review.py`로 내용 품질 검수 (기준 = `agents/reviewer/CLAUDE.md`)
-- pass → 파이프라인 종료 / revise → 현재 Step 재작업 (최대 2회) / rollback → 상류(pm 또는 researcher) 재호출 후 하류로 재진행 (같은 상류 최대 2회) / escalate → 사용자 판단
+역할 정본: `agents/planner/CLAUDE.md`
 
-**파이프라인 종료**
+**입력**: `prd_path` · `feature_list` · `priority` · `platform` · `brand_direction`
 
-- 화면 기획안 + 기능 명세서 완료 → 오케스트레이터에 최종 보고
+| 산출물 | 경로 |
+|-------|------|
+| 화면 기획안 (화면 목록 · 화면별 목적 · 텍스트 와이어 · 흐름 Mermaid, 정상 · 예외 갈래) | `[프로젝트]/planner/screen-plan-v1.0.md` |
+| 기능 명세서 (기능 ID · 상태 정의 · 예외 처리 · 공통 규칙 · 설정값 CFG) | `[프로젝트]/planner/feature-spec-v1.0.md` |
+| 확인 필요 | `[프로젝트]/open-items.md` (없으면 「없음」) |
 
----
+**완료 조건**
+- [ ] PRD In Scope 기능이 모두 화면 · 기능 ID로 잡힘
+- [ ] 흐름에 정상 · 예외 갈래와 화면 간 전이(트리거 · 조건 · 뒤로가기)
+- [ ] feature-spec에 모든 상태(empty / loading / error / disabled / 성공, 해당 없으면 사유)와 예외 처리. 예외 · 상태 표는 여기에만
+- [ ] 기준값은 CFG 표에만
+- [ ] `[확인 필요]`는 근거 없이 임의 확정하지 않고 `open-items.md`에 ID로 (`agents/planner/CLAUDE.md` 「확인 필요 모으기」)
 
-## 전체 완료 조건
+**검수**: `review.py --stage planner`. rollback 대상: pm · researcher.
 
-- [ ] Researcher 리서치 종합 완료 및 저장
-- [ ] PM PRD 완료 및 저장 (리서치 insights 인용)
-- [ ] 기획자 화면 기획안 + 기능 명세서 완료
-- [ ] 각 단계 Reviewer 검수 `pass` (또는 escalate 시 사용자 판단 완료)
-- [ ] 오케스트레이터 작업 완료 보고 전달
+## 이어서
 
----
-
-## 참고
-
-기획 완료 후 디자인이 필요하면 `DESIGN` 모드를 이어서 실행한다.
-전체 파이프라인이 필요한 경우 처음부터 `FULL` 모드로 실행하는 것이 더 효율적이다.
+- 디자인이 필요하면 DESIGN 모드를 이어 붙인다. 처음부터 구현까지 필요하면 FULL이 낫다.

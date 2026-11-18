@@ -14,7 +14,7 @@ Researcher · PM · 기획자 · UX 라이터 · 디자이너 · Engineer · QA 
 | 오케스트레이터 | 요청 분석 → 모드 판단 → 에이전트 순차 호출 · 세션 · 기억층 관리 | `CLAUDE.md` |
 | Researcher | 리서치 수집 · 종합, 경쟁 분석, insights 도출 | `agents/researcher/CLAUDE.md` |
 | PM | 제품 전략, PRD, 기능 우선순위 | `agents/pm/CLAUDE.md` |
-| 기획자 | 화면 기획, 기능 명세서, User Flow, 상태 · 예외 정의 | `agents/planner/CLAUDE.md` |
+| 기획자 | 화면 기획(목록 · 구성 · 흐름), 기능 명세(상태 · 예외 · 설정값), 확인 필요 모음 | `agents/planner/CLAUDE.md` |
 | UX 라이터 | 화면 문구를 디자인 전에 확정, 라이팅 가이드, 금지 표현 관리 | `agents/ux-writer/CLAUDE.md` |
 | 디자이너 | 디자인 시스템 위에서 화면 디자인(문구 시트 문구로), 컴포넌트 스펙 | `agents/designer/CLAUDE.md` |
 | Engineer | 프론트엔드 구현, 빌드 검증 | `agents/engineer/CLAUDE.md` |
@@ -79,6 +79,17 @@ claude
 | Playwright | QA의 화면 실행 테스트 | 실행 못 한 항목을 `not_run`으로 보고 |
 
 외부 스킬 일부는 라이선스 문제로 이 레포에 넣지 않았다. 출처와 설치 방법은 [THIRD_PARTY.md](THIRD_PARTY.md)에 있다. 설치하면 스킬 인덱스에 자동으로 잡힌다.
+
+---
+
+## 잘 쓰는 법
+
+- **맥락을 구체적으로 준다.** "기능 만들어줘"보다 "현장 작업자가 스마트폰으로 사진을 찍어 등록하는 기능, 한 손 조작 · 큰 버튼 · 최소 입력"이 결과가 훨씬 낫다.
+- **가진 리서치 자료를 넘긴다.** 인터뷰 전사 · 설문 · 지원 티켓이 있으면 Researcher가 추측 대신 사실에서 시작한다.
+- **필요한 단계만 부른다.** 한 번에 FULL보다 PLAN → (검토) → DESIGN → BUILD처럼 나눠 부르면 단계마다 방향을 잡기 쉽다. 검수만 따로 돌리고 싶으면 `scripts/review.py`를 바로 써도 된다.
+- **의존하는 단계는 순서대로.** 기획 → 문구 → 디자인처럼 앞 결과를 쓰는 단계는 병렬로 돌리지 않는다.
+- **멈추면 이유를 본다.** `blocked` · `needs_input` · `escalate`는 사람 판단이 필요하다는 뜻이다. 답을 주면 그 단계부터 이어 간다.
+- **대화가 끊겨도 된다.** 진행 상태는 `session.md`에 남아 있어 같은 작업을 다시 부르면 멈춘 곳부터 이어 간다.
 
 ---
 
