@@ -2,7 +2,7 @@
 
 > 이 파일은 `scripts/build-skill-index.py`가 생성한다. 직접 수정하지 말 것.
 
-> 스킬 24개 · 플러그인 스킬 2개
+> 스킬 27개 · 플러그인 스킬 2개
 
 
 스킬을 고를 때는 이 인덱스에서 후보를 좁힌 뒤 **선택한 스킬의 SKILL.md만** 연다.
@@ -10,12 +10,15 @@
 `자동`은 `~/.claude/skills`에 등록되어 설명 매칭으로 저절로 뜨는 스킬이다. 나머지는 경로를 열어 직접 적용한다.
 
 
-## 최상위 (17개)
+## 최상위 (20개)
 
 | 스킬 | 설명 | 자동 | 경로 |
 |---|---|:--:|---|
 | **banana** | AI image generation Creative Director powered by Google Gemini Nano Banana models. | ● | `skills/banana` |
 | **case-study** | Craft portfolio-ready case studies that tell the story of a design project. | ● | `skills/case-study` |
+| **crew** | Product AI Crew(리서치 → PM → 기획 → UX 라이팅 → 디자인 → 구현 → QA 멀티 에이전트 제품팀)를 어느 폴더에서든 불러 작업을 시작하거나 이어 간다. |  | `skills/crew` |
+| **crew-review** | 산출물 하나를 크루 검수 기준으로 Codex(다른 모델)에게 따로 검수받는다 — 크루 파이프라인 밖에서 메인 세션이 직접 쓴 기획서 · 정책 · 문구 시트 · 디자인 스펙 · 구현도 가능. |  | `skills/crew-review` |
+| **crew-status** | Product AI Crew의 프로젝트 진행 상태판을 보여 준다 — 끝나지 않은 세션(in_progress · paused)의 모드 · 다음 단계 · 기다리는 것. |  | `skills/crew-status` |
 | **critique-affordance** | Critique a screen's interactive affordances — what looks clickable, state visibility, CTA clarity, and action discoverability. | ● | `skills/critique-affordance` |
 | **critique-brand-consistency** | Critique a screen's brand consistency against mood.md, voice.md, and tokens.md. | ● | `skills/critique-brand-consistency` |
 | **critique-color** | Critique a screen's colour usage — contrast ratios, palette coherence, semantic meaning, and colour accessibility. | ● | `skills/critique-color` |

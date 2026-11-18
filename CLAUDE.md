@@ -29,7 +29,7 @@
 
 - **상류를 건너뛰는 모드**(DESIGN · BUILD · WRITE · CUSTOM): 「받는 것」 중 없는 것은 사용자 자료로 대신하거나 `해당 없음 (사유)`로 넘기고, 게이트는 그 모드에서 실제로 낼 수 있는 항목만 본다. 그 단계로 rollback이 나오면 escalate한다(돌리지 않은 단계로 되돌리지 않는다).
 - 모든 서브에이전트 호출에 `project_dir`(= `[프로젝트]` 절대경로) · `persona_path` · `memory_context` · `platform` · `design_system`을 함께 넘긴다.
-- **platform 값은 `mobile` / `web` / `both` 셋만 쓴다.** (APP/WEB/전체 같은 표기는 받는 즉시 이 값으로 바꾼다.)
+- **platform 값은 `mobile` / `web` / `both` 셋만 쓴다.** (APP/WEB/전체 같은 표기는 받는 즉시 이 값으로 바꾸고 session.md에도 고쳐 적는다.)
 - **상한**: 같은 산출물 revise 2회 · 같은 상류로 rollback 2회(어느 단계에서 되돌렸든 대상 역할별 합산) · QA 재테스트 2회. 넘으면 escalate(사용자 판단). 횟수는 session.md 「횟수」 표에 적는다.
 - **status 값**: 에이전트 반환 = `complete` / `blocked` / `needs_input`(사용자 결정 필요, `questions` 포함). 세션 = `in_progress` / `paused` / `handed_off` / `complete`. 진행표 단계 상태 = `pending` / `in_progress` / `complete` / `skipped`(사유).
 - **0단계 선행 조건**: 그 모드가 쓰는 외부 준비물이 실제로 있는지 시작 전에 확인한다. Figma를 쓸지와 쓸 파일(링크 자체는 5a에서 받아도 됨), 회사 라이브러리 게시 여부, 결정할 사람 · 시점, 기술 스택. 없으면 시작 전에 알리고 그 단계에서 멈출 것을 미리 말한다.
@@ -228,3 +228,4 @@ FULL의 최종 산출물은 Engineer의 동작하는 프론트엔드와 QA의 �
 | `workspace/_memory/README.md` | 기억층 읽기 · 쓰기 규칙 |
 | `workspace/persona-template.md` | 페르소나 양식 |
 | `skills/INDEX.md` | 스킬 목록 (세션 시작 시 자동 갱신) |
+| `skills/crew` · `crew-status` · `crew-review` | 어느 폴더에서나 크루를 부르는 진입 명령 (`scripts/status.py` · `scripts/review.py`) |
