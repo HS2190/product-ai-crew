@@ -42,7 +42,7 @@ sources.md    출처 장부 (어디서 무엇을 반영했는지)
 | 컴포넌트 이름사전 (이름 · 동작 · 문서에 남길 것) | [topics/components.md](topics/components.md) | 디자이너 · Engineer |
 | 플랫폼 (웹 · 앱 · 네이티브 · 웹뷰 · iOS와 안드로이드) | [topics/platforms.md](topics/platforms.md) | 기획자 · 디자이너 · QA |
 | API · HTTP · 캐시 (상태 코드 · JSON · 화면 vs 서버) | [topics/api-http.md](topics/api-http.md) | Engineer · QA |
-| 테스트 설계 · 종류 (경계값 · 동등 분할 · 결정 테이블 · 상태 전이 · 단위 · 통합 · E2E · 스모크 · 새니티 · 회귀) | [topics/testing.md](topics/testing.md) | QA · 기획자 · Reviewer |
+| 테스트 설계 · 종류 (경계값 · 동등 분할 · 결정 테이블 · 상태 전이 · 단위 · 통합 · E2E · 스모크 · 새니티 · 회귀 · 테스트 프로세스) | [topics/testing.md](topics/testing.md) | QA · 기획자 · Reviewer |
 
 ## 모든 역할 공통 원칙
 
